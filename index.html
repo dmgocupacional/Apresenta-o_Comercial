@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMG Ocupacional</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#1A2F5A;--navy-d:#0F1F3D;--navy-l:#2A4A7F;--orange:#D4720A;--orange-l:#F36F21;--white:#FFF;--g50:#F8FAFC;--g100:#F1F5F9;--g200:#E2E8F0;--g300:#CBD5E1;--g400:#94A3B8;--g600:#475569;--g800:#1E293B;--green:#059669;--blue:#3B82F6;--red:#DC2626;--radius:16px}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--navy-d);color:var(--white);overflow-x:hidden}
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(15,31,61,.95);backdrop-filter:blur(12px);border-bottom:3px solid var(--orange);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:54px}
+.nav-brand{font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;letter-spacing:2px;color:var(--white)}
+.nav-dots{display:flex;gap:6px;align-items:center}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;border:none;position:relative}
+.nav-dot.active{background:var(--orange);width:28px;border-radius:5px}
+.nav-dot:hover{background:rgba(255,255,255,.3)}
+.nav-dot .dot-tip{display:none;position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);font-size:10px;padding:4px 10px;border-radius:6px;white-space:nowrap;font-family:'Montserrat',sans-serif;font-weight:600}
+.nav-dot:hover .dot-tip{display:block}
+.nav-actions{display:flex;gap:8px}
+.nav-btn{padding:6px 14px;border-radius:8px;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:var(--white);font-family:'Montserrat',sans-serif;font-weight:600;font-size:10px;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.nav-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
+.nav-btn.orange{background:var(--orange);border-color:var(--orange)}
+.nav-btn.green{background:var(--green);border-color:var(--green)}
+.section{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:74px 40px 40px;position:relative;overflow:hidden}
+.section.dark{background:var(--navy-d)}.section.light{background:var(--g50);color:var(--g800)}.section.navy{background:var(--navy)}
+.section-inner{max-width:1100px;width:100%;position:relative;z-index:1}
+.cover{text-align:left}
+.cover .tag{display:inline-block;background:var(--orange);color:var(--white);font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;padding:5px 14px;border-radius:20px;letter-spacing:1px;margin-bottom:20px}
+.cover h1{font-family:'Montserrat',sans-serif;font-weight:900;font-size:52px;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px}
+.cover h1 span{color:var(--orange)}
+.cover .sub{font-size:18px;color:var(--g300);max-width:600px;line-height:1.6;margin-bottom:32px}
+.cover .client-input-wrap{display:flex;align-items:center;gap:12px;margin-bottom:30px}
+.cover .client-input-wrap label{font-size:12px;color:var(--g400);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.cover .client-input{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 20px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;color:var(--white);outline:none;width:360px;transition:border-color .3s}
+.cover .client-input:focus{border-color:var(--orange)}
+.cover .client-input::placeholder{color:rgba(255,255,255,.25)}
+.start-btn{display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:var(--white);border:none;padding:14px 32px;border-radius:12px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:transform .2s,background .2s}
+.start-btn:hover{background:var(--orange-l);transform:scale(1.03)}
+.cover-stats{display:flex;gap:32px;margin-top:36px}
+.cover-stat .num{font-family:'Montserrat',sans-serif;font-weight:800;font-size:32px;color:var(--orange)}
+.cover-stat .lbl{font-size:12px;color:var(--g400);margin-top:2px}
+.cover-deco{position:absolute;right:-40px;top:50%;transform:translateY(-50%);width:420px;height:420px;border-radius:50%;border:3px solid rgba(212,114,10,.15);opacity:.5}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.about-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:28px;transition:border-color .3s}
+.about-card:hover{border-color:var(--orange)}
+.about-card .card-num{font-family:'Montserrat',sans-serif;font-weight:800;font-size:36px;color:var(--orange);margin-bottom:4px}
+.about-card .card-label{font-size:13px;color:var(--g400);margin-bottom:12px}
+.about-card .card-desc{font-size:14px;color:var(--g300);line-height:1.6}
+.section-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:36px;letter-spacing:-1px;margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--g400);margin-bottom:32px;max-width:700px}
+.section.light .section-title{color:var(--navy)}.section.light .section-sub{color:var(--g600)}
+.orange-line{width:60px;height:4px;background:var(--orange);border-radius:2px;margin-bottom:16px}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pillar{background:var(--white);border-radius:var(--radius);padding:28px 24px;text-align:center;border-top:4px solid var(--navy);transition:transform .3s,box-shadow .3s}
+.pillar:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.pillar .p-num{font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;color:var(--white);background:var(--navy);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.pillar:nth-child(2){border-top-color:var(--orange)}.pillar:nth-child(2) .p-num{background:var(--orange)}
+.pillar:nth-child(3){border-top-color:var(--green)}.pillar:nth-child(3) .p-num{background:var(--green)}
+.pillar h3{font-family:'Montserrat',sans-serif;font-weight:700;font-size:18px;color:var(--navy);margin-bottom:10px}
+.pillar p{font-size:13px;color:var(--g600);line-height:1.6;margin-bottom:14px}
+.pillar ul{list-style:none;text-align:left;padding:0}
+.pillar ul li{font-size:12px;color:var(--g600);padding:5px 0;border-bottom:1px solid var(--g100);display:flex;align-items:center;gap:6px}
+.pillar ul li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--navy);flex-shrink:0}
+.pillar:nth-child(2) ul li::before{background:var(--orange)}.pillar:nth-child(3) ul li::before{background:var(--green)}
+.portfolio-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.port-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .3s}
+.port-card:hover{border-color:var(--orange);background:rgba(255,255,255,.08);transform:translateY(-3px)}
+.port-card .port-icon{font-size:28px;margin-bottom:10px}
+.port-card h4{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--white);margin-bottom:6px}
+.port-card p{font-size:11px;color:var(--g400);line-height:1.5}
+.wheel-section{display:flex;flex-direction:column;align-items:center}
+.wheel-container{position:relative;width:680px;height:680px;flex-shrink:0}
+.center-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:195px;height:195px;background:var(--navy);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;box-shadow:0 8px 32px rgba(26,47,90,.3);border:4px solid var(--orange);cursor:pointer;transition:transform .3s}
+.center-hub:hover{transform:translate(-50%,-50%) scale(1.03)}
+.center-hub .ch-label{color:var(--g400);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.center-hub .ch-name{color:var(--white);font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;text-align:center;margin-top:4px}
+.center-hub .ch-badge{font-size:8px;color:var(--orange);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+.petal{position:absolute;width:185px;height:108px;background:var(--white);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .35s;box-shadow:0 2px 12px rgba(0,0,0,.06);border:2px solid var(--g200);z-index:5;user-select:none}
+.petal:hover{transform:scale(1.07);box-shadow:0 6px 24px rgba(0,0,0,.12);border-color:var(--navy-l)}
+.petal.active{border-color:var(--orange);box-shadow:0 6px 24px rgba(212,114,10,.2);z-index:15;transform:scale(1.07)}
+.petal .petal-number{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;margin-bottom:5px;transition:all .3s}
+.petal.blue-a .petal-number{background:#E8F0FE;color:var(--navy)}.petal.orange-a .petal-number{background:#FFF0E5;color:var(--orange)}
+.petal.active .petal-number{color:var(--white)}.petal.active.blue-a .petal-number{background:var(--navy)}.petal.active.orange-a .petal-number{background:var(--orange)}
+.petal .petal-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;color:var(--g800);text-align:center;line-height:1.3;padding:0 10px}
+.petal .status-dot{position:absolute;top:7px;right:7px;width:11px;height:11px;border-radius:50%;background:var(--g200);transition:background .3s}
+.petal .status-dot.done{background:var(--green)}.petal .status-dot.pending{background:var(--orange)}
+.connector{position:absolute;background:rgba(255,255,255,.12);z-index:1;transition:background .3s}.connector.active{background:var(--orange)}
+.wheel-instruction{text-align:center;color:var(--g400);font-size:13px;margin-bottom:18px}
+.wheel-instruction span{background:var(--orange-l);color:white;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;margin-left:4px}
+.wheel-progress{display:flex;align-items:center;gap:12px;margin-top:16px;padding:10px 20px;background:rgba(255,255,255,.05);border-radius:var(--radius)}
+.wheel-progress .wp-label{font-size:11px;color:var(--g400);font-weight:600}
+.wp-track{flex:1;height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}.wp-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--green));border-radius:4px;transition:width .5s;width:0%}
+.wp-count{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px}
+.matrix-wrap{max-width:900px;margin:0 auto}
+.matrix-bg{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4px;border-radius:var(--radius);overflow:hidden;min-height:480px}
+.matrix-q{padding:28px;display:flex;flex-direction:column}
+.matrix-q.q-red{background:rgba(220,38,38,.06)}.matrix-q.q-green{background:rgba(5,150,105,.06)}.matrix-q.q-gray{background:rgba(148,163,184,.06)}.matrix-q.q-blue{background:rgba(59,130,246,.06)}
+.matrix-q .q-label{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;margin-bottom:12px}
+.matrix-q.q-red .q-label{color:var(--red)}.matrix-q.q-green .q-label{color:var(--green)}.matrix-q.q-gray .q-label{color:var(--g400)}.matrix-q.q-blue .q-label{color:var(--blue)}
+.matrix-card{background:var(--white);border-radius:12px;padding:20px;flex:1;border:2px solid transparent;transition:all .3s}
+.matrix-q.q-red .matrix-card{border-color:rgba(220,38,38,.2)}.matrix-q.q-green .matrix-card{border-color:rgba(5,150,105,.3);box-shadow:0 4px 20px rgba(5,150,105,.1)}.matrix-q.q-gray .matrix-card{border-color:rgba(148,163,184,.2);border-style:dashed}.matrix-q.q-blue .matrix-card{border-color:rgba(59,130,246,.2)}
+.matrix-card h4{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:8px}
+.matrix-card p{font-size:12px;color:var(--g600);line-height:1.6}
+.matrix-card .badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;font-family:'Montserrat',sans-serif;margin-bottom:8px}
+.matrix-card .badge.grn{background:var(--green);color:var(--white)}.matrix-card .badge.org{background:var(--orange);color:var(--white)}
+.axis-label{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;color:var(--g400);letter-spacing:.5px}
+.steps{display:flex;flex-direction:column;position:relative;padding-left:40px}
+.steps::before{content:'';position:absolute;left:18px;top:24px;bottom:24px;width:3px;background:linear-gradient(to bottom,var(--orange),var(--green));border-radius:2px}
+.step{display:flex;align-items:flex-start;gap:24px;padding:20px 0}
+.step-num{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;flex-shrink:0;margin-left:-40px;z-index:2}
+.step:nth-child(1) .step-num{background:var(--orange);color:var(--white)}.step:nth-child(2) .step-num{background:var(--navy);color:var(--white)}.step:nth-child(3) .step-num{background:var(--navy-l);color:var(--white)}.step:nth-child(4) .step-num{background:var(--green);color:var(--white)}
+.step-content h4{font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px}.step-content p{font-size:13px;line-height:1.6}
+.section.light .step-content h4{color:var(--navy)}.section.light .step-content p{color:var(--g600)}
+.overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.35);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s}.overlay.show{opacity:1;pointer-events:all}
+.expand-panel{position:fixed;top:0;right:-540px;width:520px;height:100vh;background:var(--navy-d);box-shadow:-8px 0 40px rgba(0,0,0,.4);z-index:400;transition:right .4s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;border-left:3px solid var(--orange)}.expand-panel.open{right:0}
+.panel-header{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.panel-header .pn{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;flex-shrink:0}
+.panel-header .pt{font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;color:var(--white);flex:1}
+.panel-close{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.08);color:var(--g400);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}.panel-close:hover{background:var(--orange);color:var(--white)}
+.panel-body{padding:16px 24px;overflow-y:auto;flex:1}
+.q-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:12px;transition:border-color .2s}.q-item:focus-within{border-color:var(--orange)}
+.q-item .ql{font-size:10px;color:var(--g400);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:5px}
+.q-item textarea{width:100%;border:none;background:none;font-family:'Inter',sans-serif;font-size:13px;color:var(--g200);resize:none;outline:none;line-height:1.5;min-height:44px}
+.q-item .note-f{margin-top:8px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.08)}
+.q-item .note-f textarea{font-size:12px;color:var(--g400);min-height:28px;font-style:italic}.q-item .note-f .ql{color:var(--orange)}
+.q-item .rm-btn{float:right;background:none;border:none;color:var(--g400);cursor:pointer;font-size:14px;transition:color .2s}.q-item .rm-btn:hover{color:#EF4444}
+.add-q-btn{background:rgba(255,255,255,.04);border:2px dashed rgba(255,255,255,.08);border-radius:12px;padding:12px;cursor:pointer;font-size:12px;color:var(--g400);font-weight:600;transition:all .2s;width:100%;text-align:center;margin-bottom:12px}.add-q-btn:hover{border-color:var(--orange);color:var(--orange)}
+.mic-section{padding:14px 24px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.mic-bar{display:flex;align-items:center;gap:8px}
+.mic-btn{width:44px;height:44px;border-radius:50%;border:none;font-size:20px;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mic-btn.idle{background:rgba(220,38,38,.15);color:#EF4444}.mic-btn.recording{background:#EF4444;color:#FFF;animation:pulse 1s infinite}.mic-btn.processing{background:var(--orange);color:#FFF;animation:pulse 1.5s infinite;pointer-events:none}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.mic-status{font-size:11px;color:var(--g400);flex:1}.mic-status.rec{color:#EF4444;font-weight:600}.mic-status.proc{color:var(--orange);font-weight:600}
+.mic-transcript{margin-top:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px;font-size:11px;color:var(--g300);max-height:80px;overflow-y:auto;display:none;line-height:1.5}.mic-transcript.show{display:block}
+.ai-summary{margin-top:8px;background:rgba(212,114,10,.08);border:1px solid rgba(212,114,10,.2);border-radius:8px;padding:10px;font-size:11px;color:var(--g200);display:none;line-height:1.5}.ai-summary.show{display:block}.ai-summary strong{color:var(--orange)}
+.api-key-bar{display:flex;gap:6px;align-items:center;margin-top:8px}
+.api-key-bar input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 10px;font-size:10px;color:var(--g300);outline:none;font-family:monospace}.api-key-bar input:focus{border-color:var(--orange)}
+.api-key-bar button{padding:6px 12px;border-radius:6px;border:none;background:var(--orange);color:#FFF;font-size:10px;font-weight:600;cursor:pointer}
+.score-wrap{padding:14px 24px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.score-wrap label{font-size:11px;color:var(--g400);font-weight:600;display:block;margin-bottom:8px}
+.score-row{display:flex;align-items:center;gap:10px}.score-row input[type=range]{flex:1;accent-color:var(--orange)}
+.score-val{font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;color:var(--orange);min-width:32px;text-align:center}
+.panel-footer{padding:12px 24px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.s-btn{flex:1;padding:9px;border-radius:10px;border:2px solid rgba(255,255,255,.1);background:transparent;font-family:'Montserrat',sans-serif;font-weight:600;font-size:11px;cursor:pointer;transition:all .2s;text-align:center;color:var(--g400);min-width:90px}
+.s-btn.done{border-color:var(--green);color:var(--green)}.s-btn.done:hover,.s-btn.done.sel{background:var(--green);color:var(--white)}
+.s-btn.pending{border-color:var(--orange);color:var(--orange)}.s-btn.pending:hover,.s-btn.pending.sel{background:var(--orange);color:var(--white)}
+.s-btn.restore{border-color:#EF4444;color:#EF4444}.s-btn.restore:hover{background:rgba(239,68,68,.1)}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--white);padding:12px 28px;border-radius:12px;font-size:13px;font-weight:600;z-index:999;transition:transform .4s;box-shadow:0 8px 30px rgba(0,0,0,.3);pointer-events:none;border:1px solid var(--orange)}.toast.show{transform:translateX(-50%) translateY(0)}
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}.fade-up.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">DIMEG</div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="saveData()">&#x1F4BE; Salvar</button>
+    <button class="nav-btn" onclick="document.getElementById('loadInput').click()">&#x1F4C2; Carregar</button>
+    <input type="file" id="loadInput" accept=".json" style="display:none" onchange="loadData(event)">
+    <button class="nav-btn orange" onclick="generateMap()">&#x1F4C4; Mapa</button>
+    <button class="nav-btn green" onclick="generateProposal()">&#x1F4DD; Proposta</button>
+  </div>
+</nav>
+
+<section class="section dark" id="s0"><div class="section-inner cover">
+  <div class="tag">PROPOSTA COMERCIAL</div>
+  <h1>DMG <span>Ocupacional</span></h1>
+  <div class="sub">Ecossistema completo de gestão em Saúde e Segurança do Trabalho com equipe médica especializada dedicada à sua operação.</div>
+  <div class="client-input-wrap"><label>Cliente</label><input type="text" class="client-input" id="clientName" placeholder="Digite o nome do cliente"></div>
+  <button class="start-btn" onclick="goTo(1)">Iniciar Apresentação &#x2192;</button>
+  <div class="cover-stats">
+    <div class="cover-stat"><div class="num">25</div><div class="lbl">Anos de experiência</div></div>
+    <div class="cover-stat"><div class="num">+300K</div><div class="lbl">Vidas atendidas</div></div>
+    <div class="cover-stat"><div class="num">+4.000</div><div class="lbl">Atendimentos/mês</div></div>
+  </div>
+  <div class="cover-deco"></div>
+</div></section>
+
+<section class="section dark" id="s1"><div class="section-inner fade-up">
+  <div class="orange-line"></div>
+  <div class="section-title">Quem Somos — DIMEG</div>
+  <div class="section-sub" style="color:var(--g300)">25 anos unindo solidez, escala operacional e foco em saúde preventiva corporativa.</div>
+  <div class="about-grid">
+    <div class="about-card"><div class="card-num">25</div><div class="card-label">Anos de experiência</div><div class="card-desc">Consolidada no mercado, gerando valor e confiança para empresas de todos os portes.</div></div>
+    <div class="about-card"><div class="card-num">+300K</div><div class="card-label">Pessoas na base histórica</div><div class="card-desc">Extensa base de atendimento com prontuários rastreáveis e histórico completo.</div></div>
+    <div class="about-card"><div class="card-num">170K</div><div class="card-label">Pacientes sem plano</div><div class="card-desc">Pacientes sem plano de saúde que dependem dos nossos serviços de saúde ocupacional.</div></div>
+    <div class="about-card"><div class="card-num">+4.000</div><div class="card-label">Atendimentos mensais</div><div class="card-desc">Consultas e exames realizados mensalmente em nossa rede credenciada.</div></div>
+  </div>
+</div></section>
+
+<section class="section light" id="s2"><div class="section-inner fade-up">
+  <div class="orange-line"></div>
+  <div class="section-title">Proposta de Valor — 3 Pilares</div>
+  <div class="section-sub">Nossa entrega se baseia em um tripé inegociável que garante a tranquilidade jurídica e operacional.</div>
+  <div class="pillars">
+    <div class="pillar"><div class="p-num">1</div><h3>Conformidade</h3><p>Segurança jurídica total com foco em zero multas e blindagem contra passivos.</p><ul><li>Zero multas e autuações</li><li>100% legal (NRs atualizadas)</li><li>Envio automático eSocial</li></ul></div>
+    <div class="pillar"><div class="p-num">2</div><h3>Gestão</h3><p>Controle operacional completo para eliminar surpresas e garantir previsibilidade.</p><ul><li>Previsibilidade de custos</li><li>Alertas de vencimento ASO/PGR</li><li>Controle centralizado de vidas</li></ul></div>
+    <div class="pillar"><div class="p-num">3</div><h3>Parceria</h3><p>Atendimento consultivo e suporte executivo que entende a realidade do RH.</p><ul><li>SLA de atendimento garantido</li><li>Suporte executivo dedicado</li><li>Consultoria técnica contínua</li></ul></div>
+  </div>
+</div></section>
+
+<section class="section navy" id="s3"><div class="section-inner fade-up">
+  <div class="orange-line"></div>
+  <div class="section-title">Portfólio de Serviços</div>
+  <div class="section-sub" style="color:var(--g300)">Ecossistema completo de gestão ocupacional.</div>
+  <div class="portfolio-grid" id="portGrid"></div>
+</div></section>
+
+<section class="section dark" id="s4"><div class="section-inner wheel-section fade-up">
+  <div class="orange-line" style="margin:0 auto 16px"></div>
+  <div class="section-title" style="text-align:center">Conhecendo seu Cenário</div>
+  <div class="wheel-instruction">Clique em cada área para explorar <span>INTERATIVO</span></div>
+    <div style="display:flex;justify-content:center;gap:12px;margin-bottom:16px">
+      <button id="globalMicBtn" onclick="toggleGlobalMic()" style="display:inline-flex;align-items:center;gap:8px;background:rgba(220,38,38,.15);color:#EF4444;border:2px solid rgba(220,38,38,.3);padding:10px 24px;border-radius:12px;font-family:Montserrat,sans-serif;font-weight:700;font-size:13px;cursor:pointer">&#x1F3A4; Gravar Reunião</button>
+      <button id="globalFillBtn" onclick="globalFillWithAI()" style="display:none;align-items:center;gap:8px;background:var(--orange);color:var(--white);border:none;padding:10px 24px;border-radius:12px;font-family:Montserrat,sans-serif;font-weight:700;font-size:13px;cursor:pointer">&#x1F916; Preencher Tudo com IA</button>
+    </div>
+    <div id="globalTranscript" style="display:none;max-width:680px;margin:0 auto 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;font-size:11px;color:var(--g300);max-height:120px;overflow-y:auto"></div>
+    <div id="globalStatus" style="text-align:center;font-size:11px;color:var(--g400);margin-bottom:8px"></div>
+  <div class="wheel-container" id="wheel">
+    <div class="center-hub" onclick="closePanel()">
+      <div class="ch-label">Cliente</div>
+      <div class="ch-name" id="hubName">—</div>
+      <div class="ch-badge">DMG Ocupacional</div>
+    </div>
+  </div>
+  <div class="wheel-progress">
+    <div class="wp-label">Qualificação</div>
+    <div class="wp-track"><div class="wp-fill" id="wpFill"></div></div>
+    <div class="wp-count" id="wpCount">0 / 8</div>
+  </div>
+</div></section>
+
+<section class="section light" id="s5"><div class="section-inner fade-up">
+  <div class="orange-line"></div>
+  <div class="section-title">Matriz: Risco vs. Diferenciação</div>
+  <div class="section-sub">Onde cada modelo de gestão SST se posiciona.</div>
+  <div class="matrix-wrap">
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="axis-label">&#x2191; Alto risco</span><span class="axis-label" style="color:var(--green)">ZONA IDEAL &#x2192;</span></div>
+    <div class="matrix-bg">
+      <div class="matrix-q q-red"><div class="q-label">ZONA DE RISCO</div><div class="matrix-card"><h4>Clínica Avulsa</h4><p>Apenas exames pontuais, sem controle de vencimentos, eSocial ou laudos. Risco máximo de autuação.</p></div></div>
+      <div class="matrix-q q-green"><div class="q-label">ZONA IDEAL</div><div class="matrix-card highlight"><div class="badge grn">DMG Ocupacional</div><div class="badge org">+ In Company</div><h4 style="margin-top:8px">Ecossistema completo</h4><p>Equipe médica dedicada in loco. Gestão de exames, laudos, treinamentos, eSocial, BI e suporte jurídico.</p></div></div>
+      <div class="matrix-q q-gray"><div class="q-label">ZONA CRÍTICA</div><div class="matrix-card"><h4>Sem Gestão Ocupacional</h4><p>Empresa totalmente exposta a multas, autuações, ações trabalhistas e interdições.</p></div></div>
+      <div class="matrix-q q-blue"><div class="q-label">ZONA DE VALOR PARCIAL</div><div class="matrix-card"><h4>Consultoria SST</h4><p>Bom técnico, mas sem operação própria. Entrega fragmentada, sem SLA e sem equipe dedicada.</p></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:4px"><span class="axis-label">&#x2190; Baixa diferenciação</span><span class="axis-label">Alta diferenciação &#x2192;</span></div>
+  </div>
+</div></section>
+
+<section class="section light" id="s6"><div class="section-inner fade-up">
+  <div class="orange-line"></div>
+  <div class="section-title">Próximos Passos</div>
+  <div class="section-sub">Fluxo de implementação e regularização SST.</div>
+  <div class="steps">
+    <div class="step"><div class="step-num">01</div><div class="step-content"><h4>Envio da Proposta</h4><p>Solução comercial customizada com base nas necessidades identificadas nesta reunião.</p></div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-content"><h4>Vistoria Técnica</h4><p>Visita do Engenheiro de Segurança para levantamento de riscos ambientais.</p></div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-content"><h4>Onboarding</h4><p>Importação da base de funcionários, procuração eCAC e treinamento no SGG.</p></div></div>
+    <div class="step"><div class="step-num">04</div><div class="step-content"><h4>Atendimento e Regularização</h4><p>Início dos atendimentos clínicos, emissão de documentos e envio dos eventos SST.</p></div></div>
+  </div>
+</div></section>
+
+<section class="section dark" id="s7"><div class="section-inner fade-up" style="text-align:center">
+  <div class="orange-line" style="margin:0 auto 16px"></div>
+  <div class="section-title" style="font-size:42px">Obrigado</div>
+  <div class="section-sub" style="color:var(--g300);margin:16px auto 32px;text-align:center;max-width:500px">O Mapa Diagnóstico desta reunião está pronto para ser gerado.</div>
+  <button class="start-btn" onclick="generateMap()" style="font-size:16px;padding:16px 40px">&#x1F4C4; Gerar Mapa Diagnóstico</button>
+  <div style="margin-top:12px"><button class="start-btn" onclick="generateProposal()" style="font-size:14px;padding:12px 32px;background:var(--green)">&#x1F4DD; Gerar Proposta DOCX</button></div>
+  <div style="margin-top:16px"><button class="nav-btn" onclick="saveData()" style="font-size:12px;padding:10px 20px">&#x1F4BE; Salvar reunião</button></div>
+  <div style="margin-top:40px;color:var(--g400);font-size:14px"><strong>Luigi Perkoski</strong> — Especialista Medicina do Trabalho<br>(11) 9 7569 1076 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="472b372622342b222a2207232e2a22206924282a692535">[email&#160;protected]</a></div>
+</div></section>
+
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="expand-panel" id="expandPanel">
+  <div class="panel-header">
+    <div class="pn" id="panelNum">01</div>
+    <div class="pt" id="panelTitle">Título</div>
+    <button class="panel-close" onclick="closePanel()">&#x2715;</button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+  <div class="mic-section">
+    <div class="mic-bar">
+      <button class="mic-btn idle" id="micBtn" onclick="toggleMic()">&#x1F3A4;</button>
+      <div class="mic-status" id="micStatus">Clique para gravar</div>
+    </div>
+    <div class="mic-transcript" id="micTranscript"></div>
+    <div class="ai-summary" id="aiSummary"></div>
+    <div class="api-key-bar" id="apiKeyBar" style="display:none">
+      <input type="password" id="apiKeyInput" placeholder="Cole sua API key da Anthropic">
+      <button onclick="saveApiKey()">Salvar</button>
+    </div>
+  </div>
+  <div class="score-wrap">
+    <label>Maturidade SST (0=inexistente, 10=excelente)</label>
+    <div class="score-row"><input type="range" min="0" max="10" value="0" id="scoreSlider" oninput="setScore(this.value)" onchange="setScore(this.value)"><div class="score-val" id="scoreVal">0</div></div>
+  </div>
+  <div class="panel-footer">
+    <button class="s-btn done" onclick="setStatus('done')">&#x2713; Abordado</button>
+    <button class="s-btn pending" onclick="setStatus('pending')">&#x23F3; Pendente</button>
+    <button class="s-btn restore" onclick="resetCluster()">&#x1F504; Restaurar</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var clusters=[{id:0,title:"Riscos Ocupacionais",accent:"blue",status:null,score:0,gap:"",questions:[{text:"Quais riscos mapeados?",note:""},{text:"PGR/PCMSO atualizados?",note:""},{text:"Riscos em expans\u00f5es?",note:""}]},{id:1,title:"Treinamentos e NRs",accent:"orange",status:null,score:0,gap:"",questions:[{text:"NRs obrigat\u00f3rias?",note:""},{text:"Calend\u00e1rio capacita\u00e7\u00f5es?",note:""},{text:"Controle certifica\u00e7\u00f5es?",note:""}]},{id:2,title:"eSocial e Compliance",accent:"blue",status:null,score:0,gap:"",questions:[{text:"Gest\u00e3o S-2210/S-2220/S-2240?",note:""},{text:"Integra\u00e7\u00e3o folha?",note:""},{text:"Autua\u00e7\u00e3o eSocial?",note:""}]},{id:3,title:"Equipe e Estrutura",accent:"orange",status:null,score:0,gap:"",questions:[{text:"Total colaboradores?",note:""},{text:"Distribui\u00e7\u00e3o unidades?",note:""},{text:"Turnover?",note:""}]},{id:4,title:"Gest\u00e3o de EPI",accent:"orange",status:null,score:0,gap:"",questions:[{text:"Sistema EPI?",note:""},{text:"Controle entrega/validade?",note:""},{text:"Rastreabilidade?",note:""}]},{id:5,title:"Controle de Terceiros",accent:"blue",status:null,score:0,gap:"",questions:[{text:"SST terceiros?",note:""},{text:"Gest\u00e3o documental?",note:""},{text:"Corresponsabilidade?",note:""}]},{id:6,title:"Planejamento SST",accent:"orange",status:null,score:0,gap:"",questions:[{text:"Planejamento anual?",note:""},{text:"Cronograma preventivo?",note:""},{text:"Revis\u00f5es vs crescimento?",note:""}]},{id:7,title:"Suporte M\u00e9dico-Jur\u00eddico",accent:"blue",status:null,score:0,gap:"",questions:[{text:"Suporte estruturado?",note:""},{text:"Defesa t\u00e9cnica?",note:""},{text:"Absent\u00e9ismo?",note:""}]}];
+var ORIG=JSON.parse(JSON.stringify(clusters));var activePetal=null;
+var portfolio=[{icon:"\ud83c\udfe5",title:"PCMSO & ASO",desc:"Controle M\u00e9dico."},{icon:"\ud83d\udccb",title:"PGR & NRs",desc:"Riscos e laudos."},{icon:"\ud83d\udd2c",title:"Exames",desc:"Adm/Per/Ret/Dem."},{icon:"\ud83d\udcbb",title:"eSocial",desc:"Envio autom\u00e1tico."},{icon:"\ud83d\udcc4",title:"Laudos",desc:"PPP, ergon\u00f4micos."},{icon:"\ud83d\udcca",title:"Auditorias",desc:"Conformidade."},{icon:"\ud83c\udf93",title:"Treinamentos",desc:"NRs, SIPAT."},{icon:"\ud83d\udc68\u200d\u2695\ufe0f",title:"In Company",desc:"Equipe in loco."}];
+var slides=['Capa','Quem Somos','3 Pilares','Portf\u00f3lio','Diagn\u00f3stico','Matriz','Passos','Encerramento'];var currentSlide=0;
+function buildNav(){var d=document.getElementById('navDots');d.innerHTML='';slides.forEach(function(s,i){var b=document.createElement('button');b.className='nav-dot'+(i===currentSlide?' active':'');b.innerHTML='<span class="dot-tip">'+s+'</span>';b.onclick=function(){goTo(i)};d.appendChild(b)})}
+function goTo(i){currentSlide=i;document.getElementById('s'+i).scrollIntoView({behavior:'smooth'});buildNav()}
+function buildPortfolio(){var g=document.getElementById('portGrid');g.innerHTML='';portfolio.forEach(function(p){var d=document.createElement('div');d.className='port-card';d.innerHTML='<div class="port-icon">'+p.icon+'</div><h4>'+p.title+'</h4><p>'+p.desc+'</p>';g.appendChild(d)})}
+var PA=[270,315,0,45,90,135,180,225],PD=228,WX=340,WY=340;
+function createPetals(){var w=document.getElementById('wheel');w.querySelectorAll('.petal,.connector').forEach(function(e){e.remove()});clusters.forEach(function(cl,i){var a=PA[i]*(Math.PI/180),px=WX+PD*Math.cos(a)-92,py=WY+PD*Math.sin(a)-54;var cn=document.createElement('div');cn.className='connector';cn.id='conn-'+i;var sx=WX+78*Math.cos(a),sy=WY+78*Math.sin(a),ln=Math.sqrt((px+92-sx)**2+(py+54-sy)**2)-40,rt=Math.atan2(py+54-sy,px+92-sx)*(180/Math.PI);cn.style.cssText='left:'+sx+'px;top:'+(sy-1)+'px;width:'+ln+'px;height:2px;transform-origin:0 50%;transform:rotate('+rt+'deg)';w.appendChild(cn);var p=document.createElement('div');p.className='petal '+(cl.accent==='blue'?'blue-a':'orange-a');p.id='petal-'+i;p.style.left=px+'px';p.style.top=py+'px';p.onclick=function(){openPanel(i)};p.innerHTML='<div class="status-dot'+(cl.status?' '+cl.status:'')+'" id="dot-'+i+'"></div><div class="petal-number">'+String(i+1).padStart(2,'0')+'</div><div class="petal-title">'+cl.title+'</div>';w.appendChild(p)})}
+function openPanel(i){var cl=clusters[i];activePetal=i;document.querySelectorAll('.petal').forEach(function(p,j){p.classList.toggle('active',j===i)});document.querySelectorAll('.connector').forEach(function(c,j){c.classList.toggle('active',j===i)});var n=document.getElementById('panelNum');n.textContent=String(i+1).padStart(2,'0');n.style.background=cl.accent==='blue'?'#E8F0FE':'#FFF0E5';n.style.color=cl.accent==='blue'?'var(--navy)':'var(--orange)';document.getElementById('panelTitle').textContent=cl.title;document.getElementById('scoreSlider').value=cl.score||0;document.getElementById('scoreVal').textContent=cl.score||0;var body=document.getElementById('panelBody');body.innerHTML='';cl.questions.forEach(function(q,qi){var d=document.createElement('div');d.className='q-item';var h='';if(cl.questions.length>1)h+='<button class="rm-btn" onclick="removeQ('+i+','+qi+')">x</button>';h+='<div class="ql">Pergunta '+(qi+1)+'</div><textarea rows="2" onchange="clusters['+i+'].questions['+qi+'].text=this.value">'+q.text+'</textarea><div class="note-f"><div class="ql" style="color:var(--orange)">Anota\u00e7\u00e3o</div><textarea rows="2" placeholder="Resposta do cliente..." onchange="clusters['+i+'].questions['+qi+'].note=this.value">'+q.note+'</textarea></div>';d.innerHTML=h;body.appendChild(d)});var ab=document.createElement('button');ab.className='add-q-btn';ab.textContent='+ Pergunta';ab.onclick=function(){cl.questions.push({text:"Nova pergunta",note:""});openPanel(i)};body.appendChild(ab);var gd=document.createElement('div');gd.className='q-item';gd.style.borderColor='rgba(220,38,38,.3)';gd.style.background='rgba(220,38,38,.03)';gd.innerHTML='<div class="ql" style="color:#DC2626">GAP</div><textarea rows="2" placeholder="Gap ou vulnerabilidade..." onchange="clusters['+i+'].gap=this.value" style="color:#fca5a5">'+(cl.gap||'')+'</textarea>';body.appendChild(gd);document.querySelectorAll('.s-btn').forEach(function(b){b.classList.remove('sel');if(b.classList.contains('done')&&cl.status==='done')b.classList.add('sel');if(b.classList.contains('pending')&&cl.status==='pending')b.classList.add('sel')});document.getElementById('micTranscript').classList.remove('show');document.getElementById('aiSummary').classList.remove('show');document.getElementById('micStatus').textContent='Gravar este tema';document.getElementById('micBtn').className='mic-btn idle';document.getElementById('overlay').classList.add('show');document.getElementById('expandPanel').classList.add('open')}
+function closePanel(){if(activePetal!==null){var sv=document.getElementById('scoreSlider');if(sv)clusters[activePetal].score=parseInt(sv.value)}document.getElementById('overlay').classList.remove('show');document.getElementById('expandPanel').classList.remove('open');document.querySelectorAll('.petal').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.connector').forEach(function(c){c.classList.remove('active')});activePetal=null;autoSave()}
+function removeQ(a,b){if(clusters[a].questions.length<=1)return;clusters[a].questions.splice(b,1);openPanel(a)}
+function setScore(v){if(activePetal===null)return;clusters[activePetal].score=parseInt(v);document.getElementById('scoreVal').textContent=v;autoSave()}
+function setStatus(s){if(activePetal===null)return;clusters[activePetal].status=s;document.getElementById('dot-'+activePetal).className='status-dot'+(s?' '+s:'');document.querySelectorAll('.s-btn').forEach(function(b){b.classList.remove('sel');if(s&&b.classList.contains(s))b.classList.add('sel')});updateProgress();autoSave()}
+function resetCluster(){if(activePetal===null||!confirm('Restaurar?'))return;clusters[activePetal].questions=JSON.parse(JSON.stringify(ORIG[activePetal].questions));clusters[activePetal].status=null;clusters[activePetal].score=0;clusters[activePetal].gap='';document.getElementById('dot-'+activePetal).className='status-dot';updateProgress();openPanel(activePetal)}
+function updateProgress(){var d=clusters.filter(function(c){return c.status==='done'}).length;document.getElementById('wpFill').style.width=(d/8)*100+'%';document.getElementById('wpCount').textContent=d+' / 8'}
+document.getElementById('clientName').addEventListener('input',function(){document.getElementById('hubName').textContent=this.value||'\u2014';autoSave()});
+var recognition=null,isRecording=false,fullTranscript='';
+function toggleMic(){if(isRecording){stopMic();return}if(!('webkitSpeechRecognition' in window)){showToast('Use Chrome');return}var SR=window.webkitSpeechRecognition;recognition=new SR();recognition.continuous=true;recognition.interimResults=true;recognition.lang='pt-BR';fullTranscript='';document.getElementById('micTranscript').classList.add('show');document.getElementById('micTranscript').textContent='Ouvindo...';document.getElementById('micBtn').className='mic-btn recording';document.getElementById('micStatus').textContent='Gravando...';isRecording=true;recognition.onresult=function(e){var interim='',final='';for(var j=e.resultIndex;j<e.results.length;j++){if(e.results[j].isFinal)final+=e.results[j][0].transcript+' ';else interim+=e.results[j][0].transcript}if(final)fullTranscript+=final;document.getElementById('micTranscript').textContent=fullTranscript+interim};recognition.onerror=function(){stopMic()};recognition.onend=function(){if(isRecording)recognition.start()};recognition.start()}
+function stopMic(){isRecording=false;if(recognition){recognition.onend=null;recognition.stop();recognition=null}document.getElementById('micBtn').className='mic-btn idle';if(fullTranscript.trim()){document.getElementById('micStatus').textContent='Analisando...';analyzeWithAI(fullTranscript.trim())}else{document.getElementById('micStatus').textContent='Nenhuma fala.'}}
+function analyzeWithAI(tr){var ak=localStorage.getItem('dmg_api_key')||'';if(!ak){document.getElementById('apiKeyBar').style.display='flex';return}if(activePetal===null)return;var cl=clusters[activePetal];document.getElementById('micBtn').className='mic-btn processing';var qs=cl.questions.map(function(q,j){return'P'+(j+1)+': '+q.text}).join('\n');fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:'SST consultor. TEMA:'+cl.title+'\nPERGUNTAS:\n'+qs+'\nTRANSCRICAO:\n'+tr+'\nJSON:{"answers":["","",""],"gap":"","score":0,"summary":""}'}]})}).then(function(r){return r.json()}).then(function(d){document.getElementById('micBtn').className='mic-btn idle';if(d.error)return;try{var r=JSON.parse((d.content[0].text||'').replace(/```json\n?/g,'').replace(/```\n?/g,'').trim());if(r.answers)r.answers.forEach(function(a,qi){if(cl.questions[qi])cl.questions[qi].note=a});if(r.gap)cl.gap=r.gap;if(typeof r.score==='number'){cl.score=Math.min(10,Math.max(0,r.score));document.getElementById('scoreSlider').value=cl.score;document.getElementById('scoreVal').textContent=cl.score}if(r.summary){document.getElementById('aiSummary').innerHTML='<strong>Resumo:</strong> '+r.summary;document.getElementById('aiSummary').classList.add('show')}openPanel(activePetal);autoSave();showToast('IA preencheu '+cl.title)}catch(e){}}).catch(function(){})}
+function saveApiKey(){var k=document.getElementById('apiKeyInput').value.trim();if(!k)return;localStorage.setItem('dmg_api_key',k);document.getElementById('apiKeyBar').style.display='none';if(fullTranscript.trim())analyzeWithAI(fullTranscript.trim())}
+function autoSave(){try{localStorage.setItem('dmg_session',JSON.stringify({clientName:document.getElementById('clientName').value,clusters:clusters.map(function(c){return{status:c.status,score:c.score,gap:c.gap||'',questions:c.questions.map(function(q){return{text:q.text,note:q.note}})}})}))}catch(e){}}
+function saveData(){var d={version:3,clientName:document.getElementById('clientName').value,date:new Date().toISOString(),clusters:clusters.map(function(c){return{id:c.id,title:c.title,accent:c.accent,status:c.status,score:c.score,gap:c.gap||'',questions:c.questions.map(function(q){return{text:q.text,note:q.note}})}})};var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='DMG_'+(d.clientName||'x').replace(/\s+/g,'_')+'.json';a.click();showToast('Salvo')}
+function loadData(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){try{var d=JSON.parse(e.target.result);document.getElementById('clientName').value=d.clientName||'';document.getElementById('hubName').textContent=d.clientName||'\u2014';d.clusters.forEach(function(s,i){if(clusters[i]){clusters[i].status=s.status;clusters[i].score=s.score||0;clusters[i].gap=s.gap||'';clusters[i].questions=s.questions}});createPetals();updateProgress();closePanel();showToast('OK')}catch(e){}};r.readAsText(f);ev.target.value=''}
+function exportJSON(){var d={version:3,type:'crm',clientName:document.getElementById('clientName').value,date:new Date().toISOString(),avgScore:Math.round(clusters.reduce(function(a,c){return a+c.score},0)/clusters.length*10)/10,clusters:clusters.map(function(c){return{id:c.id,title:c.title,status:c.status,score:c.score,gap:c.gap||'',questions:c.questions.map(function(q){return{text:q.text,note:q.note}})}})};var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='DMG_CRM.json';a.click()}
+function novaReuniao(){if(!confirm('Nova reuniao?'))return;localStorage.removeItem('dmg_session');clusters.forEach(function(cl,i){cl.status=null;cl.score=0;cl.gap='';cl.questions=JSON.parse(JSON.stringify(ORIG[i].questions))});document.getElementById('clientName').value='';document.getElementById('hubName').textContent='\u2014';createPetals();updateProgress();goTo(0);showToast('Nova reuniao')}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},3500)}
+function generateMap(){var nm=document.getElementById('clientName').value||'Cliente';var dt=new Date().toLocaleDateString('pt-BR');var sc=clusters.map(function(c){return c.score});var avg=Math.round(sc.reduce(function(a,b){return a+b},0)/sc.length*10)/10;var rl=avg<=3?'CRITICO':avg<=5?'ALTO':avg<=7?'MODERADO':'CONTROLADO';var rc=avg<=3?'#DC2626':avg<=5?'#D4720A':avg<=7?'#3B82F6':'#059669';exportJSON();var gaps='';clusters.forEach(function(c){if((c.gap&&c.gap.trim())||c.score<=4){gaps+='<div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #F1F5F9"><span style="background:'+(c.score<=2?'#DC2626':c.score<=4?'#D4720A':'#3B82F6')+';color:#FFF;font-size:9px;font-weight:700;padding:2px 9px;border-radius:10px">'+c.score+'/10</span><div><b style="font-size:11px;color:#1A2F5A">'+c.title+'</b>';if(c.gap)gaps+='<div style="font-size:10px;color:#991B1B;font-weight:600">'+c.gap+'</div>';c.questions.forEach(function(q){if(q.note&&q.note.trim())gaps+='<div style="font-size:9px;color:#64748B;padding-left:8px;border-left:2px solid #E2E8F0">'+q.note+'</div>'});gaps+='</div></div>'}});if(!gaps)gaps='<div style="color:#059669">OK</div>';var badges='';clusters.forEach(function(c){var bg=c.status==='done'?'#ECFDF5':'#F1F5F9';var co=c.status==='done'?'#059669':'#94A3B8';badges+='<span style="display:inline-flex;gap:3px;background:'+bg+';padding:3px 10px;border-radius:16px;font-size:9px;font-weight:600;color:'+co+';margin:1px">'+(c.status==='done'?'\u2713':'\u2014')+' '+c.title+' <b>'+c.score+'</b></span>'});var lb=JSON.stringify(clusters.map(function(c){return c.title}));var sd=JSON.stringify(sc);var w=window.open('','_blank');if(!w){showToast('Pop-ups');return}w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Mapa</title><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,sans-serif;background:#FFF}@page{size:A4 landscape;margin:0}.page{width:297mm;height:210mm;padding:16mm 20mm;position:relative}@media print{.np{display:none!important}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="np" style="background:#1A2F5A;padding:12px 24px;display:flex;justify-content:space-between;align-items:center"><span style="color:#FFF;font-family:Montserrat;font-weight:800;font-size:14px;letter-spacing:2px">DIMEG</span><button onclick="window.print()" style="background:#D4720A;color:#FFF;border:none;padding:8px 20px;border-radius:8px;font-family:Montserrat;font-weight:700;cursor:pointer">Imprimir</button></div><div class="page"><div style="display:flex;justify-content:space-between;margin-bottom:14px"><div><div style="font-family:Montserrat;font-weight:800;font-size:10px;color:#D4720A;letter-spacing:2px">MAPA DIAGNOSTICO SST</div><div style="font-family:Montserrat;font-weight:800;font-size:24px;color:#1A2F5A">'+nm+'</div><div style="font-size:10px;color:#94A3B8">'+dt+'</div></div><div style="text-align:right"><div style="font-family:Montserrat;font-weight:800;font-size:13px;color:#1A2F5A;letter-spacing:2px">DIMEG</div><div style="background:'+rc+';color:#FFF;font-family:Montserrat;font-weight:800;font-size:10px;padding:4px 14px;border-radius:20px;margin-top:5px;display:inline-block">RISCO '+rl+'</div><div style="font-family:Montserrat;font-weight:800;font-size:26px;color:'+rc+';margin-top:3px">'+avg+'<small style="font-size:13px;color:#94A3B8">/10</small></div></div></div><div style="height:3px;background:linear-gradient(90deg,#D4720A,#1A2F5A);margin-bottom:16px"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;height:calc(100% - 90px)"><div><div style="font-family:Montserrat;font-weight:700;font-size:12px;color:#1A2F5A;margin-bottom:8px">Radar</div><div style="height:250px"><canvas id="radar"></canvas></div><div style="margin-top:10px">'+badges+'</div></div><div><div style="font-family:Montserrat;font-weight:700;font-size:12px;color:#DC2626;margin-bottom:8px">Gaps</div>'+gaps+'</div></div></div></body></html>');w.document.close();setTimeout(function(){try{var s=w.document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';s.onload=function(){new w.Chart(w.document.getElementById('radar'),{type:'radar',data:{labels:JSON.parse(lb),datasets:[{data:JSON.parse(sd),backgroundColor:'rgba(212,114,10,.12)',borderColor:'#D4720A',borderWidth:2,pointBackgroundColor:'#D4720A',pointBorderColor:'#FFF',pointBorderWidth:2,pointRadius:4},{data:[8,8,8,8,8,8,8,8],backgroundColor:'rgba(5,150,105,.04)',borderColor:'#059669',borderWidth:1.5,borderDash:[4,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:10,ticks:{stepSize:2,font:{size:8},backdropColor:'transparent'},pointLabels:{font:{family:'Montserrat',size:9,weight:'600'},color:'#1A2F5A'},grid:{color:'#E2E8F0'}}},plugins:{legend:{display:false}}}})};w.document.head.appendChild(s)}catch(e){}},300);showToast('Mapa gerado')}
+function generateProposal(){var nm=document.getElementById('clientName').value||'Cliente';var dt=new Date().toLocaleDateString('pt-BR');var sc=clusters.map(function(c){return c.score});var avg=Math.round(sc.reduce(function(a,b){return a+b},0)/sc.length*10)/10;var rl=avg<=3?'CRITICO':avg<=5?'ALTO':avg<=7?'MODERADO':'CONTROLADO';var rc=avg<=3?'#DC2626':avg<=5?'#D4720A':avg<=7?'#3B82F6':'#059669';var cR='';clusters.forEach(function(cl){var sc2=cl.score<=4?'#DC2626':cl.score<=7?'#D4720A':'#059669';cR+='<tr><td class="tc" contenteditable="true">'+cl.title+'</td><td class="tc ctr"><span class="pill" style="background:'+sc2+'">'+cl.score+'/10</span></td><td class="tc ctr" style="color:#64748B">'+(cl.status==='done'?'\u2713':'\u2014')+'</td><td class="tc" contenteditable="true" style="color:#64748B">'+(cl.gap||'\u2014')+'</td></tr>'});var gp='';clusters.forEach(function(cl){if((cl.gap&&cl.gap.trim())||cl.score<=4){gp+='<div class="gr"><span class="pill" style="background:'+(cl.score<=2?'#DC2626':cl.score<=4?'#D4720A':'#3B82F6')+'">'+cl.score+'/10</span><div class="gb"><b class="gt">'+cl.title+'</b>';if(cl.gap)gp+='<div class="gx">'+cl.gap+'</div>';cl.questions.forEach(function(q){if(q.note&&q.note.trim())gp+='<div class="gn">'+q.note+'</div>'});gp+='</div></div>'}});if(!gp)gp='<div style="color:#059669">OK</div>';var bg='';clusters.forEach(function(cl){var b=cl.status==='done'?'#ECFDF5':'#F1F5F9';var co=cl.status==='done'?'#059669':'#94A3B8';bg+='<span class="badge" style="background:'+b+';color:'+co+'">'+(cl.status==='done'?'\u2713':'\u2014')+' '+cl.title+' <b>'+cl.score+'</b></span>'});var sv=[['Gest\u00e3o Mensal (PCMSO+PGR)','Por vida/m\u00eas'],['Exames Ocupacionais','Por exame'],['Exames Complementares','Por exame'],['Envio eSocial','Incluso'],['Laudos T\u00e9cnicos','Por laudo'],['Treinamentos NRs','Por turma'],['SIPAT e Campanhas','Por evento'],['Suporte M\u00e9dico-Jur\u00eddico','Mensal'],['Equipe In Company','Mensal'],['Gest\u00e3o de EPI','Mensal'],['Gest\u00e3o de Terceiros','Mensal']];var sR='';sv.forEach(function(s,i){var inc=s[1]==='Incluso';sR+='<tr style="background:'+(i%2===0?'#FFF':'#F8FAFC')+'" class="sr"><td class="tc" contenteditable="true">'+s[0]+'</td><td class="tc ctr" contenteditable="true" style="color:#64748B">'+s[1]+'</td><td class="tc ctr" contenteditable="true">'+(inc?'<span style="color:#059669;font-weight:600">Incluso</span>':'<span class="vp">R$ ___</span>')+'</td><td class="tc ctr np" style="width:30px"><button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#DC2626;cursor:pointer;font-size:14px">x</button></td></tr>'});var lb=JSON.stringify(clusters.map(function(c){return c.title}));var sd=JSON.stringify(sc);var w=window.open('','_blank');if(!w){showToast('Pop-ups');return}w.document.write(buildPropHTML(nm,dt,avg,rl,rc,cR,gp,bg,sR));w.document.close();w.addSvc=function(){var t=w.document.getElementById('svcT');var tot=t.querySelector('.trt');var r=w.document.createElement('tr');r.className='sr';r.style.background='#FFF';var c1=r.insertCell();c1.className='tc';c1.contentEditable='true';c1.textContent='Novo servico';var c2=r.insertCell();c2.className='tc ctr';c2.contentEditable='true';c2.style.color='#64748B';c2.textContent='Unidade';var c3=r.insertCell();c3.className='tc ctr';c3.contentEditable='true';c3.innerHTML='<span class=vp>R$ ___</span>';var c4=r.insertCell();c4.className='tc ctr np';c4.style.width='30px';var bt=w.document.createElement('button');bt.textContent='x';bt.style.cssText='background:none;border:none;color:#DC2626;cursor:pointer;font-size:14px';bt.onclick=function(){r.remove()};c4.appendChild(bt);tot.parentNode.insertBefore(r,tot)};setTimeout(function(){try{var s=w.document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';s.onload=function(){new w.Chart(w.document.getElementById('radar'),{type:'radar',data:{labels:JSON.parse(lb),datasets:[{data:JSON.parse(sd),backgroundColor:'rgba(212,114,10,.12)',borderColor:'#D4720A',borderWidth:2,pointBackgroundColor:'#D4720A',pointBorderColor:'#FFF',pointBorderWidth:2,pointRadius:4},{data:[8,8,8,8,8,8,8,8],backgroundColor:'rgba(5,150,105,.04)',borderColor:'#059669',borderWidth:1.5,borderDash:[4,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:10,ticks:{stepSize:2,font:{size:8},backdropColor:'transparent'},pointLabels:{font:{family:'Montserrat',size:9,weight:'600'},color:'#1A2F5A'},grid:{color:'#E2E8F0'}}},plugins:{legend:{display:false}}}})};w.document.head.appendChild(s)}catch(e){}},300);showToast('Proposta gerada')}
+function buildPropHTML(nm,dt,avg,rl,rc,cR,gp,bg,sR){var c='*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,sans-serif;color:#1E293B;font-size:11px;line-height:1.5;background:#F1F5F9}@page{size:A4;margin:12mm}@media print{.np{display:none!important}.pg{box-shadow:none!important;margin:0!important;padding:14mm!important}body{background:#FFF}[contenteditable]{outline:none!important}.vp{color:#1A2F5A!important;border:none!important}}.pg{max-width:210mm;margin:12px auto;background:#FFF;padding:18mm;box-shadow:0 2px 20px rgba(0,0,0,.08)}.pb{page-break-before:always}h1{font-family:Montserrat;color:#1A2F5A;font-size:15px;font-weight:800;margin:22px 0 10px;padding-bottom:6px;border-bottom:2px solid #D4720A}h2{font-family:Montserrat;color:#1A2F5A;font-size:12px;font-weight:700;margin:16px 0 8px}table{border-collapse:collapse;width:100%;margin:8px 0}th{background:#1A2F5A;color:#FFF;padding:8px 10px;text-align:left;font-family:Montserrat;font-size:10px;font-weight:700}.tc{padding:7px 10px;border-bottom:1px solid #E2E8F0;font-size:11px}.ctr{text-align:center}.pill{display:inline-block;color:#FFF;font-size:9px;font-weight:700;padding:2px 9px;border-radius:10px}.badge{display:inline-flex;gap:3px;padding:3px 10px;border-radius:16px;font-size:9px;font-weight:600;margin:1px}.gr{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #F1F5F9}.gb{flex:1}.gt{font-size:11px;color:#1A2F5A}.gx{font-size:10px;color:#991B1B;font-weight:600}.gn{font-size:9px;color:#64748B;padding-left:8px;border-left:2px solid #E2E8F0}.vp{color:#DC2626;font-weight:700;font-size:12px;border-bottom:2px dashed #DC2626;padding:1px 6px}[contenteditable]:focus{outline:2px solid #D4720A;outline-offset:1px;border-radius:3px}.trt td{background:#D4720A!important;color:#FFF;font-weight:700;font-family:Montserrat;font-size:12px;padding:10px}.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.dc{background:#F8FAFC;border-radius:6px;padding:10px;border-left:3px solid #D4720A}.dc strong{font-family:Montserrat;font-size:11px;color:#1A2F5A;display:block;margin-bottom:2px}.dc span{font-size:10px;color:#64748B}.ct td{padding:6px 10px;border-bottom:1px solid #E2E8F0;font-size:11px}.cl{font-weight:600;color:#1A2F5A;width:140px}.ft{margin-top:20px;padding-top:10px;border-top:3px solid #D4720A;display:flex;justify-content:space-between}.tc2{display:grid;grid-template-columns:1fr 1fr;gap:20px}';var h='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Proposta - '+nm+'</title><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>'+c+'</style></head><body>';h+='<div class="np" style="position:sticky;top:0;background:#1A2F5A;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;z-index:100"><div style="display:flex;align-items:center"><span style="color:#FFF;font-family:Montserrat;font-weight:800;font-size:13px;letter-spacing:2px">DIMEG</span><span style="color:#94A3B8;margin-left:12px;font-size:11px">'+nm+'</span></div><div><span style="color:#D4720A;font-size:10px;font-weight:600;margin-right:12px">Campos editaveis</span><button onclick="window.print()" style="background:#D4720A;color:#FFF;border:none;padding:8px 20px;border-radius:8px;font-family:Montserrat;font-weight:700;font-size:11px;cursor:pointer">Imprimir / PDF</button></div></div>';h+='<div class="pg"><div style="display:flex;justify-content:space-between;margin-bottom:14px"><div><div style="font-family:Montserrat;font-weight:800;font-size:10px;color:#D4720A;letter-spacing:2px">MAPA DIAGNOSTICO SST</div><div style="font-family:Montserrat;font-weight:800;font-size:22px;color:#1A2F5A" contenteditable="true">'+nm+'</div><div style="font-size:10px;color:#94A3B8">'+dt+'</div></div><div style="text-align:right"><div style="font-family:Montserrat;font-weight:800;font-size:13px;color:#1A2F5A;letter-spacing:2px">DIMEG</div><div style="background:'+rc+';color:#FFF;font-family:Montserrat;font-weight:800;font-size:10px;padding:4px 14px;border-radius:20px;margin-top:5px;display:inline-block">RISCO '+rl+'</div><div style="font-family:Montserrat;font-weight:800;font-size:26px;color:'+rc+';margin-top:3px">'+avg+'<small style="font-size:12px;color:#94A3B8">/10</small></div></div></div><div style="height:3px;background:linear-gradient(90deg,#D4720A,#1A2F5A);margin-bottom:16px"></div><div class="tc2"><div><h2 style="margin-top:0">Radar</h2><div style="height:240px"><canvas id="radar"></canvas></div><div style="margin-top:10px">'+bg+'</div></div><div><h2 style="margin-top:0;color:#DC2626">Gaps</h2>'+gp+'</div></div><h2>Detalhamento</h2><table><tr><th>Area</th><th class="ctr">Score</th><th class="ctr">Status</th><th>Gap</th></tr>'+cR+'</table><div class="ft"><div><span style="font-family:Montserrat;font-weight:800;color:#1A2F5A;font-size:12px">DIMEG</span></div><span style="font-size:9px;color:#94A3B8">1/2</span></div></div>';h+='<div class="pg pb"><div style="display:flex;justify-content:space-between;margin-bottom:14px"><div><div style="font-family:Montserrat;font-weight:800;font-size:10px;color:#D4720A;letter-spacing:2px">PROPOSTA COMERCIAL</div><div style="font-family:Montserrat;font-weight:800;font-size:22px;color:#1A2F5A" contenteditable="true">'+nm+'</div><div style="font-size:10px;color:#94A3B8">'+dt+' | Validade: <span contenteditable="true" style="border-bottom:1px dashed #D4720A">30 dias</span></div></div><div style="font-family:Montserrat;font-weight:800;font-size:13px;color:#1A2F5A;letter-spacing:2px">DIMEG</div></div><div style="height:3px;background:linear-gradient(90deg,#D4720A,#1A2F5A);margin-bottom:16px"></div>';h+='<h1>Diferenciais DMG</h1><div class="dg"><div class="dc"><strong>In Company</strong><span>Medico, Enfermeiro e TST in loco</span></div><div class="dc"><strong>Tecnologia SGG</strong><span>BI, alertas, prontuario, eSocial</span></div><div class="dc"><strong>Suporte Juridico</strong><span>Pericias, FAP/NTEP, blindagem</span></div><div class="dc"><strong>Rede Credenciada</strong><span>Operacao propria + SLA</span></div></div>';h+='<h1>Proposta de Servicos</h1><table id="svcT"><tr><th>Servico</th><th class="ctr">Unidade</th><th class="ctr" style="width:140px">Valor (R$)</th><th class="ctr np" style="width:30px"></th></tr>'+sR+'<tr class="trt"><td colspan="2">INVESTIMENTO MENSAL TOTAL</td><td class="ctr" contenteditable="true"><span class="vp" style="color:#FFF;border-color:#FFF">R$ ___</span></td><td class="np"></td></tr></table><div class="np" style="margin:8px 0"><button onclick="addSvc()" style="background:#F8FAFC;border:2px dashed #CBD5E1;border-radius:8px;padding:8px;cursor:pointer;font-size:11px;color:#64748B;font-weight:600;width:100%">+ Adicionar Servico</button></div>';h+='<h1>Condicoes Gerais</h1><table class="ct"><tr><td class="cl">Vigencia</td><td contenteditable="true">12 meses</td></tr><tr><td class="cl">Pagamento</td><td contenteditable="true"><span class="vp">Boleto / Transf.</span></td></tr><tr><td class="cl">Implantacao</td><td contenteditable="true">15 dias uteis</td></tr><tr><td class="cl">SLA</td><td contenteditable="true"><span class="vp">24h</span></td></tr><tr><td class="cl">Incluso</td><td>SGG, portal, app, dashboards</td></tr><tr><td class="cl">Obs.</td><td contenteditable="true"><span class="vp">Adicionar...</span></td></tr></table><div class="ft"><div><span style="font-family:Montserrat;font-weight:800;color:#1A2F5A;font-size:12px">DIMEG</span></div><span style="font-size:9px;color:#94A3B8">Luigi Perkoski - (11) 9 7569 1076 - lpaesleme@dimeg.com.br</span></div></div></body></html>';return h}
+// ── DMG EXTENSÃO MEET ────────────────────────────────────────────────────────
+var gRecOn=false,gTxt='',gExtConnected=false;
+var DMG_EXT_ID='';
+
+function initExtension(){
+  // Tenta pegar ID injetado pelo content script
+  if(window.DMG_EXTENSION_ID){
+    DMG_EXT_ID=window.DMG_EXTENSION_ID;
+    doConnect();
+    return;
+  }
+  // Escuta evento do content script
+  window.addEventListener('dmg_ext_ready',function(e){
+    DMG_EXT_ID=e.detail.id;
+    doConnect();
+  },{once:true});
+  // Timeout — se não conectar em 3s, mostra aviso
+  setTimeout(function(){
+    if(!gExtConnected) showExtWarning();
+  },3000);
+}
+
+function doConnect(){
+  if(!DMG_EXT_ID){showExtWarning();return;}
+  chrome.runtime.sendMessage(DMG_EXT_ID,{type:'DMG_TOOL_REGISTER'},function(resp){
+    if(chrome.runtime.lastError||!resp){showExtWarning();return;}
+    onConnected(resp);
+  });
+}
+
+function onConnected(resp){
+  gExtConnected=true;
+  document.getElementById('globalStatus').textContent='✓ Extensão DMG conectada — Meet pronto';
+  document.getElementById('globalStatus').style.color='var(--green)';
+  if(resp&&resp.capturing){gRecOn=true;updateGlobalMicBtn(true);}
+  if(resp&&resp.transcript&&resp.transcript.length>0){
+    gTxt=resp.transcript;
+    var el=document.getElementById('globalTranscript');
+    el.textContent=gTxt;el.style.display='block';
+    document.getElementById('globalFillBtn').style.display='inline-flex';
+  }
+  chrome.runtime.onMessage.addListener(function(msg){
+    if(msg.type==='TRANSCRIPT_UPDATE'){
+      gTxt=msg.transcript||'';
+      var el=document.getElementById('globalTranscript');
+      el.style.display='block';el.textContent=gTxt;el.scrollTop=el.scrollHeight;
+    }else if(msg.type==='CAPTURE_STARTED'){
+      gRecOn=true;updateGlobalMicBtn(true);
+      document.getElementById('globalStatus').textContent='⏺ Gravando Meet — vendedor + cliente';
+      document.getElementById('globalStatus').style.color='#EF4444';
+    }else if(msg.type==='CAPTURE_STOPPED'){
+      gRecOn=false;updateGlobalMicBtn(false);
+      gTxt=msg.transcript||gTxt;
+      var words=gTxt.trim().split(/\s+/).filter(Boolean).length;
+      document.getElementById('globalStatus').textContent='Pronto ('+words+' palavras). Clique em Preencher com IA.';
+      document.getElementById('globalStatus').style.color='var(--g400)';
+      if(words>0) document.getElementById('globalFillBtn').style.display='inline-flex';
+    }else if(msg.type==='ERROR'){
+      document.getElementById('globalStatus').textContent='⚠ '+msg.message;
+      document.getElementById('globalStatus').style.color='#DC2626';
+    }
+  });
+}
+
+function showExtWarning(){
+  document.getElementById('globalStatus').textContent='⚠ Extensão DMG não encontrada — instale para capturar o Meet';
+  document.getElementById('globalStatus').style.color='var(--orange)';
+}
+
+function updateGlobalMicBtn(recording){
+  var btn=document.getElementById('globalMicBtn');
+  if(recording){
+    btn.innerHTML='&#x23F9; Parar';
+    btn.style.background='#DC2626';btn.style.color='#FFF';btn.style.borderColor='#DC2626';
+  }else{
+    btn.innerHTML='&#x1F3A4; Gravar Reunião';
+    btn.style.background='rgba(220,38,38,.15)';btn.style.color='#EF4444';btn.style.borderColor='rgba(220,38,38,.3)';
+  }
+}
+
+function toggleGlobalMic(){
+  if(!gExtConnected){showExtWarning();return;}
+  if(gRecOn){
+    chrome.runtime.sendMessage(DMG_EXT_ID,{type:'DMG_STOP_CAPTURE'},function(resp){
+      if(resp&&resp.transcript) gTxt=resp.transcript;
+      gRecOn=false;updateGlobalMicBtn(false);
+      var words=gTxt.trim().split(/\s+/).filter(Boolean).length;
+      document.getElementById('globalStatus').textContent='Pronto ('+words+' palavras). Clique em Preencher com IA.';
+      document.getElementById('globalStatus').style.color='var(--g400)';
+      if(words>0) document.getElementById('globalFillBtn').style.display='inline-flex';
+    });
+  }else{
+    gTxt='';
+    document.getElementById('globalTranscript').textContent='';
+    document.getElementById('globalTranscript').style.display='block';
+    document.getElementById('globalFillBtn').style.display='none';
+    chrome.runtime.sendMessage(DMG_EXT_ID,{type:'DMG_START_CAPTURE'},function(){
+      if(chrome.runtime.lastError){showExtWarning();return;}
+      gRecOn=true;updateGlobalMicBtn(true);
+      document.getElementById('globalStatus').textContent='Iniciando captura no Meet...';
+      document.getElementById('globalStatus').style.color='var(--orange)';
+    });
+  }
+}
+
+setTimeout(initExtension,800);
+// ── FIM EXTENSÃO ──────────────────────────────────────────────────────────────
+function globalFillWithAI(){var ak=localStorage.getItem('dmg_api_key')||'';if(!ak){var key=prompt('Cole sua API key (sk-ant-...):');if(!key)return;localStorage.setItem('dmg_api_key',key);ak=key}document.getElementById('globalStatus').textContent='IA analisando...';document.getElementById('globalStatus').style.color='var(--orange)';document.getElementById('globalFillBtn').style.display='none';var allQs='';clusters.forEach(function(cl,i){allQs+='\nTEMA '+(i+1)+': '+cl.title+'\n';cl.questions.forEach(function(q,j){allQs+='  P'+(j+1)+': '+q.text+'\n'})});fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:'Consultor SST da DMG. Preencha TODOS 8 temas.\nTEMAS:'+allQs+'\nTRANSCRICAO:\n'+gTxt.trim()+'\nJSON:{"clusters":[{"answers":["","",""],"gap":"","score":0,"summary":""},...]}\nScore 0-10.'}]})}).then(function(r){return r.json()}).then(function(d){if(d.error){document.getElementById('globalStatus').textContent='Erro';document.getElementById('globalFillBtn').style.display='inline-flex';return}try{var r=JSON.parse((d.content[0].text||'').replace(/```json\n?/g,'').replace(/```\n?/g,'').trim());if(r.clusters){r.clusters.forEach(function(rc,i){if(i<clusters.length){if(rc.answers)rc.answers.forEach(function(a,qi){if(clusters[i].questions[qi])clusters[i].questions[qi].note=a});if(rc.gap)clusters[i].gap=rc.gap;if(typeof rc.score==='number')clusters[i].score=Math.min(10,Math.max(0,rc.score));clusters[i].status='done'}});createPetals();updateProgress();autoSave();document.getElementById('globalStatus').textContent='\u2713 8 clusters preenchidos!';document.getElementById('globalStatus').style.color='var(--green)';showToast('IA preencheu 8 clusters')}}catch(e){document.getElementById('globalStatus').textContent='Erro';document.getElementById('globalFillBtn').style.display='inline-flex'}}).catch(function(){document.getElementById('globalStatus').textContent='Erro';document.getElementById('globalFillBtn').style.display='inline-flex'})}
+var observer=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){currentSlide=parseInt(e.target.id.replace('s',''));buildNav();e.target.querySelectorAll('.fade-up').forEach(function(el){el.classList.add('visible')})}})},{threshold:0.4});slides.forEach(function(_,i){observer.observe(document.getElementById('s'+i))});
+document.addEventListener('keydown',function(e){if(e.key==='ArrowDown'||e.key==='ArrowRight'){if(currentSlide<slides.length-1)goTo(currentSlide+1)}if(e.key==='ArrowUp'||e.key==='ArrowLeft'){if(currentSlide>0)goTo(currentSlide-1)}if(e.key==='Escape'&&activePetal!==null)closePanel()});
+buildNav();buildPortfolio();createPetals();updateProgress();
+try{var saved=localStorage.getItem('dmg_session');if(saved){var d=JSON.parse(saved);if(d.clientName)document.getElementById('clientName').value=d.clientName;document.getElementById('hubName').textContent=d.clientName||'\u2014';d.clusters.forEach(function(s,i){if(clusters[i]){clusters[i].status=s.status;clusters[i].score=s.score||0;clusters[i].gap=s.gap||'';if(s.questions)clusters[i].questions=s.questions}});createPetals();updateProgress();document.getElementById('hubName').textContent=d.clientName||'\u2014'}}catch(e){}</script>
+</body>
+</html>
