@@ -1,0 +1,1212 @@
+<title>Petri · Começa Debaixo da Terra</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,200..800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Plano-sequência: um único canvas 3D ao fundo e camadas de texto que entram por "estratos". Visual único, noturno. */
+:root{
+  --noite:#120E0C; --terra-funda:#221915; --argila:#8C4A3A; --terracota:#C8735A; --creme:#F2E6DA; --areia:#CCB6A5;
+  --sinal:#E9A23B; --firme:#A9C79A; --linha:rgba(242,230,218,.16);
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif; --f-corpo:"Archivo",Arial,sans-serif; --f-dado:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--noite);color:var(--creme);font-family:var(--f-corpo);overflow:hidden;-webkit-font-smoothing:antialiased}
+canvas#cena3d{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+
+/* ═══ BLOCO: VINHETA ═══ */
+.vinheta{position:fixed;inset:0;z-index:1;pointer-events:none;background:
+  radial-gradient(120% 90% at 70% 40%,transparent 40%,rgba(18,14,12,.55) 75%,rgba(18,14,12,.92) 100%),
+  linear-gradient(0deg,rgba(18,14,12,.9) 0%,rgba(18,14,12,.45) 30%,transparent 55%),
+  linear-gradient(90deg,rgba(18,14,12,.78) 0%,rgba(18,14,12,.35) 38%,transparent 62%)}
+.vinheta.fecha{background:linear-gradient(90deg,rgba(18,14,12,.94) 0%,rgba(18,14,12,.86) 55%,rgba(18,14,12,.6) 100%)}
+.grao{position:fixed;inset:-50%;z-index:2;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:grao 1.2s steps(6) infinite}
+@keyframes grao{to{transform:translate(4%,-3%)}}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CENAS ═══ */
+.palco{position:fixed;inset:0;z-index:3;pointer-events:none;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.cena{position:absolute;inset:0;padding:clamp(28px,6vh,72px) max(clamp(20px,6vw,96px),env(safe-area-inset-left,0px));padding-bottom:calc(env(safe-area-inset-bottom,0px) + 92px);display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;visibility:hidden}
+.cena.on{visibility:visible;pointer-events:auto}
+.cena.centro{justify-content:center}
+.estrato{opacity:0;transform:translateY(28px);filter:blur(6px);clip-path:inset(0 0 100% 0);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform 1.1s cubic-bezier(.2,.7,.2,1),filter .9s,clip-path 1.1s cubic-bezier(.7,0,.2,1)}
+.cena.on .estrato{opacity:1;transform:none;filter:none;clip-path:inset(0 0 0 0)}
+.cena.on .estrato:nth-child(2){transition-delay:.25s}.cena.on .estrato:nth-child(3){transition-delay:.45s}
+.cena.on .estrato:nth-child(4){transition-delay:.65s}.cena.on .estrato:nth-child(5){transition-delay:.85s}.cena.on .estrato:nth-child(6){transition-delay:1.05s}
+.etapa{font-family:var(--f-dado);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--terracota);display:flex;gap:14px;align-items:center;margin:0 0 18px}
+.etapa::before{content:"";width:34px;height:1px;background:var(--terracota)}
+.manchete{font-family:var(--f-display);font-stretch:125%;font-weight:250;font-size:clamp(34px,6.2vw,92px);line-height:.98;letter-spacing:-.02em;margin:0;max-width:15ch;text-wrap:balance}
+.manchete b{font-weight:780;color:var(--creme)}
+.manchete em{font-style:normal;color:var(--terracota);font-weight:700}
+.apoio{font-size:clamp(15px,1.35vw,20px);line-height:1.5;color:var(--areia);max-width:52ch;margin:22px 0 0;font-weight:350}
+.apoio strong{color:var(--creme);font-weight:600}
+.miolo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,4vw,64px);align-items:end}
+@media (max-width:820px){.miolo{grid-template-columns:1fr}}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: ALERTAS-E-MEDIDORES ═══ */
+.pinos{position:fixed;inset:0;z-index:3;pointer-events:none}
+.pino{position:absolute;transform:translate(-50%,-100%);font-family:var(--f-dado);font-size:12px;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;transition:opacity .5s}
+.pino.on{opacity:1}
+.pino span{background:rgba(18,14,12,.82);border:1px solid var(--sinal);color:var(--sinal);padding:6px 10px;letter-spacing:.04em}
+.pino.ok span{border-color:var(--firme);color:var(--firme)}
+.pino.neutro span{border-color:var(--areia);color:var(--creme)}
+.pino i{width:1px;height:26px;background:currentColor;color:var(--sinal)}
+.pino.ok i{color:var(--firme)}.pino.neutro i{color:var(--areia)}
+.pino.pulsa span{animation:pulsa 1.4s ease-in-out infinite}
+@keyframes pulsa{50%{box-shadow:0 0 0 6px rgba(233,162,59,.18)}}
+.medidores{display:grid;gap:12px;max-width:440px;margin-top:26px}
+.med{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;font-family:var(--f-dado);font-size:12px;color:var(--areia);letter-spacing:.06em;text-transform:uppercase}
+.med .tr{height:6px;background:rgba(242,230,218,.1);overflow:hidden}
+.med .tr i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sinal),#E0653F);transition:width 2.4s cubic-bezier(.3,.6,.2,1) .6s}
+.cena.on .med .tr i{width:var(--v)}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: TRES-CAMINHOS ═══ */
+.caminhos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.6vw,22px);margin-top:28px}
+@media (max-width:820px){.caminhos{grid-template-columns:1fr}}
+.cam{border-top:1px solid var(--linha);padding-top:14px;transition:border-color .6s,background .6s}
+.cam h4{margin:0 0 10px;font-family:var(--f-display);font-stretch:110%;font-weight:600;font-size:clamp(15px,1.3vw,19px)}
+.cam .rot{font-family:var(--f-dado);font-size:11px;color:var(--terracota);letter-spacing:.14em;text-transform:uppercase}
+.cam dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-family:var(--f-dado);font-size:12px;color:var(--areia)}
+.cam dd{margin:0;letter-spacing:.2em;color:var(--creme)}
+.cam.vence{border-top:2px solid var(--firme)}
+.cam.foco{border-top-color:var(--terracota);background:linear-gradient(180deg,rgba(200,115,90,.14),transparent 70%)}
+.cam.vence.foco{border-top-color:var(--firme);background:linear-gradient(180deg,rgba(169,199,154,.14),transparent 70%)}
+.cam.apaga{opacity:.35}
+.cena[data-etapa="Necessidade"]{justify-content:center}
+.cena[data-etapa="Necessidade"] .manchete{font-size:clamp(30px,4.2vw,62px)}
+.cena[data-etapa="Necessidade"] .caminhos{grid-template-columns:1fr;max-width:400px;gap:10px;margin-top:22px}
+.cena[data-etapa="Necessidade"] .cam{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:start;padding:10px 12px 10px 0}
+.cena[data-etapa="Necessidade"] .cam .rot,.cena[data-etapa="Necessidade"] .cam h4{grid-column:1}
+.cena[data-etapa="Necessidade"] .cam dl{grid-column:2;grid-row:1 / span 2}
+.cena[data-etapa="Necessidade"] .nota{max-width:400px}
+.cam{transition:opacity .6s,border-color .6s,background .6s}
+.cam.vence .rot{color:var(--firme)}
+.nota{font-family:var(--f-dado);font-size:11px;color:rgba(204,182,165,.7);margin-top:14px;letter-spacing:.03em}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: BOLETIM ═══ */
+.boletim{font-family:var(--f-dado);font-size:12px;background:rgba(18,14,12,.72);border:1px solid var(--linha);padding:16px 18px;max-width:440px;justify-self:end;width:100%}
+.bol-cab{display:flex;justify-content:space-between;color:var(--terracota);letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;margin-bottom:10px}
+.bol-l{display:grid;grid-template-columns:96px minmax(0,1fr) 92px;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--linha);color:var(--areia)}
+.bol-l b{position:relative;font-weight:600;color:var(--creme);text-align:right;font-variant-numeric:tabular-nums}
+.bol-l b::before{content:"";position:absolute;left:0;top:50%;height:4px;margin-top:-2px;width:0;max-width:60%;background:var(--terracota);transition:width 1.6s cubic-bezier(.3,.6,.2,1) .8s}
+.cena.on .bol-l b::before{width:calc(var(--n) * .6)}
+.bol-rod{margin-top:10px;font-size:10.5px;color:rgba(204,182,165,.7)}
+@media (max-width:820px){.boletim{justify-self:start}}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: METODO ═══ */
+.trilha{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin-top:30px;counter-reset:fase}
+@media (max-width:820px){.trilha{grid-template-columns:1fr 1fr}}
+.fase{border-left:1px solid var(--linha);padding:0 16px 0 14px;counter-increment:fase}
+.fase::before{content:counter(fase,decimal-leading-zero);display:block;font-family:var(--f-dado);font-size:11px;color:var(--terracota);letter-spacing:.14em;margin-bottom:8px}
+.fase b{display:block;font-family:var(--f-display);font-stretch:110%;font-weight:600;font-size:clamp(14px,1.2vw,17px);margin-bottom:6px}
+.fase span{font-size:13px;line-height:1.45;color:var(--areia)}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: DORES-NICHO ═══ */
+.dores{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:14px;max-width:560px}
+.dores li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:clamp(14px,1.15vw,17px);line-height:1.45;color:var(--areia)}
+.dores li::before{content:"";width:12px;height:12px;margin-top:5px;border:1px solid var(--sinal);transform:rotate(45deg)}
+.dores li b{color:var(--creme);font-weight:600}
+.resposta{border-left:2px solid var(--firme);padding:4px 0 4px 18px;margin-top:22px;max-width:560px;font-size:clamp(14px,1.15vw,17px);line-height:1.5;color:var(--creme)}
+.resposta small{display:block;font-family:var(--f-dado);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--firme);margin-bottom:6px}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: OBRAS ═══ */
+.mosaico{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:clamp(80px,13vh,150px);gap:10px;margin-top:26px;max-width:1180px}
+.mosaico figure{margin:0;position:relative;overflow:hidden;background:var(--terra-funda)}
+.mosaico img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);transition:transform 6s ease-out}
+.cena.on .mosaico img{transform:scale(1)}
+.mosaico figcaption{position:absolute;left:0;bottom:0;padding:6px 9px;font-family:var(--f-dado);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;background:rgba(18,14,12,.78);color:var(--creme)}
+.m-a{grid-column:span 3;grid-row:span 2}.m-b{grid-column:span 2;grid-row:span 2}.m-c{grid-column:span 1;grid-row:span 2}
+.m-d{grid-column:span 2}.m-e{grid-column:span 2}.m-f{grid-column:span 2}
+@media (max-width:820px){.mosaico{grid-template-columns:repeat(2,minmax(0,1fr))}.m-a,.m-b,.m-c,.m-d,.m-e,.m-f{grid-column:span 1;grid-row:span 1}}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CLIENTES ═══ */
+.marcas{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:28px;max-width:1000px}
+.marcas span{font-family:var(--f-display);font-stretch:118%;font-weight:600;font-size:clamp(17px,2vw,30px);letter-spacing:.02em;color:rgba(242,230,218,.82)}
+.marcas span.destaque{color:var(--terracota)}
+.marcas span.sep{color:var(--argila);font-weight:300}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: EQUIPE ═══ */
+.socios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,3vw,44px);margin-top:28px;max-width:1080px}
+@media (max-width:820px){.socios{grid-template-columns:1fr}}
+.socio{display:grid;grid-template-columns:clamp(84px,9vw,130px) minmax(0,1fr);gap:18px;align-items:start}
+.socio img{width:100%;aspect-ratio:3/4;object-fit:cover;filter:grayscale(.35) contrast(1.05);max-width:100%}
+.socio h4{margin:0 0 4px;font-family:var(--f-display);font-stretch:112%;font-weight:650;font-size:clamp(17px,1.5vw,22px)}
+.socio .cargo{font-family:var(--f-dado);font-size:11px;color:var(--terracota);letter-spacing:.12em;text-transform:uppercase}
+.socio p{margin:10px 0 0;font-size:14px;line-height:1.5;color:var(--areia)}
+.consult{margin-top:22px;font-size:14px;color:var(--areia);max-width:880px;line-height:1.55}
+.consult b{color:var(--creme);font-weight:600}
+.selos{display:flex;gap:24px;flex-wrap:wrap;margin-top:18px;font-family:var(--f-dado);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--creme)}
+.selos span{border:1px solid var(--linha);padding:8px 12px}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CONVITE ═══ */
+.contato{display:flex;flex-wrap:wrap;gap:14px 34px;margin-top:30px;font-family:var(--f-dado);font-size:14px;color:var(--creme)}
+.contato div small{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--terracota);margin-bottom:4px}
+.contato div{user-select:text}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: SONDAGEM-PROGRESSO ═══ */
+.furo{position:fixed;z-index:4;right:max(18px,calc(env(safe-area-inset-right,0px) + 14px));top:calc(env(safe-area-inset-top,0px) + 76px);bottom:calc(env(safe-area-inset-bottom,0px) + 86px);width:54px;display:flex;flex-direction:column;align-items:center}
+.furo .tubo{position:relative;flex:1;width:2px;background:rgba(242,230,218,.14)}
+.furo .tubo i{position:absolute;left:0;top:0;width:2px;background:var(--terracota);height:0;transition:height 1.6s cubic-bezier(.6,0,.2,1)}
+.furo .ponta{position:absolute;left:50%;width:10px;height:10px;margin-left:-5px;background:var(--terracota);transform:rotate(45deg);transition:top 1.6s cubic-bezier(.6,0,.2,1)}
+.furo .prof{font-family:var(--f-dado);font-size:11px;color:var(--areia);margin-top:10px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.furo .marcas-furo{position:absolute;inset:0;pointer-events:none}
+.furo .marcas-furo b{position:absolute;left:8px;width:6px;height:1px;background:rgba(242,230,218,.3)}
+@media (max-width:820px){.furo{display:none}}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: TOPO-E-CONTROLES ═══ */
+.topo{position:fixed;z-index:5;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 22px) max(clamp(20px,6vw,96px),env(safe-area-inset-right,0px)) 0 max(clamp(20px,6vw,96px),env(safe-area-inset-left,0px));display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.marca{font-family:var(--f-display);font-stretch:125%;font-weight:300;letter-spacing:.55em;font-size:14px}
+.marca small{font-family:var(--f-dado);letter-spacing:.14em;font-size:10.5px;color:var(--areia);margin-left:14px;text-transform:uppercase}
+.contador{font-family:var(--f-dado);font-size:12px;color:var(--areia);letter-spacing:.1em;font-variant-numeric:tabular-nums}
+.controles{position:fixed;z-index:5;left:max(clamp(20px,6vw,96px),env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 22px);display:flex;gap:10px;align-items:center}
+.ctl{background:rgba(18,14,12,.6);border:1px solid var(--linha);color:var(--creme);font-family:var(--f-dado);font-size:12px;letter-spacing:.08em;padding:10px 14px;cursor:pointer;transition:border-color .2s,background .2s}
+.ctl:hover{border-color:var(--terracota);background:rgba(140,74,58,.25)}
+.ctl:focus-visible{outline:2px solid var(--terracota);outline-offset:2px}
+.dica{font-family:var(--f-dado);font-size:11px;color:rgba(204,182,165,.6);margin-left:8px}
+@media (max-width:820px){.dica{display:none}}
+.rotulo3d{position:fixed;z-index:3;pointer-events:none;font-family:var(--f-dado);font-size:11px;color:var(--creme);opacity:0;transition:opacity .6s;white-space:nowrap;transform:translate(10px,-50%)}
+.rotulo3d.on{opacity:.95}
+.rotulo3d em{font-style:normal;color:var(--terracota);margin-left:8px}
+/* ── FIM BLOCO ── */
+@media (prefers-reduced-motion:reduce){.estrato,.furo .tubo i,.furo .ponta,.med .tr i{transition:none}.grao{animation:none}}
+</style>
+
+<canvas id="cena3d" aria-hidden="true"></canvas>
+<div class="vinheta" id="vinheta"></div>
+<div class="pinos" id="pinos"></div>
+<div id="rotulos"></div>
+
+<header class="topo">
+  <div class="marca">PETRI<small>Geotecnia · Fundações · Contenções</small></div>
+  <div class="contador" id="contador">01 / 14</div>
+</header>
+
+<aside class="furo" aria-hidden="true">
+  <div class="tubo"><i id="furoBarra"></i><span class="ponta" id="furoPonta"></span><div class="marcas-furo" id="furoMarcas"></div></div>
+  <div class="prof" id="furoProf">0,0 m</div>
+</aside>
+
+<main class="palco" id="palco">
+
+  <section class="cena" data-etapa="Gancho">
+    <p class="etapa estrato">Uma história contada de cima para baixo</p>
+    <h1 class="manchete estrato">Todo mundo olha <b>para cima.</b></h1>
+    <p class="apoio estrato">A fachada, a vista, o último andar. É ali que o empreendimento aparece. Mas não é ali que ele se decide.</p>
+  </section>
+
+  <section class="cena" data-etapa="Situação">
+    <div class="miolo">
+      <div>
+        <p class="etapa estrato">Situação</p>
+        <h2 class="manchete estrato">Terreno comprado. <b>Relógio correndo.</b></h2>
+        <p class="apoio estrato">A sondagem SPT já saiu, o lançamento tem data e o projeto de fundação precisa andar junto com todo o resto. Na pressa, ele costuma seguir <strong>o primeiro caminho que funciona</strong>.</p>
+      </div>
+      <div class="boletim estrato" aria-label="Boletim de sondagem ilustrativo">
+        <div class="bol-cab"><span>Boletim de sondagem · SP-01</span><span>NSPT</span></div>
+        <div class="bol-l"><span>0,0 – 2,5 m</span><span>Aterro</span><b style="--n:6%">3</b></div>
+        <div class="bol-l"><span>2,5 – 9,0 m</span><span>Areia fina fofa</span><b style="--n:10%">5</b></div>
+        <div class="bol-l"><span>9,0 – 17,0 m</span><span>Argila orgânica mole</span><b style="--n:4%">2</b></div>
+        <div class="bol-l"><span>17,0 – 27,0 m</span><span>Areia compacta</span><b style="--n:56%">28</b></div>
+        <div class="bol-l"><span>27,0 m +</span><span>Rocha alterada</span><b style="--n:100%">&gt; 50</b></div>
+        <div class="bol-rod">Nível d'água: −3,0 m · perfil ilustrativo</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cena" data-etapa="Problema">
+    <p class="etapa estrato">Problema</p>
+    <h2 class="manchete estrato">As decisões mais caras <em>ficam aqui embaixo.</em></h2>
+    <p class="apoio estrato">Aterro, areia fofa, argila mole, nível d'água alto. Cada camada muda o tipo de estaca, a profundidade, o equipamento e o prazo. E quase ninguém compara alternativas antes de decidir.</p>
+  </section>
+
+  <section class="cena" data-etapa="Implicação">
+    <div class="miolo">
+      <div>
+        <p class="etapa estrato">Implicação</p>
+        <h2 class="manchete estrato">Uma só solução, <b>e a conta chega depois.</b></h2>
+        <p class="apoio estrato">A perfuratriz executa estaca por estaca do jeito de sempre. No fim, sobram metros de estaca que o solo não pedia, a obra fica refém de um único equipamento e o vizinho sente o recalque.</p>
+      </div>
+      <div class="medidores estrato" aria-label="Efeitos ilustrativos">
+        <div class="med"><span>Custo</span><span class="tr"><i style="--v:88%"></i></span></div>
+        <div class="med"><span>Prazo</span><span class="tr"><i style="--v:74%"></i></span></div>
+        <div class="med"><span>Aditivos</span><span class="tr"><i style="--v:62%"></i></span></div>
+        <div class="med"><span>Risco vizinho</span><span class="tr"><i style="--v:80%"></i></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cena centro" data-etapa="Virada">
+    <p class="etapa estrato">Pausa</p>
+    <h2 class="manchete estrato">E se a fundação fosse escolhida <em>como se escolhe um terreno?</em></h2>
+    <p class="apoio estrato">Comparando opções lado a lado, com números na mesa, antes de assinar o executivo.</p>
+  </section>
+
+  <section class="cena" data-etapa="Necessidade">
+    <p class="etapa estrato">Necessidade de solução</p>
+    <h2 class="manchete estrato">Três caminhos. <b>Um vencedor.</b></h2>
+    <div class="caminhos estrato">
+      <div class="cam"><span class="rot">Alternativa A</span><h4>Hélice contínua</h4><dl><dt>Custo</dt><dd>●●●○○</dd><dt>Prazo</dt><dd>●●○○○</dd><dt>Equipamento</dt><dd>●●●●○</dd><dt>Risco</dt><dd>●●○○○</dd></dl></div>
+      <div class="cam"><span class="rot">Alternativa B</span><h4>Estaca metálica</h4><dl><dt>Custo</dt><dd>●●●●○</dd><dt>Prazo</dt><dd>●●●○○</dd><dt>Equipamento</dt><dd>●●●○○</dd><dt>Risco</dt><dd>●○○○○</dd></dl></div>
+      <div class="cam vence"><span class="rot">Alternativa C · melhor equilíbrio</span><h4>Radier estaqueado</h4><dl><dt>Custo</dt><dd>●●○○○</dd><dt>Prazo</dt><dd>●●○○○</dd><dt>Equipamento</dt><dd>●●●●●</dd><dt>Risco</dt><dd>●●○○○</dd></dl></div>
+    </div>
+    <p class="nota estrato">Execução e notas ilustrativas. Em cada projeto, a Petri compara as alternativas viáveis para aquele solo e aquela estrutura, junto com engenharia e orçamento.</p>
+  </section>
+
+  <section class="cena" data-etapa="Contenção">
+    <p class="etapa estrato">Solução · contenção</p>
+    <h2 class="manchete estrato">O subsolo desce. <b>O vizinho fica onde está.</b></h2>
+    <p class="apoio estrato">Parede diafragma em painéis, tirantes ancorados além da cunha de ruptura e o empuxo do solo calculado camada por camada. A contenção certa para cada divisa, com análise de estabilidade e interação solo-estrutura.</p>
+  </section>
+
+  <section class="cena" data-etapa="Método">
+    <p class="etapa estrato">Como trabalhamos</p>
+    <h2 class="manchete estrato">Tudo modelado <b>antes do primeiro furo.</b></h2>
+    <div class="trilha estrato">
+      <div class="fase"><b>Viabilidade</b><span>Leitura do solo e das condicionantes do terreno.</span></div>
+      <div class="fase"><b>Alternativas</b><span>Custo, prazo, equipamento e risco lado a lado.</span></div>
+      <div class="fase"><b>ATP</b><span>Avaliação Técnica de Projeto: revisão independente.</span></div>
+      <div class="fase"><b>Executivo BIM</b><span>Fundação, contenção e terraplenagem em Revit e Civil 3D.</span></div>
+      <div class="fase"><b>Compatibilização</b><span>Integração com estrutura e arquitetura até a obra.</span></div>
+    </div>
+  </section>
+
+  <section class="cena" data-etapa="Alto padrão · Litoral">
+    <div class="miolo">
+      <div>
+        <p class="etapa estrato">Torres de alto padrão no litoral</p>
+        <h2 class="manchete estrato">Areia de praia, água a três metros, <b>torre de 30 andares.</b></h2>
+      </div>
+      <div>
+        <ul class="dores estrato">
+          <li><span><b>Nível d'água a −3 m</b> invade a escavação do subsolo sem contenção estanque e rebaixamento.</span></li>
+          <li><span><b>Areia fofa e camadas moles</b> sob cargas concentradas de torres esbeltas.</span></li>
+          <li><span><b>Terreno de quadra apertada</b> com vizinhos sensíveis a recalque e vibração.</span></li>
+        </ul>
+        <div class="resposta estrato"><small>Como a Petri resolve</small>Parede diafragma estanque, rebaixamento dimensionado e fundação comparada antes do executivo, tudo no mesmo modelo. Já fizemos isso em torres de Balneário Camboriú e no Nordeste.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cena" data-etapa="Recompensa">
+    <p class="etapa estrato">De volta à superfície</p>
+    <h2 class="manchete estrato">Tudo o que se vê <b>começa debaixo da terra.</b></h2>
+    <p class="apoio estrato">Com a fundação decidida cedo e comparando, a torre sobe sobre a solução certa: no prazo, no orçamento e sem surpresa com a vizinhança.</p>
+  </section>
+
+  <section class="cena" data-etapa="Obras">
+    <p class="etapa estrato">Onde já estamos</p>
+    <h2 class="manchete estrato">Do MCMV ao <b>data center.</b></h2>
+    <div class="mosaico estrato">
+      <figure class="m-a"><img alt="Torre residencial de frente para o mar" src="{{IMG:f_praia}}"><figcaption>Edify · Balneário Camboriú</figcaption></figure>
+      <figure class="m-b"><img alt="Torre residencial à noite" src="{{IMG:f_bild}}"><figcaption>Bild · alto padrão</figcaption></figure>
+      <figure class="m-c"><img alt="Torre com fachada verde" src="{{IMG:f_athie}}"><figcaption>Athié Wohnrath</figcaption></figure>
+      <figure class="m-d"><img alt="Data center" src="{{IMG:f_scala}}"><figcaption>Scala Data Centers</figcaption></figure>
+      <figure class="m-e"><img alt="Torres residenciais" src="{{IMG:f_patriani}}"><figcaption>Patriani</figcaption></figure>
+      <figure class="m-f"><img alt="Subestação de energia ao entardecer" src="{{IMG:f_energia}}"><figcaption>Subestações · BA e MG</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="cena" data-etapa="Clientes">
+    <p class="etapa estrato">Quem confia</p>
+    <h2 class="manchete estrato">Incorporadoras que <b>constroem em escala.</b></h2>
+    <div class="marcas estrato">
+      <span class="destaque">Mota Machado</span><span>Plaenge</span><span>Patriani</span><span>MRV</span><span>Tenda</span><span>Cury</span><span>Direcional</span>
+      <span>J.A. Russi</span><span>Vetter</span><span>Athié Wohnrath</span><span>Scala</span><span>GPA</span><span>Sigdo Koppers</span><span>Vertin</span><span>Mutual</span>
+    </div>
+    <p class="apoio estrato">Em Fortaleza, a Petri já trabalha com a <strong>Mota Machado</strong>.</p>
+  </section>
+
+  <section class="cena" data-etapa="Quem assina">
+    <p class="etapa estrato">Quem assina</p>
+    <h2 class="manchete estrato">Formados nos melhores <b>escritórios do país.</b></h2>
+    <div class="socios estrato">
+      <div class="socio"><img alt="Franco Petrilli" src="{{IMG:f_franco}}"><div><span class="cargo">Sócio-administrador · Responsável técnico</span><h4>Franco Petrilli</h4><p>Projetista de fundação e contenção na Consultrix, braço direito do diretor técnico. Coordenador técnico nacional de fundações e gestor nacional de produtos de construção na Gerdau.</p></div></div>
+      <div class="socio"><img alt="Guilherme Araújo" src="{{IMG:f_guilherme}}"><div><span class="cargo">Sócio · Coordenação de projetos</span><h4>Guilherme Araújo</h4><p>Poli-USP, pós em geotecnia e MBA em Real Estate. Passagens por Camargo Corrêa, Even e Consultrix. Artigos no COBRAMSEG e no SEFE.</p></div></div>
+    </div>
+    <p class="consult estrato">Consultores: <b>Alberto Maccheroni</b> (estruturas, ex-JKMF e Promon), <b>Eliane Oliveira</b> (estruturas, mais de mil obras, inclusive edifícios altos), <b>Fernanda Vissirini</b> (hidrologia e drenagem).</p>
+    <div class="selos estrato"><span>Associada ABEG</span><span>BIM · Revit · Civil 3D</span><span>Atuação nacional</span></div>
+  </section>
+
+  <section class="cena" data-etapa="Convite">
+    <p class="etapa estrato">Próximo passo</p>
+    <h2 class="manchete estrato">Traga um terreno. <b>Mostramos três caminhos.</b></h2>
+    <p class="apoio estrato">Escolha um empreendimento em estudo. A Petri faz a leitura do solo e apresenta as alternativas de fundação e contenção, com custo, prazo e risco, antes do executivo.</p>
+    <div class="contato estrato">
+      <div><small>Franco Petrilli · sócio</small>Agenda presencial em Fortaleza</div>
+      <div><small>Telefones</small>(11) 4332-7273 · (11) 98400-4241</div>
+      <div><small>Site</small>petriprojetos.com.br</div>
+    </div>
+  </section>
+</main>
+
+<nav class="controles" aria-label="Navegação">
+  <button class="ctl" id="bVolta" type="button" aria-label="Cena anterior">←</button>
+  <button class="ctl" id="bAvanca" type="button" aria-label="Próxima cena">Avançar →</button>
+  <button class="ctl" id="bTela" type="button">Tela cheia</button>
+  <span class="dica">Setas, espaço ou clique</span>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script>
+// ═══ BLOCO: CONSTANTES ═══
+const COR = {ceuTarde:0x2B1E1A, fundo:0x0D0A09, creme:0xF2E6DA, terracota:0xC8735A, sinal:0xE9A23B, alerta:0xE0503A, firme:0xA9C79A, aco:0x3B4248, maquina:0xE2A43A, agua:0x3E9CC4, mar:0x16303A};
+const CAMADAS = [
+  {t:0, b:-2.5, c:'#5A3B2C', k:'aterro', n:'Aterro', spt:'SPT 3'},
+  {t:-2.5, b:-9, c:'#B48448', k:'areia', n:'Areia fofa', spt:'SPT 5'},
+  {t:-9, b:-17, c:'#4A5246', k:'argila', n:'Argila mole', spt:'SPT 2'},
+  {t:-17, b:-27, c:'#8A5A2E', k:'areia', n:'Areia compacta', spt:'SPT 28'},
+  {t:-27, b:-36, c:'#2F2B29', k:'rocha', n:'Rocha alterada', spt:'SPT > 50'}
+];
+const BLOCO = {x0:-56, x1:34, z0:-24, z1:-1};
+const LAB_X = 1500, LAB_DX = [-46, 0, 46];
+const ANDAR_H = 3.15, NA = 30, PL = [20, 15], PODIO = 3;
+const EST_TOPO = -2.2, EST_L_PADRAO = 24, EST_L_OTIMO = 15, EST_NECESSARIO = 19;
+const GRADE = []; for (let j = 0; j < 3; j++) for (let i = 0; i < 5; i++) GRADE.push([-8 + i*4, -5 + j*5]);
+// est: estado-alvo da cena 3D · cam/alvo: enquadramento · prof: profundidade na barra de sondagem
+const CENAS = [
+  {cam:[190,120,300], alvo:[0,45,0], prof:0, est:{andares:30, luzes:.45}},
+  {cam:[2,13,40], alvo:[-26,3,2], prof:0, est:{andares:0, sondagem:1}},
+  {cam:[14,-14,98], alvo:[-4,-15,0], prof:-17, est:{andares:0, sondagem:1, rotulos:1, corte:1}},
+  {cam:[-6,-6,96], alvo:[-26,-12,0], prof:-26, est:{andares:0, corte:1, estacas:1, perf:1, alerta:1}},
+  {cam:[-10,-4,124], alvo:[-30,-12,0], prof:-26, est:{andares:0, corte:1, estacas:1, alerta:1, congela:1}},
+  {cam:[LAB_X - 20,4,120], alvo:[LAB_X - 34,-2,0], prof:-30, est:{lab:1}},
+  {cam:[-70,-6,62], alvo:[-30,-9,0], prof:-18, est:{andares:0, guindaste:1, corte:1, estacas:1, radier:1, contencao:1, empuxo:1}},
+  {cam:[96,22,118], alvo:[-6,8,0], prof:-30, est:{andares:30, corte:1, estacas:1, radier:1, contencao:1, bim:1}},
+  {cam:[34,-7,92], alvo:[-16,-9,0], prof:-9, est:{andares:0, corte:1, estacas:1, radier:1, contencao:1, agua:1, rotulos:1}},
+  {cam:[150,78,190], alvo:[0,48,0], prof:0, est:{andares:30, luzes:1, raiox:1, radier:1, estacas:1}},
+  {cam:null, prof:0, est:{andares:30, luzes:1, orbita:1, fecha:1, radier:1, estacas:1}},
+  {cam:null, prof:0, est:{andares:30, luzes:1, orbita:1, fecha:1, radier:1, estacas:1}},
+  {cam:null, prof:0, est:{andares:30, luzes:1, orbita:1, fecha:1, radier:1, estacas:1}},
+  {cam:null, prof:0, est:{andares:30, luzes:1, orbita:1, fecha:1, radier:1, estacas:1}}
+];
+const PROF_MAX = 36;
+const reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const leve = Math.min(innerWidth, innerHeight) < 600 || (navigator.hardwareConcurrency || 8) <= 4;
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: ESTADO ═══
+let focoAnterior = -2;
+const S = {i:0, inicio:0, camDe:null, camPara:null, alvoDe:null, alvoPara:null, via:null, viaAlvo:null, dur:3, tCam:1, relogio:0, tCena:0, fovBase:36};
+const V = {andares:30, luzes:.45, guindaste:0, sondagem:0, corte:0, rotulos:0, estacas:0, perf:0, alerta:0, congela:0, lab:0, radier:0, contencao:0, empuxo:0, bim:0, agua:0, raiox:0, orbita:0, fecha:0};
+const T = Object.assign({}, V);
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: HELPERS ═══
+const $ = id => document.getElementById(id);
+const v3 = a => new THREE.Vector3(a[0], a[1], a[2]);
+const suave = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const faixa = (x, a, b) => clamp01((x - a) / (b - a));
+function rng(seed){ let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+function mat(cor, extra){ return new THREE.MeshStandardMaterial(Object.assign({color:cor, roughness:.9, metalness:0}, extra || {})); }
+function sombra(o){ o.castShadow = true; o.receiveShadow = true; return o; }
+function caixa(w, h, d, m){ return sombra(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m)); }
+function cilindro(r, h, m, seg){ return sombra(new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 16), m)); }
+function tex(canvas, rx, ry){ const t = new THREE.CanvasTexture(canvas); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx || 1, ry || 1); t.anisotropy = 8; t.encoding = THREE.sRGBEncoding; return t; }
+function tela(w, h){ const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; }
+function hexRgb(h){ const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: TEXTURAS ═══
+function texturaSolo(base, tipo, seed){
+  const [c, g] = tela(512, 512), r = rng(seed), [R, G, B] = hexRgb(base);
+  g.fillStyle = base; g.fillRect(0, 0, 512, 512);
+  const img = g.getImageData(0, 0, 512, 512), d = img.data;
+  for (let p = 0; p < d.length; p += 4){
+    const y = (p / 4 / 512) | 0;
+    let n = (r() - .5) * (tipo === 'argila' ? 14 : tipo === 'rocha' ? 26 : 40);
+    if (tipo === 'argila') n += Math.sin(y * .09 + r() * .4) * 7;
+    d[p] = R + n; d[p+1] = G + n * .95; d[p+2] = B + n * .85;
+  }
+  g.putImageData(img, 0, 0);
+  if (tipo === 'aterro'){
+    for (let k = 0; k < 160; k++){ g.fillStyle = r() < .5 ? 'rgba(30,20,14,.45)' : 'rgba(170,140,110,.35)'; const s = 2 + r()*9; g.beginPath(); g.ellipse(r()*512, r()*512, s, s*.7, r()*3, 0, 7); g.fill(); }
+    for (let k = 0; k < 18; k++){ g.fillStyle = 'rgba(120,110,100,.55)'; g.fillRect(r()*512, r()*512, 6 + r()*18, 3 + r()*5); }
+  }
+  if (tipo === 'areia'){ for (let k = 0; k < 2600; k++){ g.fillStyle = r() < .5 ? 'rgba(255,240,210,.22)' : 'rgba(60,40,20,.2)'; g.fillRect(r()*512, r()*512, 1.4, 1.4); } }
+  if (tipo === 'argila'){ g.strokeStyle = 'rgba(20,25,20,.25)'; for (let k = 0; k < 14; k++){ g.lineWidth = .6 + r(); g.beginPath(); const y = r()*512; g.moveTo(0, y); for (let x = 0; x <= 512; x += 32) g.lineTo(x, y + Math.sin(x*.02 + k)*4); g.stroke(); } }
+  if (tipo === 'rocha'){ g.strokeStyle = 'rgba(10,10,10,.55)'; for (let k = 0; k < 22; k++){ g.lineWidth = .8 + r()*1.4; g.beginPath(); let x = r()*512, y = r()*512; g.moveTo(x, y); for (let j = 0; j < 6; j++){ x += (r()-.5)*90; y += (r()-.5)*70; g.lineTo(x, y); } g.stroke(); } }
+  return tex(c, 4, 1);
+}
+function texturaConcreto(seed, base){
+  const [c, g] = tela(256, 256), r = rng(seed);
+  g.fillStyle = base || '#B3ABA2'; g.fillRect(0, 0, 256, 256);
+  for (let k = 0; k < 5000; k++){ const v = 140 + r()*70 | 0; g.fillStyle = `rgba(${v},${v-4},${v-10},.22)`; g.fillRect(r()*256, r()*256, 1.5, 1.5); }
+  for (let k = 0; k < 40; k++){ g.fillStyle = 'rgba(60,55,50,.25)'; g.beginPath(); g.arc(r()*256, r()*256, .8 + r()*1.6, 0, 7); g.fill(); }
+  return tex(c, 1, 3);
+}
+function texturaAndar(seed, acesas){
+  const W = 1024, H = 128, r = rng(seed);
+  const [c, g] = tela(W, H), [ce, ge] = tela(W, H);
+  const grad = g.createLinearGradient(0, 0, 0, H); grad.addColorStop(0, '#5E6A72'); grad.addColorStop(1, '#2C3338');
+  g.fillStyle = grad; g.fillRect(0, 0, W, H); ge.fillStyle = '#000'; ge.fillRect(0, 0, W, H);
+  for (let x = 0; x < W; x += 64){
+    if (r() < acesas){
+      const quente = r() < .7, gi = ge.createLinearGradient(0, 0, 0, H);
+      gi.addColorStop(0, quente ? '#FFD9A0' : '#E8EEF2'); gi.addColorStop(1, quente ? '#B8752E' : '#8E9AA3');
+      ge.fillStyle = gi; ge.fillRect(x + 3, 8, 58, H - 14);
+      g.fillStyle = quente ? '#C9A27A' : '#A9B4BA'; g.fillRect(x + 3, 8, 58, H - 14);
+      if (r() < .5){ ge.fillStyle = 'rgba(0,0,0,.55)'; ge.fillRect(x + 10 + r()*30, 50, 10, H - 60); }
+    } else if (r() < .35){ g.fillStyle = 'rgba(200,190,180,.18)'; g.fillRect(x + 3, 8, 58, (H - 14) * .6); }
+    g.fillStyle = '#1B1F22'; g.fillRect(x, 0, 3, H); ge.fillStyle = '#000'; ge.fillRect(x, 0, 3, H);
+  }
+  g.fillStyle = '#1B1F22'; g.fillRect(0, 0, W, 6); g.fillRect(0, H - 6, W, 6);
+  return [tex(c, 1, 1), tex(ce, 1, 1)];
+}
+function texturaPredio(seed, acesas){
+  const [c, g] = tela(128, 256), [ce, ge] = tela(128, 256), r = rng(seed);
+  g.fillStyle = '#3B3330'; g.fillRect(0, 0, 128, 256); ge.fillStyle = '#000'; ge.fillRect(0, 0, 128, 256);
+  for (let y = 6; y < 256; y += 12) for (let x = 5; x < 128; x += 12){
+    const on = r() < acesas;
+    g.fillStyle = on ? '#B79A78' : '#4A4440'; g.fillRect(x, y, 7, 7);
+    if (on){ ge.fillStyle = r() < .75 ? '#F5C27E' : '#DCE6EC'; ge.fillRect(x, y, 7, 7); }
+  }
+  return [tex(c, 1, 1), tex(ce, 1, 1)];
+}
+function spriteRadial(stops){
+  const [c, g] = tela(256, 256), gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  stops.forEach(s => gr.addColorStop(s[0], s[1])); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c);
+}
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: RENDERER-E-POS ═══
+const canvas = $('cena3d');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(leve ? 1.5 : 2, window.devicePixelRatio || 1));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = !location.search.includes('nosh'); renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const cena = new THREE.Scene();
+cena.background = new THREE.Color(COR.ceuTarde);
+cena.fog = new THREE.FogExp2(COR.ceuTarde, .0016);
+const camera = new THREE.PerspectiveCamera(36, 1, .3, 4000);
+camera.position.copy(v3(CENAS[0].cam));
+const alvoAtual = v3(CENAS[0].alvo);
+const temPos = !location.search.includes('nopos') && typeof THREE.EffectComposer === 'function' && typeof THREE.UnrealBloomPass === 'function';
+let composer = null, bloom = null, acabamento = null;
+if (temPos){
+  composer = new THREE.EffectComposer(renderer);
+  composer.addPass(new THREE.RenderPass(cena, camera));
+  bloom = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), .55, .55, .86);
+  composer.addPass(bloom);
+  acabamento = new THREE.ShaderPass({
+    uniforms:{tDiffuse:{value:null}, t:{value:0}, vinheta:{value:.9}, grao:{value:.04}, congela:{value:0}},
+    vertexShader:'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+    fragmentShader:[
+      'uniform sampler2D tDiffuse; uniform float t; uniform float vinheta; uniform float grao; uniform float congela; varying vec2 vUv;',
+      'float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)) + t) * 43758.5453); }',
+      'void main(){',
+      '  vec2 d = vUv - .5; float ab = .0016 * length(d) * 2.;',
+      '  vec3 c = vec3(texture2D(tDiffuse, vUv + d*ab).r, texture2D(tDiffuse, vUv).g, texture2D(tDiffuse, vUv - d*ab).b);',
+      '  c = pow(max(c, 0.), vec3(1./2.2));',
+      '  float v = smoothstep(.95, .2, length(d) * vinheta * 1.25); c *= mix(.55, 1., v);',
+      '  float l = dot(c, vec3(.299,.587,.114)); c = mix(c, vec3(l) * vec3(1.02,.98,.94), congela * .75);',
+      '  c += (h(vUv * 900.) - .5) * grao;',
+      '  gl_FragColor = vec4(c, 1.);',
+      '}'].join('\n')
+  });
+  composer.addPass(acabamento);
+}
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: CEU-LUZ-AMBIENTE ═══
+const hemi = new THREE.HemisphereLight(0xF6D9C2, 0x2A1E18, .55); cena.add(hemi);
+const sol = new THREE.DirectionalLight(0xFFB27A, 2.1); sol.position.set(-160, 95, 150);
+sol.castShadow = true; sol.shadow.mapSize.set(leve ? 1024 : 2048, leve ? 1024 : 2048);
+Object.assign(sol.shadow.camera, {left:-160, right:160, top:160, bottom:-160, near:10, far:600}); sol.shadow.bias = -.0004; sol.shadow.normalBias = .04;
+cena.add(sol); cena.add(sol.target);
+const contra = new THREE.DirectionalLight(0x8FA8C0, .5); contra.position.set(160, 70, -200); cena.add(contra);
+const luzSub = new THREE.PointLight(0xFFE2C4, 0, 170, 1.4); cena.add(luzSub);
+const luzSub2 = new THREE.SpotLight(0xFFF1E0, 0, 260, .55, .6, 1.2); cena.add(luzSub2); cena.add(luzSub2.target);
+const ceuMat = new THREE.ShaderMaterial({side:THREE.BackSide, depthWrite:false, fog:false,
+  uniforms:{topo:{value:new THREE.Color(0x15111A)}, horiz:{value:new THREE.Color(0xD2714A)}, k:{value:1}},
+  vertexShader:'varying vec3 p; void main(){ p = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+  fragmentShader:'uniform vec3 topo; uniform vec3 horiz; uniform float k; varying vec3 p; void main(){ float h = clamp(p.y*2.4+.06,0.,1.); vec3 c = mix(horiz, topo, pow(h,.5)); c += vec3(.18,.08,.03) * pow(max(0., 1.-abs(p.y*6.)), 3.) * max(0., -p.x*.6 + .4); gl_FragColor = vec4(c*k,1.); }'});
+const ceu = new THREE.Mesh(new THREE.SphereGeometry(2000, 32, 16), ceuMat); cena.add(ceu);
+const sol2d = new THREE.Sprite(new THREE.SpriteMaterial({map:spriteRadial([[0,'rgba(255,236,200,1)'],[.12,'rgba(255,190,120,.9)'],[.4,'rgba(230,120,70,.25)'],[1,'rgba(230,120,70,0)']]), transparent:true, depthWrite:false, fog:false, blending:THREE.AdditiveBlending}));
+sol2d.scale.set(260, 260, 1); sol2d.position.set(-1200, 70, 1100); cena.add(sol2d);
+(function(){
+  const [c, g] = tela(512, 256), gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#2A2230'); gr.addColorStop(.42, '#C8775A'); gr.addColorStop(.5, '#F0B486'); gr.addColorStop(.56, '#6A4A3A'); gr.addColorStop(1, '#1E1714');
+  g.fillStyle = gr; g.fillRect(0, 0, 512, 256);
+  const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; t.encoding = THREE.sRGBEncoding;
+  const pm = new THREE.PMREMGenerator(renderer); cena.environment = pm.fromEquirectangular(t).texture; pm.dispose(); t.dispose();
+})();
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: MATERIAIS ═══
+const matConcreto = new THREE.MeshStandardMaterial({color:0xC9C1B8, map:texturaConcreto(3), roughness:.85});
+const matEst = new THREE.MeshStandardMaterial({color:0xD8D0C6, map:texturaConcreto(9), roughness:.8});
+const matConcFresco = new THREE.MeshStandardMaterial({color:0x8C8781, map:texturaConcreto(14, '#8C8781'), roughness:.35, metalness:.05});
+const matAco = new THREE.MeshStandardMaterial({color:0x6B4A3A, roughness:.45, metalness:.7});
+const matPerfil = new THREE.MeshStandardMaterial({color:0x4B545B, roughness:.3, metalness:.85});
+const matMaquina = new THREE.MeshStandardMaterial({color:COR.maquina, roughness:.45, metalness:.25});
+const matEsteira = new THREE.MeshStandardMaterial({color:0x1E1C1B, roughness:.7, metalness:.4});
+const matVidroCab = new THREE.MeshStandardMaterial({color:0x2A3A44, roughness:.05, metalness:.6, envMapIntensity:1.5});
+const matTrado = new THREE.MeshStandardMaterial({color:0x9AA3A8, roughness:.25, metalness:.9});
+const matExcesso = new THREE.MeshStandardMaterial({color:COR.alerta, emissive:COR.alerta, emissiveIntensity:1.3, roughness:.6});
+const matSeta = new THREE.MeshBasicMaterial({color:COR.terracota, transparent:true, opacity:0});
+const matSetaAtr = new THREE.MeshBasicMaterial({color:COR.firme, transparent:true, opacity:0});
+const matEmpuxo = new THREE.MeshBasicMaterial({color:COR.sinal, transparent:true, opacity:0});
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: PECAS-DE-ENGENHARIA ═══
+// Trado de hélice contínua: haste central + hélice
+class Helice extends THREE.Curve {
+  constructor(raio, comp, voltas){ super(); this.r = raio; this.l = comp; this.v = voltas; }
+  getPoint(t, alvo){ const a = t * this.v * Math.PI * 2; return (alvo || new THREE.Vector3()).set(Math.cos(a)*this.r, -t*this.l, Math.sin(a)*this.r); }
+}
+function trado(comp){
+  const g = new THREE.Group();
+  const haste = cilindro(.22, comp, matTrado, 12); haste.position.y = -comp/2; g.add(haste);
+  const helice = sombra(new THREE.Mesh(new THREE.TubeGeometry(new Helice(.55, comp - .6, comp/1.1), Math.round(comp*22), .13, 6, false), matTrado));
+  helice.position.y = -.3; g.add(helice);
+  const ponta = sombra(new THREE.Mesh(new THREE.ConeGeometry(.6, 1.1, 12), matTrado)); ponta.rotation.x = Math.PI; ponta.position.y = -comp - .45; g.add(ponta);
+  return g;
+}
+// Armadura: barras longitudinais + estribo helicoidal
+function armadura(comp, raio){
+  const g = new THREE.Group();
+  for (let k = 0; k < 8; k++){ const a = k/8*Math.PI*2; const b = cilindro(.055, comp, matAco, 6); b.castShadow = false; b.position.set(Math.cos(a)*raio, -comp/2, Math.sin(a)*raio); g.add(b); }
+  const esp = new THREE.Mesh(new THREE.TubeGeometry(new Helice(raio + .04, comp, comp/.25), Math.round(comp*30), .03, 4, false), matAco); g.add(esp);
+  return g;
+}
+// Perfil metálico W (alma + mesas) com talas de emenda
+function perfilW(comp){
+  const g = new THREE.Group();
+  const alma = caixa(.1, comp, .9, matPerfil); const m1 = caixa(.62, comp, .09, matPerfil), m2 = m1.clone();
+  m1.position.z = .45; m2.position.z = -.45; [alma, m1, m2].forEach(p => { p.position.y = -comp/2; g.add(p); });
+  for (let y = -6; y > -comp; y -= 6){ const tala = caixa(.7, .5, 1.0, mat(0x2E3338, {metalness:.8, roughness:.4})); tala.position.y = y; g.add(tala); }
+  return g;
+}
+// Estaca escavada completa (concreto + arranque de armadura no topo)
+function estacaConcreto(comp, raio){
+  const g = new THREE.Group();
+  const corpo = cilindro(raio, comp, matEst, 20); corpo.position.y = -comp/2; g.add(corpo);
+  const arr = armadura(1.6, raio*.7); arr.position.y = 1.4; g.add(arr);
+  g.userData.corpo = corpo; return g;
+}
+// Seta de carga (haste + ponta), apontando para -y
+function seta(comp, m){
+  const g = new THREE.Group();
+  const h = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, comp*.72, 8), m); h.position.y = -comp*.36; g.add(h);
+  const p = new THREE.Mesh(new THREE.ConeGeometry(.55, comp*.28, 12), m); p.rotation.x = Math.PI; p.position.y = -comp*.86; g.add(p);
+  return g;
+}
+// Esteiras + corpo + cabine: base comum das máquinas
+function baseMaquina(){
+  const g = new THREE.Group();
+  [-1.6, 1.6].forEach(z => {
+    const e = caixa(7.5, 1.2, 1.1, matEsteira); e.position.set(0, .6, z); g.add(e);
+    [-3.5, 3.5].forEach(x => { const r = cilindro(.62, 1.12, matEsteira, 14); r.rotation.x = Math.PI/2; r.position.set(x, .62, z); g.add(r); });
+  });
+  const giro = cilindro(1.4, .4, matEsteira, 20); giro.position.y = 1.4; g.add(giro);
+  const corpo = caixa(5.6, 2.2, 3.4, matMaquina); corpo.position.set(1.2, 2.7, 0); g.add(corpo);
+  const contrapeso = caixa(1.4, 1.8, 3.4, mat(0x3A3633, {metalness:.3})); contrapeso.position.set(4.6, 2.5, 0); g.add(contrapeso);
+  const cab = caixa(1.9, 2.1, 1.6, matVidroCab); cab.position.set(-.6, 4.4, 1); g.add(cab);
+  const tetoCab = caixa(2.1, .2, 1.8, matMaquina); tetoCab.position.set(-.6, 5.5, 1); g.add(tetoCab);
+  return g;
+}
+// Perfuratriz de hélice contínua: torre (leader) + mesa rotativa + trado
+function perfuratriz(compTrado){
+  const g = new THREE.Group(); g.add(baseMaquina());
+  const torreH = compTrado + 6;
+  const leader = new THREE.Group(); leader.position.set(-2.6, 0, 0); g.add(leader);
+  const mastro = caixa(.9, torreH, .9, matMaquina); mastro.position.y = torreH/2 + 1; leader.add(mastro);
+  const trel = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(.95, torreH, .95, 1, Math.round(torreH/1.5), 1)), new THREE.LineBasicMaterial({color:0x6B4A12})); trel.position.copy(mastro.position); leader.add(trel);
+  const topo = caixa(1.6, 1.2, 1.4, matMaquina); topo.position.y = torreH + 1.4; leader.add(topo);
+  const escora = caixa(.35, 9, .35, matMaquina); escora.position.set(1.9, 6, 0); escora.rotation.z = .55; g.add(escora);
+  const mesa = new THREE.Group(); leader.add(mesa);
+  const motor = caixa(1.8, 2.2, 1.8, mat(0x2C2A28, {metalness:.5, roughness:.4})); motor.position.set(-.9, 0, 0); mesa.add(motor);
+  const tr = trado(compTrado); tr.position.set(-.9, -1.1, 0); mesa.add(tr);
+  const luz = new THREE.Mesh(new THREE.SphereGeometry(.25, 8, 6), new THREE.MeshBasicMaterial({color:0xFFB04A})); luz.position.set(-.6, torreH + 2.2, 0); leader.add(luz);
+  g.userData = {mesa, tr, torreH, ox:-3.5, L:compTrado - 1};
+  return g;
+}
+// Posiciona mesa rotativa e trado para a ponta chegar a 'prof' m abaixo da base da máquina
+function posicionaTrado(maq, prof, compTrado){
+  const u = maq.userData;
+  u.mesa.position.y = Math.min(u.torreH - 1, compTrado + 2.1 - prof);   // ponta do trado = −prof
+  u.tr.position.y = -1.1;
+}
+// Bate-estaca: torre + martelo que sobe e desce
+function bateEstaca(){
+  const g = new THREE.Group(); g.add(baseMaquina());
+  const H = 22, leader = new THREE.Group(); leader.position.set(-2.6, 0, 0); g.add(leader);
+  const mastro = caixa(.8, H, .8, matMaquina); mastro.position.y = H/2 + 1; leader.add(mastro);
+  const trel = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(.85, H, .85, 1, 14, 1)), new THREE.LineBasicMaterial({color:0x6B4A12})); trel.position.copy(mastro.position); leader.add(trel);
+  const martelo = caixa(1.4, 3.2, 1.4, mat(0x24282B, {metalness:.7, roughness:.35})); martelo.position.set(-1, 10, 0); leader.add(martelo);
+  const capacete = caixa(1.1, .6, 1.1, mat(0x5A5550, {metalness:.6})); capacete.position.set(-1, 8, 0); leader.add(capacete);
+  const escora = caixa(.35, 9, .35, matMaquina); escora.position.set(1.9, 6, 0); escora.rotation.z = .55; g.add(escora);
+  g.userData = {martelo, capacete, ox:-3.6};
+  return g;
+}
+// Tripé de sondagem SPT: tripé, roldana, martelo de 65 kg e haste
+function tripeSPT(){
+  const g = new THREE.Group(), m = mat(0x3A3532, {roughness:.4, metalness:.6});
+  for (let k = 0; k < 3; k++){ const a = k*2.094; const p = caixa(.22, 9.5, .22, m); p.position.set(Math.cos(a)*1.5, 4.4, Math.sin(a)*1.5); p.rotation.set(Math.sin(a)*.17, 0, -Math.cos(a)*.17); g.add(p); }
+  const roldana = sombra(new THREE.Mesh(new THREE.TorusGeometry(.35, .08, 8, 16), m)); roldana.position.y = 9.1; g.add(roldana);
+  const corda = caixa(.04, 6, .04, mat(0xD8C8A8)); corda.position.y = 6.1; g.add(corda);
+  const martelo = cilindro(.32, .9, mat(0xB0654F, {metalness:.4, roughness:.5})); martelo.position.y = 3.2; g.add(martelo);
+  const haste = cilindro(.07, 36, m, 8); haste.position.y = -16; g.add(haste);
+  const furo = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, 34, 10), new THREE.MeshBasicMaterial({color:COR.terracota})); furo.position.y = -17; g.add(furo);
+  const amostras = new THREE.Group(); g.add(amostras);
+  for (let d = -1; d > -34; d -= 1){ const a = new THREE.Mesh(new THREE.SphereGeometry(.38, 10, 8), new THREE.MeshBasicMaterial({color:COR.creme})); a.position.y = d; amostras.add(a); }
+  g.userData = {martelo, corda, amostras};
+  return g;
+}
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: CHAO-PRAIA-MAR ═══
+const chao = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000), mat(0x2B221D, {roughness:1})); chao.rotation.x = -Math.PI/2; chao.receiveShadow = true; cena.add(chao);
+const lote = new THREE.Mesh(new THREE.PlaneGeometry(70, 46), mat(0x6A5A4C, {roughness:1})); lote.rotation.x = -Math.PI/2; lote.position.set(-4, .03, -10); lote.receiveShadow = true; cena.add(lote);
+const calcada = new THREE.Mesh(new THREE.PlaneGeometry(3000, 14), mat(0x4A3E36, {roughness:1})); calcada.rotation.x = -Math.PI/2; calcada.position.set(0, .04, 26); calcada.receiveShadow = true; cena.add(calcada);
+const praia = new THREE.Mesh(new THREE.PlaneGeometry(3000, 70), mat(0xC2A47E, {roughness:1})); praia.rotation.x = -Math.PI/2; praia.position.set(0, .05, 150); praia.receiveShadow = true; cena.add(praia);
+const marGeo = new THREE.PlaneGeometry(3000, 1400, 90, 40);
+const mar = new THREE.Mesh(marGeo, new THREE.MeshStandardMaterial({color:COR.mar, roughness:.18, metalness:.55, envMapIntensity:1.2})); mar.rotation.x = -Math.PI/2; mar.position.set(0, .2, 885); cena.add(mar);
+const marBase = marGeo.attributes.position.array.slice();
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: CIDADE ═══
+const cidade = new THREE.Group(); cena.add(cidade);
+const matsCidade = [];
+(function(){
+  const r = rng(11);
+  const variantes = [0, 1, 2, 3].map(k => { const [m, e] = texturaPredio(30 + k, .18 + k*.09); return {m, e}; });
+  function predio(x, z, w, d, h, k, claro){
+    const v = variantes[k % 4], tm = v.m.clone(), te = v.e.clone();
+    tm.needsUpdate = te.needsUpdate = true; tm.repeat.set(Math.max(1, w/12), Math.max(1, h/24)); te.repeat.copy(tm.repeat);
+    const m = new THREE.MeshStandardMaterial({color:claro ? 0xE7DCCF : 0xC9BBAE, map:tm, emissive:0xffffff, emissiveMap:te, emissiveIntensity:.15, roughness:.75, metalness:.05});
+    matsCidade.push(m);
+    const b = caixa(w, h, d, m); b.position.set(x, h/2, z); cidade.add(b);
+    if (h > 50 && r() < .55){ const h2 = h * (.25 + r()*.25); const b2 = caixa(w*.7, h2, d*.7, m); b2.position.set(x, h + h2/2, z); cidade.add(b2); }
+  }
+  for (let k = 0; k < 260; k++){
+    const x = (r() - .5)*1000, z = -60 - r()*620;
+    if (Math.abs(x) < 95 && z > -100) continue;
+    predio(x, z, 12 + r()*16, 12 + r()*16, 10 + Math.pow(r(), 2.4)*120, k, false);
+  }
+  for (let k = 0; k < 40; k++){ const x = -700 + k*36 + (r()-.5)*8; if (Math.abs(x) < 230) continue; predio(x, 92 + r()*10, 16 + r()*8, 16, 30 + r()*90, k, true); }
+  const inst = new THREE.InstancedMesh(new THREE.SphereGeometry(.7, 8, 6), new THREE.MeshBasicMaterial({color:0xFFC27A}), 420), m4 = new THREE.Matrix4();
+  for (let k = 0; k < 420; k++){ const l = k % 3, x = -700 + (k/3|0)*10; m4.makeTranslation(x, 7, l === 0 ? 33 : l === 1 ? -55 : -260); inst.setMatrixAt(k, m4); }
+  cidade.add(inst);
+})();
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: VIZINHO ═══
+const vizinho = new THREE.Group(); cena.add(vizinho);
+const [vt, ve] = texturaPredio(5, .35); vt.repeat.set(1.3, 1.1); ve.repeat.copy(vt.repeat);
+const vizMat = new THREE.MeshStandardMaterial({color:0xDCCFC2, map:vt, emissive:0xffffff, emissiveMap:ve, emissiveIntensity:.2, roughness:.8});
+const vizCorpo = caixa(16, 27, 18, vizMat); vizCorpo.position.set(0, 13.5, 0); vizinho.add(vizCorpo);
+const vizAlerta = new THREE.Mesh(new THREE.BoxGeometry(16.4, 27.4, 18.4), new THREE.MeshBasicMaterial({color:COR.sinal, transparent:true, opacity:0, wireframe:true}));
+vizAlerta.position.copy(vizCorpo.position); vizinho.add(vizAlerta);
+const sapata = caixa(18, 1.4, 20, matConcreto); sapata.position.set(0, -2.2, 0); vizinho.add(sapata);
+vizinho.position.set(-45, 0, -6);
+// bacia de recalque sob o vizinho (curva tracejada)
+const bacia = (function(){
+  const pts = []; for (let k = 0; k <= 40; k++){ const x = -56 + k*.75, u = (x + 45)/11; pts.push(new THREE.Vector3(x, -3.2 - 2.4*Math.exp(-u*u), BLOCO.z1 + .3)); }
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const l = new THREE.Line(geo, new THREE.LineDashedMaterial({color:COR.alerta, dashSize:.8, gapSize:.5, transparent:true, opacity:0})); l.computeLineDistances(); cena.add(l); return l;
+})();
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: SOLO-EM-CORTE ═══
+const solo = new THREE.Group(); cena.add(solo);
+const largB = BLOCO.x1 - BLOCO.x0, profB = BLOCO.z1 - BLOCO.z0, cxB = (BLOCO.x0 + BLOCO.x1)/2, czB = (BLOCO.z0 + BLOCO.z1)/2;
+const matsSolo = CAMADAS.map((c, n) => new THREE.MeshStandardMaterial({color:0xffffff, map:texturaSolo(c.c, c.k, 100 + n), roughness:1}));
+function camadaOndulada(c, n, larg, prof){
+  const g = new THREE.BoxGeometry(larg, c.t - c.b, prof, 48, 1, 1), p = g.attributes.position;
+  for (let k = 0; k < p.count; k++){
+    const x = p.getX(k), y = p.getY(k), onda = sd => Math.sin(x*.09 + sd)*.45 + Math.sin(x*.23 + sd*2)*.2;
+    if (y > 0 && n > 0) p.setY(k, y + onda(n));
+    if (y < 0 && n < CAMADAS.length - 1) p.setY(k, y + onda(n + 1));
+  }
+  g.computeVertexNormals();
+  const m = new THREE.Mesh(g, matsSolo[n]); m.receiveShadow = true; return m;
+}
+CAMADAS.forEach((c, n) => { const m = camadaOndulada(c, n, largB, profB); m.position.set(cxB, (c.t + c.b)/2, czB); solo.add(m); });
+const moldura = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(largB, 36, profB)), new THREE.LineBasicMaterial({color:COR.creme, transparent:true, opacity:.22}));
+moldura.position.set(cxB, -18, czB); solo.add(moldura);
+const escav = caixa(58, 8.6, .4, mat(0x15100D, {roughness:1})); escav.position.set(-1, -4.3, BLOCO.z1 + .25); escav.visible = false; solo.add(escav);
+// lençol d'água: fora da parede (lado do vizinho) e abaixo da escavação; escavação seca
+const matAgua = new THREE.MeshStandardMaterial({color:COR.agua, transparent:true, opacity:0, roughness:.15, metalness:.1, emissive:0x2C7FA5, emissiveIntensity:.8, depthWrite:false});
+const aguaFora = new THREE.Mesh(new THREE.BoxGeometry(24.4, 14, 22), matAgua); aguaFora.position.set(-44, -10, 10); solo.add(aguaFora);
+const aguaBaixo = new THREE.Mesh(new THREE.BoxGeometry(65, 8.4, 22), matAgua); aguaBaixo.position.set(1.4, -12.8, 10); solo.add(aguaBaixo);
+const linhaAgua = new THREE.Mesh(new THREE.BoxGeometry(24.6, .12, 22.2), new THREE.MeshBasicMaterial({color:0x8FD3F0, transparent:true, opacity:0})); linhaAgua.position.set(-44, -3, 10); solo.add(linhaAgua);
+const pocos = new THREE.Group(); solo.add(pocos);
+const gotasGeo = new THREE.SphereGeometry(.22, 6, 5), gotasMat = new THREE.MeshBasicMaterial({color:0x9FE0FF, transparent:true, opacity:0});
+[-20, -4, 14].forEach(x => {
+  const tubo = cilindro(.35, 16, mat(0x7C8A92, {metalness:.7, roughness:.3}), 10); tubo.position.set(x, -9, 8); pocos.add(tubo);
+  const bomba = caixa(1.4, 1, 1.4, mat(0x2E5E78, {metalness:.5})); bomba.position.set(x, -.2, 8); pocos.add(bomba);
+  for (let k = 0; k < 6; k++){ const gt = new THREE.Mesh(gotasGeo, gotasMat); gt.userData = {x, f:k/6}; pocos.add(gt); }
+});
+pocos.visible = false;
+solo.visible = false;
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: TORRE ═══
+const torre = new THREE.Group(); cena.add(torre);
+const andares = [], matsAndar = [];
+const matLaje = new THREE.MeshStandardMaterial({color:0xEFE6DB, roughness:.6});
+const matGuarda = new THREE.MeshStandardMaterial({color:0xA9C3CC, transparent:true, opacity:.28, roughness:.05, metalness:.3, envMapIntensity:1.4});
+const matBrise = new THREE.MeshStandardMaterial({color:0xB0654F, roughness:.55});
+const matPodio = new THREE.MeshStandardMaterial({color:0x3A322D, roughness:.5, metalness:.2});
+for (let k = 0; k < 4; k++){
+  const [t, te] = texturaAndar(50 + k, .35 + k*.1); t.repeat.set(2, 1); te.repeat.set(2, 1);
+  matsAndar.push(new THREE.MeshStandardMaterial({color:0xffffff, map:t, emissive:0xffffff, emissiveMap:te, emissiveIntensity:.25, roughness:.12, metalness:.55, envMapIntensity:1.1}));
+}
+for (let k = 0; k < NA; k++){
+  const g = new THREE.Group(), podio = k < PODIO;
+  const v = caixa(PL[0] - (podio ? -2 : 1.2), ANDAR_H - .42, PL[1] - (podio ? -2 : 1.2), podio ? matPodio : matsAndar[k % 4]); v.position.y = ANDAR_H/2 + .2; g.add(v);
+  const l = caixa(PL[0] + (podio ? 2.4 : 1.6), .4, PL[1] + (podio ? 2.4 : 1.6), matLaje); l.position.y = .2; g.add(l);
+  if (!podio){ const gf = new THREE.Mesh(new THREE.BoxGeometry(PL[0] + 1.5, 1.05, .06), matGuarda); gf.position.set(0, .95, (PL[1] + 1.5)/2); g.add(gf); const gt = gf.clone(); gt.position.z = -(PL[1] + 1.5)/2; g.add(gt); }
+  g.position.y = k * ANDAR_H; torre.add(g); andares.push(g);
+}
+const brises = new THREE.Group(); torre.add(brises);
+[-1, 1].forEach(sx => [-1, 1].forEach(sz => { const b = caixa(.7, 1, .7, matBrise); b.position.set(sx*(PL[0]/2 + .9), 0, sz*(PL[1]/2 + .9)); brises.add(b); }));
+for (let k = -3; k <= 3; k++){ const b = caixa(.25, 1, .9, matBrise); b.position.set(k*2.6, 0, PL[1]/2 + 1.1); brises.add(b); }
+const coroa = new THREE.Group(); torre.add(coroa);
+(function(){ const m = mat(0xE2D5C6, {roughness:.5}); const a = caixa(PL[0] + 1.6, .6, PL[1] + 1.6, m); a.position.y = 4.2; coroa.add(a);
+  [-1, 1].forEach(s => { const p = caixa(.6, 4.2, PL[1] + 1.6, m); p.position.set(s*(PL[0]/2 + .5), 2.1, 0); coroa.add(p); });
+  const casa = caixa(8, 3, 6, matPodio); casa.position.y = 1.5; coroa.add(casa); })();
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: CANTEIRO ═══
+const guindaste = new THREE.Group(); cena.add(guindaste);
+(function(){
+  const trelica = (x, y, z, w, h, d) => { const g = new THREE.Group(); g.add(caixa(w, h, d, matMaquina));
+    g.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w*1.02, h, d*1.02, 1, Math.max(1, h/2|0), 1)), new THREE.LineBasicMaterial({color:0x7A4A12}))); g.position.set(x, y, z); return g; };
+  guindaste.add(trelica(13, 34, -9, 1.6, 68, 1.6)); guindaste.add(trelica(27, 67, -9, 56, 1.3, 1.3)); guindaste.add(trelica(5, 67, -9, 16, 1.3, 1.3));
+  const cp = caixa(4, 3, 2.4, mat(0x6A6460)); cp.position.set(-1, 65.5, -9); guindaste.add(cp);
+  const cab = caixa(2.2, 2, 2.2, mat(0xE8E0D6)); cab.position.set(14.8, 65, -9); guindaste.add(cab);
+  const cabo = caixa(.12, 22, .12, mat(0x1A1A1A)); cabo.position.set(44, 55, -9); guindaste.add(cabo);
+  const carga = caixa(3, 1.2, 1.2, matConcreto); carga.position.set(44, 43.5, -9); guindaste.add(carga);
+  const lt = new THREE.Mesh(new THREE.SphereGeometry(.5, 8, 6), new THREE.MeshBasicMaterial({color:0xFF3B2F})); lt.position.set(13, 69, -9); guindaste.add(lt);
+})();
+const spt = tripeSPT(); spt.position.set(-22, 0, 4); cena.add(spt);
+const perfMain = perfuratriz(EST_L_PADRAO + 1); cena.add(perfMain); perfMain.visible = false;
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: FUNDACOES-PRINCIPAIS ═══
+const estacas = new THREE.Group(); cena.add(estacas);
+const listaEstacas = GRADE.map(([x, z], n) => {
+  const g = new THREE.Group(); g.position.set(x, EST_TOPO, z);
+  const fresco = cilindro(.7, 1, matConcFresco, 20); g.add(fresco);              // concreto subindo durante a execução
+  const pronta = estacaConcreto(1, .7); g.add(pronta);                            // estaca curada (escala em y = comprimento)
+  const gaiola = armadura(12, .48); g.add(gaiola);                                // armadura descendo no concreto fresco
+  const excesso = cilindro(.74, 1, matExcesso, 20); g.add(excesso);              // trecho além do necessário
+  estacas.add(g); return {g, fresco, pronta, gaiola, excesso, n};
+});
+const blocoCor = caixa(PL[0] + 2, 1.6, PL[1] + 2, matConcreto); blocoCor.position.set(0, -1.4, 0); estacas.add(blocoCor);
+const linhaNecessaria = (function(){
+  const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-14, EST_TOPO - EST_NECESSARIO, BLOCO.z1 + .4), new THREE.Vector3(14, EST_TOPO - EST_NECESSARIO, BLOCO.z1 + .4)]);
+  const l = new THREE.Line(geo, new THREE.LineDashedMaterial({color:COR.firme, dashSize:.9, gapSize:.5, transparent:true, opacity:0})); l.computeLineDistances(); cena.add(l); return l;
+})();
+const radier = caixa(PL[0] + 6, 1.4, PL[1] + 5, new THREE.MeshStandardMaterial({color:0xC7D4BA, map:texturaConcreto(12, '#C7D4BA'), roughness:.7, emissive:COR.firme, emissiveIntensity:.05}));
+radier.position.set(0, -2.6, 0); radier.visible = false; cena.add(radier);
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: CONTENCAO ═══
+const contencao = new THREE.Group(); cena.add(contencao);
+const paineisCont = [];
+(function(){
+  const mp = new THREE.MeshStandardMaterial({color:0xC8735A, map:texturaConcreto(21, '#C8735A'), roughness:.7});
+  for (let k = 0; k < 6; k++){ const p = caixa(1.2, 19, 4.85, mp); p.position.set(-31, -9.5, -11 + k*5); contencao.add(p); paineisCont.push(p);
+    const junta = caixa(1.25, 19, .12, mat(0x7A3E2E)); junta.position.set(-31, -9.5, -8.55 + k*5); contencao.add(junta); }
+  const guia = caixa(2.4, 1.2, 30, matConcreto); guia.position.set(-31, -.6, 2); contencao.add(guia);
+  const mt = new THREE.MeshStandardMaterial({color:0xE6DCCD, emissive:COR.firme, emissiveIntensity:.35, metalness:.4, roughness:.4});
+  const bulbo = new THREE.MeshStandardMaterial({color:0x9AB58C, roughness:.8, map:texturaConcreto(30, '#9AB58C')});
+  for (let lin = 0; lin < 3; lin++) for (let k = 0; k < 6; k++){
+    const g = new THREE.Group(); g.position.set(-31.6, -3 - lin*4.5, -10 + k*4.6); g.rotation.z = -.38;
+    const t = new THREE.Mesh(new THREE.CylinderGeometry(.14, .14, 13, 6), mt); t.rotation.z = Math.PI/2; t.position.x = -6.5; g.add(t);
+    const b = new THREE.Mesh(new THREE.CylinderGeometry(.6, .6, 4.5, 12), bulbo); b.rotation.z = Math.PI/2; b.position.x = -11; g.add(b);
+    const placa = caixa(.3, 1, 1, mat(0x2E2A27, {metalness:.7})); placa.position.x = .25; g.add(placa);
+    const porca = cilindro(.25, .4, mat(0x1E1E1E, {metalness:.8}), 6); porca.rotation.z = Math.PI/2; porca.position.x = .6; g.add(porca);
+    contencao.add(g);
+  }
+  contencao.visible = false;
+})();
+// empuxo: setas crescentes com a profundidade, do vizinho para a parede
+const empuxo = new THREE.Group(); cena.add(empuxo);
+for (let k = 0; k < 7; k++){ const y = -2 - k*2.4, comp = 2 + k*1.15; const s = seta(comp, matEmpuxo); s.rotation.z = Math.PI/2; s.position.set(-32.4 - comp, y, BLOCO.z1 + .8); empuxo.add(s); }
+const diagEmp = (function(){ const pts = [new THREE.Vector3(-32.4, -1, BLOCO.z1 + .8), new THREE.Vector3(-43.6, -18, BLOCO.z1 + .8), new THREE.Vector3(-32.4, -18, BLOCO.z1 + .8)];
+  const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:COR.sinal, transparent:true, opacity:0})); empuxo.add(l); return l; })();
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: CAMINHO-DAS-CARGAS ═══
+const cargas = new THREE.Group(); cena.add(cargas);
+GRADE.forEach(([x, z], n) => { if (n % 2) return; const s = seta(5, matSeta); s.position.set(x, 4.5, BLOCO.z1 + 2 + (z + 5)*.1); cargas.add(s); });
+const atrito = new THREE.Group(); cena.add(atrito);
+GRADE.forEach(([x, z], n) => { if (z !== 5) return; for (let k = 0; k < 4; k++){ [-1, 1].forEach(sx => { const s = seta(1.8, matSetaAtr); s.rotation.z = Math.PI; s.position.set(x + sx*1.1, EST_TOPO - 3 - k*3, z + 1); atrito.add(s); }); } });
+const bulboT = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 16), new THREE.MeshBasicMaterial({color:COR.terracota, transparent:true, opacity:0, depthWrite:false}));
+bulboT.scale.set(18, 7, 6); bulboT.position.set(0, -20, BLOCO.z1 - 2); cena.add(bulboT);
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: LABORATORIO ═══
+const lab = new THREE.Group(); lab.position.x = LAB_X; cena.add(lab);
+const labBase = new THREE.Mesh(new THREE.PlaneGeometry(240, 90), mat(0x1A1411, {roughness:1})); labBase.rotation.x = -Math.PI/2; labBase.position.set(0, -36.2, -10); lab.add(labBase);
+const labA = {estacas:[], perf:null}, labB = {perfis:[], bate:null}, labC = {estacas:[], laje:null, malha:null, setas:null, bulbo:null};
+const PONTOS_LAB = [[-6, 0], [0, 0], [6, 0], [-6, 4], [0, 4], [6, 4]];
+LAB_DX.forEach((dx, n) => {
+  const g = new THREE.Group(); g.position.x = dx; lab.add(g);
+  CAMADAS.forEach((c, k) => { const m = camadaOndulada(c, k, 34, 14); m.position.set(0, (c.t + c.b)/2, -8); g.add(m); });
+  const placa = caixa(34, .3, 12, mat(0x3A2E27)); placa.position.set(0, .15, 5); placa.receiveShadow = true; g.add(placa);
+  if (n === 0){
+    PONTOS_LAB.forEach(([x, z]) => { const e = estacaConcreto(22, .72); e.position.set(x, -.6, z); e.scale.y = .001; g.add(e); labA.estacas.push(e); });
+    labA.perf = perfuratriz(23); g.add(labA.perf);
+  }
+  if (n === 1){
+    PONTOS_LAB.forEach(([x, z]) => { const p = perfilW(30); p.position.set(x, 30, z); g.add(p); labB.perfis.push(p); });
+    labB.bate = bateEstaca(); g.add(labB.bate);
+  }
+  if (n === 2){
+    PONTOS_LAB.forEach(([x, z]) => { const e = estacaConcreto(12, .62); e.position.set(x, -.6, z); e.scale.y = .001; g.add(e); labC.estacas.push(e); });
+    const malha = new THREE.Group(); for (let k = -9; k <= 9; k += 1.5){ const a = cilindro(.05, 14, matAco, 5); a.rotation.x = Math.PI/2; a.position.set(k, .2, 2); malha.add(a); }
+    for (let k = -5; k <= 9; k += 1.5){ const a = cilindro(.05, 19, matAco, 5); a.rotation.z = Math.PI/2; a.position.set(0, .3, k - 3); malha.add(a); }
+    g.add(malha); labC.malha = malha;
+    labC.laje = caixa(19, 1.2, 14.4, radier.material); labC.laje.position.set(0, -.1, 2); g.add(labC.laje);
+    labC.setas = new THREE.Group(); [-6, -2, 2, 6].forEach(x => { const s = seta(4, matSeta); s.position.set(x, 6, 7.5); labC.setas.add(s); }); g.add(labC.setas);
+    labC.bulbo = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 16), new THREE.MeshBasicMaterial({color:COR.firme, transparent:true, opacity:0, depthWrite:false})); labC.bulbo.scale.set(13, 6, 7); labC.bulbo.position.set(0, -9, 1); g.add(labC.bulbo);
+  }
+});
+const anelVence = new THREE.Mesh(new THREE.TorusGeometry(20, .3, 8, 96), new THREE.MeshBasicMaterial({color:COR.firme, transparent:true, opacity:0}));
+anelVence.rotation.x = Math.PI/2; anelVence.position.set(46, .5, -2); lab.add(anelVence);
+lab.visible = false;
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: BIM ═══
+const bim = new THREE.Group(); cena.add(bim);
+const matBim = new THREE.LineBasicMaterial({color:0xE58A6C, transparent:true, opacity:0});
+const matBim2 = new THREE.LineBasicMaterial({color:0xF6EBDD, transparent:true, opacity:0});
+[torre, estacas, contencao].forEach((grp, gi) => grp.traverse(o => {
+  if (o.isMesh && (o.geometry.type === 'BoxGeometry' || o.geometry.type === 'CylinderGeometry')){
+    const l = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 30), gi === 0 ? matBim2 : matBim); l.userData.src = o; l.matrixAutoUpdate = false; bim.add(l);
+  }
+}));
+const pilares = new THREE.Group(); cena.add(pilares);
+const matPilar = new THREE.MeshBasicMaterial({color:0x8FD3F0, transparent:true, opacity:0});
+for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++){ const p = new THREE.Mesh(new THREE.BoxGeometry(.8, NA*ANDAR_H, .8), matPilar); p.position.set(-7.5 + i*5, NA*ANDAR_H/2, -5 + j*5); p.userData.base = p.position.x; p.userData.desloc = (i + j) % 2 ? 34 : -34; pilares.add(p); }
+const tuboClash = cilindro(.45, 24, new THREE.MeshBasicMaterial({color:COR.alerta, transparent:true, opacity:0}), 12);
+tuboClash.rotation.z = Math.PI/2; tuboClash.position.set(0, ANDAR_H*1.5, 0); tuboClash.castShadow = false; cena.add(tuboClash);
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: ROTULOS-E-PINOS ═══
+const rotulos = CAMADAS.map(c => { const el = document.createElement('div'); el.className = 'rotulo3d'; el.innerHTML = c.n + ' <em>' + c.spt + '</em>'; $('rotulos').appendChild(el); return {el, p:new THREE.Vector3(BLOCO.x1 + .5, (c.t + c.b)/2, BLOCO.z1)}; });
+function criaPino(txt, cls, p){ const d = document.createElement('div'); d.className = 'pino ' + cls; d.innerHTML = '<span>' + txt + '</span><i></i>'; $('pinos').appendChild(d); return {el:d, p:v3(p)}; }
+const pinosAlerta = [
+  criaPino('Recalque no vizinho', 'pulsa', [-45, 2, -2]),
+  criaPino('5 m de estaca além do necessário', '', [8, EST_TOPO - EST_NECESSARIO - 2, 6]),
+  criaPino('Perfuratriz parada · equipamento único na região', '', [-10, 12, 4])
+];
+const pinoNecess = criaPino('Comprimento necessário', 'ok', [14, EST_TOPO - EST_NECESSARIO, 0]);
+const pinoOk = criaPino('Vizinho protegido', 'ok', [-45, 4, -6]);
+const pinoEmp = criaPino('Empuxo do solo contido', 'neutro', [-40, -18, 0]);
+const pinoAgua = criaPino("Nível d'água · −3 m", 'neutro', [-36, -3, 21]);
+const pinoSeca = criaPino('Escavação seca · rebaixamento', 'ok', [-4, 1, 8]);
+const pinoClash = criaPino('Interferência resolvida no modelo', 'ok', [12, ANDAR_H*1.5, 8]);
+const proj = new THREE.Vector3();
+function posTela(p){ proj.copy(p).project(camera); return {x:(proj.x*.5 + .5)*innerWidth, y:(-proj.y*.5 + .5)*innerHeight, vis:proj.z < 1 && proj.z > -1}; }
+function colocar(item, ligado){ const t = posTela(item.p); item.el.style.left = t.x + 'px'; item.el.style.top = t.y + 'px'; item.el.classList.toggle('on', ligado && t.vis); }
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: NEGOCIO-CENAS ═══
+function alvosDaCena(i){ const out = {}; Object.keys(T).forEach(k => { out[k] = 0; }); return Object.assign(out, CENAS[i].est); }
+function camOrbita(t){ const a = t*.05; return new THREE.Vector3(Math.cos(a)*230, 95, Math.sin(a)*230 + 40); }
+// Execução de uma estaca hélice contínua: 0–.45 perfura · .45–.8 concreta subindo o trado · .8–1 desce a armadura
+function faseHC(p){ return {desce:faixa(p, 0, .45), sobe:faixa(p, .45, .8), arm:faixa(p, .8, 1)}; }
+// Tour da cena "três caminhos": foco A → B → C → plano geral
+const TOUR = [{ate:5.5, foco:0}, {ate:10.5, foco:1}, {ate:15, foco:2}, {ate:1e9, foco:-1}];
+function focoTour(t){ return TOUR.find(f => t < f.ate).foco; }
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: RENDER-HTML ═══
+const cenasEl = [...document.querySelectorAll('.cena')];
+const cardsCam = [...document.querySelectorAll('.cam')];
+(function(){ const m = $('furoMarcas'); for (let d = 0; d <= PROF_MAX; d += 3){ const b = document.createElement('b'); b.style.top = (d/PROF_MAX*100) + '%'; m.appendChild(b); } })();
+function renderCenaHtml(i){
+  cenasEl.forEach((c, k) => c.classList.toggle('on', k === i));
+  $('contador').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(cenasEl.length).padStart(2, '0');
+  const p = Math.abs(CENAS[i].prof), pct = p / PROF_MAX * 100;
+  $('furoBarra').style.height = pct + '%'; $('furoPonta').style.top = 'calc(' + pct + '% - 5px)';
+  $('furoProf').textContent = p ? '−' + p.toFixed(0) + ' m' : '0 m';
+  $('vinheta').classList.toggle('fecha', !!CENAS[i].est.fecha);
+  $('bVolta').disabled = i === 0;
+  $('bAvanca').textContent = i === cenasEl.length - 1 ? 'Recomeçar ↺' : 'Avançar →';
+}
+function renderTourHtml(foco){ cardsCam.forEach((c, k) => { c.classList.toggle('foco', foco === k); c.classList.toggle('apaga', foco >= 0 && foco !== k); }); }
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: NAVEGACAO ═══
+function irPara(i){
+  i = (i + CENAS.length) % CENAS.length; S.i = i; S.tCena = 0;
+  Object.assign(T, alvosDaCena(i));
+  const c = CENAS[i];
+  S.camDe = camera.position.clone(); S.alvoDe = alvoAtual.clone();
+  if (c.cam){ S.camPara = v3(c.cam); S.alvoPara = v3(c.alvo); } else { S.camPara = camOrbita(S.relogio + 3); S.alvoPara = new THREE.Vector3(0, 46, 0); }
+  // respiro: recua para um plano aberto entre as duas fases e avança na nova
+  const centro = S.alvoDe.clone().add(S.alvoPara).multiplyScalar(.5);
+  const dir = S.camDe.clone().add(S.camPara).multiplyScalar(.5).sub(centro); dir.y = 0;
+  if (dir.lengthSq() < 1) dir.set(0, 0, 1); dir.normalize();
+  const dist = Math.max(S.camDe.distanceTo(S.camPara), 40);
+  const ambosEmbaixo = S.camDe.y < 0 && S.camPara.y < 0;
+  S.via = centro.clone().add(dir.multiplyScalar(dist*.7 + 90));
+  S.via.y = ambosEmbaixo ? -10 : Math.max(centro.y, 0) + 40 + dist*.15;
+  S.viaAlvo = centro.clone(); if (ambosEmbaixo) S.viaAlvo.y = Math.min(S.viaAlvo.y, -12);
+  if (Math.abs(S.camDe.x - S.camPara.x) > 800){ S.via.set((S.camDe.x + S.camPara.x)/2, 160, 380); S.viaAlvo.set((S.camDe.x + S.camPara.x)/2, -10, 0); }
+  S.dur = reduz ? .01 : Math.min(4.2, 2.8 + dist/400);
+  S.tCam = 0; S.inicio = performance.now();
+  renderCenaHtml(i); renderTourHtml(-1); focoAnterior = -2;
+}
+$('bAvanca').addEventListener('click', e => { e.stopPropagation(); irPara(S.i + 1); });
+$('bVolta').addEventListener('click', e => { e.stopPropagation(); irPara(S.i - 1); });
+$('bTela').addEventListener('click', e => {
+  e.stopPropagation(); const d = document.documentElement;
+  if (!document.fullscreenElement){ if (d.requestFullscreen) d.requestFullscreen().catch(() => {}); }
+  else if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+});
+document.addEventListener('keydown', e => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)){ e.preventDefault(); irPara(S.i + 1); }
+  if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)){ e.preventDefault(); irPara(S.i - 1); }
+  if (e.key === 'Home') irPara(0);
+});
+$('palco').addEventListener('click', e => { if (!e.target.closest('a,button')) irPara(S.i + 1); });
+let toqueX = null;
+addEventListener('touchstart', e => { toqueX = e.touches[0].clientX; }, {passive:true});
+addEventListener('touchend', e => { if (toqueX === null) return; const dx = e.changedTouches[0].clientX - toqueX; if (Math.abs(dx) > 50) irPara(S.i + (dx < 0 ? 1 : -1)); toqueX = null; }, {passive:true});
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: ANIMACOES-DE-OBRA ═══
+const tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3();
+function animaSPT(t, ativo){
+  const u = spt.userData, ciclo = (t*1.6) % 1, queda = ciclo < .7 ? ciclo/.7 : 1 - (ciclo - .7)/.3;
+  u.martelo.position.y = ativo ? 1.6 + (1 - queda)*3.2 : 3.2;
+  u.amostras.children.forEach((a, k) => { a.visible = !ativo || k < S.tCena*6; });
+}
+function animaEstacasPrincipais(prog, executando, compAtual, excessoVis){
+  // prog: 0..1 para as 15 estacas; executando = perfuratriz visível
+  const N = listaEstacas.length, ativa = Math.min(N - 1, Math.floor(prog*N));
+  listaEstacas.forEach((it, n) => {
+    const local = executando ? clamp01(prog*N - n) : (prog > 0 ? 1 : 0);
+    const f = faseHC(local), L = compAtual;
+    const feita = local >= 1;
+    it.g.visible = local > 0;
+    // concreto fresco sobe do fundo enquanto o trado sai
+    const hFresco = Math.max(.001, f.sobe * L);
+    it.fresco.visible = !feita && f.sobe > 0; it.fresco.scale.y = hFresco; it.fresco.position.y = -L + hFresco/2;
+    it.pronta.visible = feita; it.pronta.userData.corpo.scale.y = L; it.pronta.userData.corpo.position.y = -L/2;
+    it.gaiola.visible = !feita && f.arm > 0; it.gaiola.position.y = 12 - f.arm*12.6;
+    const exc = Math.max(0, L - EST_NECESSARIO);
+    it.excesso.visible = feita && excessoVis > .05 && exc > .2; it.excesso.scale.y = exc; it.excesso.position.y = -L + exc/2;
+  });
+  perfMain.visible = executando && prog < 1;
+  if (perfMain.visible){
+    const it = listaEstacas[ativa], f = faseHC(clamp01(prog*N - ativa)), u = perfMain.userData;
+    perfMain.position.set(it.g.position.x - u.ox, 0, it.g.position.z);
+    posicionaTrado(perfMain, Math.max(0, (f.desce - f.sobe) * (compAtual + 2.2)), EST_L_PADRAO + 1);
+    u.tr.rotation.y += (f.desce < 1 ? .5 : .15);
+  }
+}
+function animaLab(t){
+  const foco = focoTour(t);
+  // A: hélice contínua executando 6 estacas
+  const pA = faixa(t, .6, 5.5), N = 6, ativaA = Math.min(N - 1, Math.floor(pA*N));
+  labA.estacas.forEach((e, n) => { const loc = clamp01(pA*N - n), f = faseHC(loc); e.scale.y = Math.max(.001, f.sobe); e.visible = loc > .4; });
+  const uA = labA.perf.userData, fA = faseHC(clamp01(pA*N - ativaA)), [xa, za] = PONTOS_LAB[ativaA];
+  labA.perf.position.set(xa - uA.ox, .3, za); labA.perf.visible = pA < 1;
+  posicionaTrado(labA.perf, Math.max(0, (fA.desce - fA.sobe) * 22) + .9, 23);
+  uA.tr.rotation.y += fA.desce < 1 ? .45 : .12;
+  // B: bate-estaca cravando perfis W
+  const pB = faixa(t, 5.5, 10.5), ativaB = Math.min(N - 1, Math.floor(pB*N));
+  labB.perfis.forEach((p, n) => { const loc = clamp01(pB*N - n); p.position.y = 30 - loc*30 + .2; p.visible = loc > 0; });
+  const uB = labB.bate.userData, [xb, zb] = PONTOS_LAB[ativaB], golpe = (t*2.4) % 1;
+  labB.bate.position.set(xb - uB.ox, .3, zb); labB.bate.visible = pB > 0 && pB < 1;
+  uB.martelo.position.y = 9 + (golpe < .25 ? (1 - golpe/.25) : (golpe - .25)/.75) * 3;
+  // C: estacas curtas → malha → concretagem do radier → cargas e bulbo de tensões
+  const pC = faixa(t, 10.5, 15);
+  labC.estacas.forEach((e, n) => { const loc = clamp01(faixa(pC, 0, .35)*6 - n); e.scale.y = Math.max(.001, loc); e.visible = loc > 0; });
+  labC.malha.visible = pC > .35; labC.malha.scale.y = 1;
+  labC.laje.visible = pC > .55; labC.laje.scale.y = Math.max(.02, faixa(pC, .55, .75));
+  matSeta.opacity = Math.max(matSeta.opacity, faixa(pC, .75, .9) * (S.i === 5 ? 1 : 0));
+  labC.bulbo.material.opacity = faixa(pC, .8, 1) * .22;
+  anelVence.material.opacity = (t > 15 ? .8 : 0) * (.6 + .4*Math.sin(S.relogio*3));
+  return foco;
+}
+// ── FIM BLOCO ──
+
+// ═══ BLOCO: LOOP ═══
+function redimensiona(){
+  renderer.setSize(innerWidth, innerHeight, false);
+  if (composer){ composer.setSize(innerWidth, innerHeight); bloom.resolution.set(innerWidth, innerHeight); }
+  camera.aspect = innerWidth/innerHeight; S.fovBase = innerWidth < 820 ? 50 : 36; camera.fov = S.fovBase; camera.updateProjectionMatrix();
+}
+addEventListener('resize', redimensiona); redimensiona();
+const corA = new THREE.Color(), corB = new THREE.Color(COR.fundo);
+let ultimo = performance.now();
+function quadro(agora){
+  const dt = Math.min(.25, (agora - ultimo)/1000); ultimo = agora; S.relogio += dt; S.tCena += dt;
+  const k = reduz ? 1 : Math.min(1, dt*2.2);
+  Object.keys(V).forEach(key => { V[key] += (T[key] - V[key]) * (key === 'andares' ? Math.min(1, dt*(T.andares < V.andares ? 2.6 : .9)) : k); });
+  const tAposCam = Math.max(0, S.tCena - S.dur);
+
+  // ── câmera: curva com respiro (recua e avança) + FOV que abre no meio do trajeto
+  if (S.tCam < 1){
+    S.tCam = Math.min(1, (agora - S.inicio)/1000 / S.dur); const u = suave(S.tCam);
+    const a = S.camDe.clone().lerp(S.via, u), b = S.via.clone().lerp(S.camPara, u); camera.position.copy(a.lerp(b, u));
+    const aa = S.alvoDe.clone().lerp(S.viaAlvo, u), bb = S.viaAlvo.clone().lerp(S.alvoPara, u); alvoAtual.copy(aa.lerp(bb, u));
+    camera.fov = S.fovBase + Math.sin(Math.PI*u) * 9; camera.updateProjectionMatrix();
+  } else if (V.orbita > .5){
+    camera.position.lerp(camOrbita(S.relogio), .02); alvoAtual.lerp(tmp.set(0, 46, 0), .05);
+  } else if (S.i === 5){
+    const f = focoTour(tAposCam), dx = f < 0 ? 0 : LAB_DX[f];
+    if (f < 0){ tmp.set(LAB_X + 18, 6, 168); tmp2.set(LAB_X + 6, -3, 0); }
+    else { tmp.set(LAB_X + dx - 12, 5, 84); tmp2.set(LAB_X + dx - 22, 1, 0); }
+    camera.position.lerp(tmp, Math.min(1, dt*1.1)); alvoAtual.lerp(tmp2, Math.min(1, dt*1.3));
+  } else if (!reduz){
+    tmp.copy(alvoAtual).sub(camera.position).multiplyScalar(.00035); camera.position.add(tmp);
+    camera.position.x += Math.sin(S.relogio*.23)*.01; camera.position.y += Math.cos(S.relogio*.19)*.006;
+  }
+  camera.lookAt(alvoAtual);
+
+  // ── ambiente
+  const noLab = Math.abs(camera.position.x - LAB_X) < 500, embaixo = camera.position.y < 0, isola = V.bim > .3 || noLab;
+  solo.visible = !noLab && (embaixo || V.corte > .05 || V.bim > .05);
+  escav.visible = V.contencao > .3;
+  const superf = !embaixo && !isola;
+  chao.visible = lote.visible = calcada.visible = praia.visible = mar.visible = superf;
+  cidade.visible = superf && !noLab; ceu.visible = superf; sol2d.visible = superf;
+  hemi.intensity = embaixo ? .6 : .55;
+  luzSub.intensity = embaixo ? .8 : (isola ? .5 : 0);
+  luzSub.position.set(camera.position.x*.6 + alvoAtual.x*.4, -8, camera.position.z*.7);
+  luzSub2.intensity = embaixo || isola ? 1.6 : 0; luzSub2.position.copy(camera.position).add(tmp.set(-30, 40, 10)); luzSub2.target.position.copy(alvoAtual);
+  sol.intensity = embaixo ? 1.1 : 2.1 - V.luzes*1.3;
+  corA.set(COR.ceuTarde).lerp(corB, Math.max(embaixo || isola ? 1 : 0, V.luzes*.75));
+  cena.background.copy(corA); cena.fog.color.copy(corA); cena.fog.density = embaixo ? .0028 : .0016;
+  ceuMat.uniforms.k.value = 1 - V.luzes*.6;
+  ceuMat.uniforms.horiz.value.setRGB(.82 - V.luzes*.45, .44 - V.luzes*.22, .29 - V.luzes*.12);
+  sol2d.material.opacity = 1 - V.luzes*.8;
+
+  // ── torre (cresce andar por andar)
+  const nAnd = V.andares;
+  torre.visible = nAnd > .15;
+  andares.forEach((g, n) => { const vis = clamp01(nAnd - n); g.visible = vis > .12; g.scale.set(1, Math.max(.02, vis), 1); });
+  const alt = Math.max(ANDAR_H*PODIO + .1, nAnd*ANDAR_H);
+  brises.visible = nAnd > PODIO + .5;
+  brises.children.forEach(b => { b.scale.y = alt - ANDAR_H*PODIO; b.position.y = ANDAR_H*PODIO + (alt - ANDAR_H*PODIO)/2; });
+  coroa.visible = nAnd > NA - .5; coroa.position.y = NA*ANDAR_H;
+  matsAndar.forEach(m => { m.emissiveIntensity = .22 + V.luzes*1.6; });
+  matsCidade.forEach(m => { m.emissiveIntensity = .12 + V.luzes*1.3; });
+  vizMat.emissiveIntensity = .2 + V.luzes;
+  guindaste.visible = V.guindaste > .5;
+
+  // ── sondagem SPT
+  spt.visible = V.sondagem > .05;
+  animaSPT(S.relogio, S.i === 1);
+
+  // ── estacas: execução na cena de implicação; otimizadas depois da escolha (radier)
+  const compAtual = EST_L_PADRAO - (EST_L_PADRAO - EST_L_OTIMO) * V.radier;
+  const execProg = S.i === 3 ? faixa(tAposCam, .2, 9.5) : (V.estacas > .5 ? 1 : 0);
+  estacas.visible = V.estacas > .02 || S.i === 3;
+  animaEstacasPrincipais(execProg, S.i === 3 && V.perf > .5, compAtual, V.alerta * (S.i === 3 ? faixa(tAposCam, 9.5, 10.5) : 1));
+  blocoCor.visible = V.radier < .5 && execProg >= 1;
+  linhaNecessaria.material.opacity = V.alerta * (S.i === 3 ? faixa(tAposCam, 9.5, 10.5) : 1);
+  radier.visible = V.radier > .05; radier.scale.set(1, Math.max(.05, V.radier), 1);
+  const alerta = V.alerta * (S.i === 3 ? faixa(tAposCam, 4, 6) : 1), ok = V.contencao;
+  vizinho.rotation.z = alerta * .028 * (1 - ok);
+  vizAlerta.material.opacity = alerta * (1 - ok) * (.35 + .3*Math.sin(S.relogio*5));
+  bacia.material.opacity = alerta * (1 - ok);
+
+  // ── contenção + empuxo
+  contencao.visible = V.contencao > .02;
+  contencao.children.forEach((c, n) => { const p = clamp01(V.contencao*1.6 - (n / contencao.children.length)*.6); c.scale.set(1, Math.max(.001, p), 1); });
+  matEmpuxo.opacity = V.empuxo * (S.i === 6 ? faixa(tAposCam, .3, 1.5) : 1) * .9;
+  empuxo.visible = matEmpuxo.opacity > .02; diagEmp.material.opacity = matEmpuxo.opacity;
+  empuxo.children.forEach((s, n) => { if (s.isGroup) s.position.x = -32.4 - (2 + n*1.15) - Math.sin(S.relogio*2 + n*.4)*.25; });
+
+  // ── água: fora da parede estanque; escavação seca com poços de rebaixamento
+  matAgua.opacity = V.agua * .45; linhaAgua.material.opacity = V.agua * .9;
+  aguaFora.visible = aguaBaixo.visible = V.agua > .02;
+  pocos.visible = V.agua > .3; gotasMat.opacity = V.agua;
+  pocos.children.forEach(c => { if (c.userData.f !== undefined){ const f = (c.userData.f + S.relogio*.35) % 1; c.position.set(c.userData.x, -17 + f*17, 8.6); } });
+
+  // ── caminho das cargas (BIM e raio-x final)
+  const vCargas = Math.max(V.bim, V.raiox*.0);
+  matSeta.opacity = vCargas * (.75 + .25*Math.sin(S.relogio*3));
+  matSetaAtr.opacity = V.bim * .85;
+  cargas.visible = atrito.visible = V.bim > .05;
+  cargas.children.forEach((s, n) => { s.position.y = 4.5 - ((S.relogio*.8 + n*.2) % 1) * 1.2; });
+  bulboT.material.opacity = V.bim * .12;
+
+  // ── laboratório (tour pelas três soluções)
+  lab.visible = noLab;
+  if (noLab){
+    const foco = S.i === 5 ? animaLab(tAposCam) : -1;
+    if (foco !== focoAnterior){ renderTourHtml(S.i === 5 ? foco : -1); focoAnterior = foco; }
+  }
+
+  // ── BIM: tudo em linhas + pilares que encaixam + interferência que se resolve
+  matBim.opacity = V.bim; matBim2.opacity = V.bim*.85;
+  bim.visible = V.bim > .02;
+  if (bim.visible) bim.children.forEach(l => { const s = l.userData.src; s.updateWorldMatrix(true, false); l.matrix.copy(s.matrixWorld); l.visible = s.visible && s.parent.visible; });
+  const transp = V.bim > .05;
+  matsAndar.forEach(m => { m.transparent = transp; m.opacity = 1 - V.bim*.88; });
+  matLaje.transparent = transp; matLaje.opacity = 1 - V.bim*.85; matPodio.transparent = transp; matPodio.opacity = 1 - V.bim*.85;
+  pilares.visible = V.bim > .02; matPilar.opacity = V.bim*.75;
+  pilares.children.forEach(p => { p.position.x = p.userData.base + p.userData.desloc * Math.pow(1 - clamp01(V.bim*1.15), 2); });
+  const clashT = S.i === 7 ? tAposCam : 0, resolvido = faixa(clashT, 3, 4.2);
+  tuboClash.visible = V.bim > .3;
+  tuboClash.material.color.setHex(resolvido > .5 ? COR.firme : COR.alerta);
+  tuboClash.material.opacity = V.bim * (resolvido > .5 ? .9 : .5 + .5*Math.abs(Math.sin(S.relogio*6)));
+  tuboClash.position.y = ANDAR_H*1.5 + resolvido*1.1; tuboClash.position.z = -2.5 + resolvido*.0;
+
+  // ── mar
+  if (mar.visible && !reduz){
+    const a = marGeo.attributes.position.array;
+    for (let n = 0; n < a.length; n += 3) a[n+2] = marBase[n+2] + Math.sin(marBase[n]*.018 + S.relogio*.8)*.7 + Math.cos(marBase[n+1]*.025 + S.relogio*.55)*.55;
+    marGeo.attributes.position.needsUpdate = true; marGeo.computeVertexNormals();
+  }
+
+  // ── rótulos e pinos
+  const pronto = S.tCam > .9;
+  rotulos.forEach(r => colocar(r, V.rotulos > .5 && embaixo && pronto));
+  colocar(pinosAlerta[0], S.i === 3 && pronto && tAposCam > 5);
+  colocar(pinosAlerta[1], S.i === 3 && pronto && tAposCam > 10);
+  colocar(pinosAlerta[2], S.i === 3 && pronto && tAposCam > 2 && tAposCam < 9);
+  colocar(pinoNecess, S.i === 3 && pronto && tAposCam > 10);
+  colocar(pinoOk, S.i === 6 && pronto);
+  colocar(pinoEmp, S.i === 6 && pronto && tAposCam > 1.5);
+  colocar(pinoAgua, V.agua > .6 && pronto);
+  colocar(pinoSeca, V.agua > .6 && pronto && tAposCam > 1.5);
+  colocar(pinoClash, S.i === 7 && pronto && resolvido > .5);
+
+  // ── pós
+  if (composer){
+    acabamento.uniforms.t.value = S.relogio % 100; acabamento.uniforms.congela.value = V.congela;
+    bloom.strength = (embaixo ? .35 : .5) + V.luzes*.4 + V.bim*.5;
+    renderer.toneMappingExposure = 1 - V.congela*.25;
+    composer.render();
+  } else { renderer.toneMappingExposure = 1 - V.congela*.4; renderer.render(cena, camera); }
+  requestAnimationFrame(quadro);
+}
+irPara(0); S.tCam = 1; camera.position.copy(v3(CENAS[0].cam)); alvoAtual.copy(v3(CENAS[0].alvo));
+Object.assign(V, alvosDaCena(0));
+requestAnimationFrame(quadro);
+// ── FIM BLOCO ──
+</script>
