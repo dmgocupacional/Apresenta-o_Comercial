@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>DMG Ocupacional · Apresentação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/deck.css">
+</head>
+<body>
+
+<div id="palco" aria-hidden="true"></div>
+<div class="veu"></div>
+<div class="grain"></div>
+<div class="prog" id="prog"></div>
+
+<main class="deck" id="deck"></main>
+
+<div class="pnl" id="pnl" aria-hidden="true">
+  <div class="pnl-jan" role="dialog" aria-label="Painel exclusivo">
+    <div class="pnl-barra">
+      <span class="pnl-dots"><i></i><i></i><i></i></span>
+      <span class="pnl-url" id="pnl-url"></span>
+      <button class="pnl-fechar" type="button" id="fechar-painel" aria-label="Fechar painel">✕</button>
+    </div>
+    <div class="pnl-app">
+      <aside class="pnl-menu">
+        <div class="pnl-marca"><img class="logo-dmg" alt="DMG"><small id="pnl-marca-txt"></small></div>
+        <nav id="pnl-nav"></nav>
+        <div class="pnl-user"><i>RH</i><div><b id="pnl-user-txt"></b><small>Administrador</small></div></div>
+      </aside>
+      <section class="pnl-conteudo" id="pnl-conteudo"></section>
+      <div class="pnl-load" id="pnl-load"><i></i><span id="pnl-load-txt"></span></div>
+    </div>
+  </div>
+</div>
+
+<nav class="hud" aria-label="Navegação">
+  <div class="hud-m">DMG Ocupacional · <b id="hud-ato">Abertura</b></div>
+  <div class="dots" id="dots"></div>
+  <div class="hud-c" id="count"></div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="js/carregador.js"></script>
+</body>
+</html>
