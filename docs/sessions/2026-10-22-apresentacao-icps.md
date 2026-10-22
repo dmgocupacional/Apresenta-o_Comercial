@@ -23,7 +23,7 @@
 
 ## Fases
 1. Motor (concluída): `apresentacao/` com carregador, núcleo, slides (templates), kit 3D, cenário `esportiva`, motor e roteiro `construcao-esportiva`. Paridade validada: 22 slides com texto idêntico ao `/recoma/`, 0 erros no navegador.
-2. Hub: escolha de ICP/subtipo, busca por CNPJ, link por cliente.
+2. Hub (concluída): `apresentacao/` sem `?r=` abre o preparo. CNPJ via BrasilAPI (CORS liberado, validação de dígitos) → razão, fantasia, CNAE, cidade, anos desde a abertura; CNAE sugere ICP/subtipo (prefixo mais longo) e RAT estimado; site → ícone via Google favicons; vendedor ajusta nome, colaboradores, anos e RAT; gera e copia o link (`r, empresa, func, anos, rat, site, cidade`). Último preparo fica salvo no navegador.
 3. Construção completa (3 subtipos).
 4. Demais ICPs.
 5. Radar → pré-proposta no padrão dmg-erp.
@@ -34,6 +34,11 @@
 - Correção: `dt` negativo no laço de animação quebrava a curva do fluxo dourado (getPoint com t < 0); travado em ≥ 0 no kit. O `/recoma/` publicado ainda tem esse defeito latente.
 - "45 anos" virou `{anos}` (dado da Recoma não pode aparecer para outra empresa); na Fase 2 virá da data de abertura do CNPJ.
 - Guia de criação de subtipo em `apresentacao/LEIAME.md`.
+
+## Fase 2 — registro técnico
+- Catálogo dos 18 subtipos em `js/hub.js` (bloco CATALOGO), com prefixos de CNAE e RAT estimado por ICP; só `construcao-esportiva` tem roteiro, os demais aparecem "Em produção".
+- Teste: CNPJ da Estrela (09.413.300/0001-77) → Construção · Edificações (CNAE 4120-4/00), Cotia/SP, 18 anos. Link gerado abriu o deck com nome, anos, RAT e logo.
+- Logo pelo site usa o ícone do domínio (pequeno); logo grande continua por arquivo.
 
 ## Pendências
 - Logo oficial da Recoma (placeholder em texto).

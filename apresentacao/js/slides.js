@@ -7,6 +7,7 @@
   if (!EMPRESA.nome) EMPRESA.nome = R.empresaPadrao.nome;
   if (!EMPRESA.func) EMPRESA.func = R.empresaPadrao.func;
   if (!EMPRESA.anos) EMPRESA.anos = R.empresaPadrao.anos;
+  if (EMPRESA.rat) R.calc.rat = EMPRESA.rat;
   document.title = 'DMG Ocupacional · ' + EMPRESA.nome;
 })();
 /* ── FIM BLOCO ── */
@@ -30,7 +31,7 @@ var Slides = (function(){
   var T = {
     capa: function(s){
       return secao(s, '', '<div class="col">' +
-        '<div class="marca rv"><div class="selo">D</div>DMG<span>OCUPACIONAL</span><em>× ' + escaparHtml(EMPRESA.nome.toUpperCase()) + '</em></div>' +
+        '<div class="marca rv"><div class="selo">D</div>DMG<span>OCUPACIONAL</span><em>×' + (logoCliente() ? ' <img class="logo-cli" src="' + logoCliente() + '" alt="">' : '') + ' ' + escaparHtml(EMPRESA.nome.toUpperCase()) + '</em></div>' +
         '<div class="eyebrow rv d1">' + pers(s.eyebrow) + '</div>' +
         '<h1 class="rv d2">' + pers(s.titulo) + '</h1>' +
         '<p class="capa-sub rv d3">' + pers(s.sub) + '</p>' +
@@ -135,7 +136,7 @@ var Slides = (function(){
             return '<span class="tp-k"><b' + (p.c ? ' class="' + p.c + '"' : '') + '>' + pers(p.v) + '</b>' + p.l + '</span>';
           }).join('') + '</span><span class="tp-cta">Abrir o painel ao vivo →</span></button>';
       } else if (s.extra === 'parceria'){
-        extra = '<div class="parceria glass rv d6"><img class="logo-dmg" alt="DMG Ocupacional"><span class="x">×</span><span class="parc-cliente">' + escaparHtml(EMPRESA.nome.toUpperCase()) + '</span><small>' + pers(s.parceria) + '</small></div>';
+        extra = '<div class="parceria glass rv d6"><img class="logo-dmg" alt="DMG Ocupacional"><span class="x">×</span>' + (logoCliente() ? '<img class="logo-cli grande" src="' + logoCliente() + '" alt="">' : '') + '<span class="parc-cliente">' + escaparHtml(EMPRESA.nome.toUpperCase()) + '</span><small>' + pers(s.parceria) + '</small></div>';
       }
       return secao(s, 'andar-slide', '<div class="torre-ind" aria-hidden="true"></div><div class="col">' +
         '<div class="andar-cab rv"><span class="andar-num">' + s.num + '</span><span class="andar-de">Andar ' + (s.andar + 1) + ' de ' + NAND + '</span></div>' +

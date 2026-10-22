@@ -4,8 +4,8 @@
 /* ═══ BLOCO: CARREGADOR ═══ */
 (function(){
   var ROTEIRO_PADRAO = 'construcao-esportiva';
-  var pedido = new URLSearchParams(location.search).get('r') || ROTEIRO_PADRAO;
-  var id = /^[a-z0-9-]+$/.test(pedido) ? pedido : ROTEIRO_PADRAO;   // só nomes de arquivo seguros
+  var pedido = new URLSearchParams(location.search).get('r');
+  var id = pedido && /^[a-z0-9-]+$/.test(pedido) ? pedido : ROTEIRO_PADRAO;   // só nomes de arquivo seguros
 
   function carregar(src, depois){
     var s = document.createElement('script');
@@ -25,6 +25,9 @@
     var src = typeof lista[0] === 'function' ? lista[0]() : lista[0];
     carregar(src, function(){ emSequencia(lista.slice(1), fim); });
   }
+
+  // Sem roteiro na URL: abre o hub de preparação para o vendedor montar o link do cliente
+  if (!pedido){ emSequencia(['js/nucleo.js', 'js/hub.js']); return; }
 
   emSequencia([
     'js/nucleo.js',

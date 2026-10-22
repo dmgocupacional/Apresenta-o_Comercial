@@ -42,19 +42,30 @@ function nomeCurto(razao){
   }).join(' ');
 }
 
-// A empresa da apresentação vem da URL (?empresa=, ?func=) com padrão definido no roteiro
+// A empresa da apresentação vem da URL (?empresa=, ?func=, ?anos=, ?rat=, ?site=, ?cidade=) com padrão definido no roteiro
 var EMPRESA = (function(){
   var q = new URLSearchParams(location.search);
-  return { nome: q.get('empresa') ? nomeCurto(q.get('empresa')) : null, func: q.get('func') ? numero(q.get('func')) : null, anos: q.get('anos') ? numero(q.get('anos')) : null };
+  var site = (q.get('site') || '').toLowerCase();
+  return {
+    nome: q.get('empresa') ? nomeCurto(q.get('empresa')) : null,
+    func: q.get('func') ? numero(q.get('func')) : null,
+    anos: q.get('anos') ? numero(q.get('anos')) : null,
+    rat: [1, 2, 3].indexOf(numero(q.get('rat'))) >= 0 ? numero(q.get('rat')) : null,
+    site: /^[a-z0-9.-]+\.[a-z]{2,}$/.test(site) ? site : null,   // só domínio, sem caminho
+    cidade: q.get('cidade') || null
+  };
 })();
 
 // Substitui {empresa}, {EMPRESA}, {func} (colaboradores) e {anos} (anos de empresa) em textos do roteiro
 function pers(txt){
   if (txt == null) return '';
   return String(txt).replace(/\{empresa\}/g, EMPRESA.nome).replace(/\{EMPRESA\}/g, EMPRESA.nome.toUpperCase())
-    .replace(/\{func\}/g, EMPRESA.func).replace(/\{anos\}/g, EMPRESA.anos);
+    .replace(/\{func\}/g, EMPRESA.func).replace(/\{anos\}/g, EMPRESA.anos).replace(/\{cidade\}/g, EMPRESA.cidade || '');
 }
 /* ── FIM BLOCO ── */
+
+// Logo do cliente a partir do domínio do site (ícone do site, servido pelo Google)
+function logoCliente(){ return EMPRESA.site ? 'https://www.google.com/s2/favicons?sz=128&domain=' + encodeURIComponent(EMPRESA.site) : null; }
 
 /* ═══ BLOCO: REGISTRO_CENARIOS ═══ */
 // Cada arquivo em js/cenarios/ registra aqui uma função construtora: CENARIOS[id] = function(kit){ ... }
