@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>DMG Ocupacional · Recoma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══ BLOCO: TOKENS ═══ */
+:root{
+  --ink:#0C1B22; --ink2:#11242D; --deep:#17444C; --petrol:#30747F; --teal:#A8D8DB; --cyan:#6FE3EC;
+  --gold:#D6B17D; --gold2:#F0D2A4; --white:#FFFFFF;
+  --danger:#FF6B5E; --ok:#5EE0A6; --warn:#F2B957;
+  --t90:rgba(255,255,255,.92); --t70:rgba(255,255,255,.7); --t50:rgba(255,255,255,.52); --t30:rgba(255,255,255,.3);
+  --line:rgba(255,255,255,.08); --line2:rgba(168,216,219,.22);
+  --r:16px; --pad:clamp(18px,5vw,88px); --ease:cubic-bezier(.22,1,.36,1);
+  --glass:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,.015));
+  --sombra:0 30px 80px -30px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.07);
+}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: BASE ═══ */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--ink);color:var(--t90);overflow:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--gold);color:var(--ink)}
+b,strong{font-weight:700;color:var(--white)}
+.gold{color:var(--gold)} .red{color:var(--danger)} .green{color:var(--ok)} .warn{color:var(--warn)}
+.grain{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sombra);-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%)}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: PALCO_3D ═══ */
+#palco{position:fixed;inset:0;z-index:0;background:radial-gradient(1200px 700px at 72% 18%,#163a44 0%,#0C1B22 60%);transition:opacity .9s var(--ease),filter .9s var(--ease)}
+#palco canvas{display:block;width:100%;height:100%}
+body.cena-fundo #palco{opacity:.22;filter:blur(4px) saturate(80%)}
+.veu{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(12,27,34,.96) 0%,rgba(12,27,34,.84) 30%,rgba(12,27,34,.15) 58%,rgba(12,27,34,0) 70%),linear-gradient(0deg,rgba(12,27,34,.7) 0%,rgba(12,27,34,0) 22%)}
+body.cena-fundo .veu{background:rgba(12,27,34,.6)}
+body.alarme .veu{background:linear-gradient(0deg,rgba(12,27,34,.9) 10%,rgba(12,27,34,.55) 60%,rgba(12,27,34,.35));box-shadow:inset 0 0 220px rgba(255,107,94,.28)}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: SLIDES ═══ */
+.deck{position:relative;z-index:2;width:100vw;height:100dvh}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:clamp(56px,9vh,100px) var(--pad) clamp(70px,10vh,110px);opacity:0;visibility:hidden;pointer-events:none;overflow-y:auto;transition:opacity .7s var(--ease),visibility 0s .7s}
+.slide.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .7s var(--ease),visibility 0s}
+.rv{opacity:0;transform:translateY(22px);filter:blur(6px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease)}
+.slide.on .rv{opacity:1;transform:none;filter:none}
+.slide.on .rv.d1{transition-delay:.08s}.slide.on .rv.d2{transition-delay:.18s}.slide.on .rv.d3{transition-delay:.28s}.slide.on .rv.d4{transition-delay:.38s}.slide.on .rv.d5{transition-delay:.5s}.slide.on .rv.d6{transition-delay:.62s}
+.col{max-width:570px;position:relative}
+.wide{max-width:1200px;width:100%;margin:0 auto;position:relative}
+.cap{position:absolute;top:-92px;left:-6px;font-size:120px;font-weight:800;line-height:1;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px rgba(214,177,125,.22);pointer-events:none;z-index:-1}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.eyebrow::before{content:"";width:28px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.eyebrow.red{color:var(--danger)} .eyebrow.red::before{background:linear-gradient(90deg,var(--danger),transparent)}
+.eyebrow.green{color:var(--ok)} .eyebrow.green::before{background:linear-gradient(90deg,var(--ok),transparent)}
+h1{font-size:clamp(36px,5.2vw,74px);font-weight:800;line-height:.98;letter-spacing:-.045em}
+h2{font-size:clamp(26px,3.3vw,48px);font-weight:700;line-height:1.05;letter-spacing:-.035em;margin-bottom:16px}
+.grad{background:linear-gradient(100deg,var(--gold2) 0%,var(--gold) 45%,#b98c52 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.grad-red{background:linear-gradient(100deg,#ffb0a8,var(--danger));-webkit-background-clip:text;background-clip:text;color:transparent}
+.grad-ok{background:linear-gradient(100deg,#b8f5d9,var(--ok));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:clamp(14px,1.15vw,17px);font-weight:300;line-height:1.65;color:var(--t70)}
+.lede+.lede{margin-top:12px}
+.lista+.lede{margin-top:18px}
+.lista{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:9px}
+.lista li{position:relative;padding:13px 16px 13px 44px;font-size:14px;line-height:1.45;color:var(--t70)}
+.lista li::before{content:"";position:absolute;left:16px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--danger);box-shadow:0 0 0 4px rgba(255,107,94,.15),0 0 18px rgba(255,107,94,.7)}
+.lista.ok li::before{background:var(--ok);box-shadow:0 0 0 4px rgba(94,224,166,.15),0 0 18px rgba(94,224,166,.7)}
+.pill{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:9px 16px;border-radius:40px;color:var(--teal)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:pulso 1.6s infinite}
+@keyframes pulso{50%{opacity:.3}}
+.fonte{font-size:10px;color:var(--t50);margin-top:14px;line-height:1.45}
+.dor-tag{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--danger);padding:6px 12px;border-radius:30px;border:1px solid rgba(255,107,94,.35);background:rgba(255,107,94,.08);margin-bottom:14px}
+.dor-tag i{width:6px;height:6px;border-radius:50%;background:var(--danger);box-shadow:0 0 10px var(--danger);animation:pulso 1.2s infinite}
+.custo{display:flex;gap:16px;margin-top:18px;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,107,94,.22);background:linear-gradient(90deg,rgba(255,107,94,.1),rgba(255,107,94,.02))}
+.custo small{display:block;font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--danger);margin-bottom:4px}
+.custo span{font-size:13px;color:var(--t70);line-height:1.45}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CAPA ═══ */
+.marca{display:flex;align-items:center;gap:12px;font-weight:800;font-size:15px;letter-spacing:.08em;margin-bottom:38px}
+.marca .selo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold2),#a87c45);color:var(--ink);font-size:13px;box-shadow:0 8px 30px -6px rgba(214,177,125,.6)}
+.marca span{color:var(--gold)}
+.marca em{font-style:normal;color:var(--t50);font-weight:300;letter-spacing:.2em}
+.capa-sub{margin-top:24px;color:var(--teal);font-size:clamp(15px,1.25vw,19px);font-weight:300;line-height:1.55;max-width:46ch}
+.stats{display:grid;grid-template-columns:repeat(3,auto);margin-top:38px;width:max-content}
+.stat{padding:14px 26px 14px 0;margin-right:26px;border-right:1px solid var(--line)}
+.stat:last-child{border:none;margin:0}
+.stat .n{font-size:34px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stat .l{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t50);margin-top:4px}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: MAPA ═══ */
+.mapa-wrap{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center}
+.mapa{padding:18px;position:relative}
+.mapa svg{width:100%;display:block;overflow:visible}
+.mapa .rota{fill:none;stroke:url(#g-rota);stroke-width:1.6;stroke-dasharray:4 5;animation:fluir 1.4s linear infinite}
+@keyframes fluir{to{stroke-dashoffset:-18}}
+.mapa .cid{fill:var(--gold2)}
+.mapa .cid-halo{fill:var(--gold);opacity:.25;animation:respira 2.4s ease-in-out infinite}
+@keyframes respira{50%{opacity:.05}}
+.mapa-leg{display:flex;gap:18px;font-size:11px;color:var(--t50);margin-top:10px}
+.mapa-leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.mapa-leg .lf{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.mapa-leg .lo{background:var(--gold2)}
+.tripe{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.tripe > div{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:center;padding:14px 16px}
+.tripe .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--ink);background:linear-gradient(135deg,var(--gold2),var(--gold))}
+.tripe b{display:block;font-size:14px}
+.tripe span{font-size:12px;color:var(--t70);font-weight:300}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: LINHA_TEMPO ═══ */
+.tl{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:40px;padding-top:34px}
+.tl-trilho{position:absolute;top:8px;left:0;right:0;height:2px;background:var(--line)}
+.tl-trilho i{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--danger),var(--gold) 60%,var(--warn));box-shadow:0 0 18px rgba(255,107,94,.6);transition:width 2.2s cubic-bezier(.65,0,.35,1) .3s}
+.slide.on .tl-trilho i{width:100%}
+.tl-p{position:relative;padding:18px;opacity:0;transform:translateY(16px);transition:all .7s var(--ease)}
+.slide.on .tl-p{opacity:1;transform:none}
+.slide.on .tl-p:nth-child(2){transition-delay:.4s}.slide.on .tl-p:nth-child(3){transition-delay:.8s}.slide.on .tl-p:nth-child(4){transition-delay:1.2s}.slide.on .tl-p:nth-child(5){transition-delay:1.6s}.slide.on .tl-p:nth-child(6){transition-delay:2s}
+.tl-p::before{content:"";position:absolute;top:-33px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid var(--gold);box-shadow:0 0 16px rgba(214,177,125,.6)}
+.tl-p.ini::before{border-color:var(--danger);background:var(--danger);box-shadow:0 0 22px var(--danger)}
+.tl-q{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.tl-p.ini .tl-q{color:var(--danger)}
+.tl-p b{display:block;margin:8px 0 6px;font-size:15px}
+.tl-p small{font-size:12px;font-weight:300;color:var(--t70);line-height:1.45;display:block}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CALCULADORA ═══ */
+.calc{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;margin-top:22px;align-items:stretch}
+.calc-in{padding:24px}
+.campo{margin-bottom:20px}
+.campo:last-child{margin-bottom:0}
+.campo label{display:flex;justify-content:space-between;align-items:baseline;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:9px}
+.inp{display:flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:12px;padding:11px 14px;background:rgba(0,0,0,.18);transition:border-color .2s}
+.inp:focus-within{border-color:var(--gold)}
+.inp input{flex:1;min-width:0;border:none;background:transparent;outline:none;color:var(--white);font:800 20px 'Sora',sans-serif;font-variant-numeric:tabular-nums}
+.inp span{color:var(--t50);font-weight:600;font-size:12px}
+.chips{display:flex;gap:6px;padding:4px;border-radius:12px;background:rgba(0,0,0,.2);border:1px solid var(--line)}
+.chip{flex:1;cursor:pointer;border:none;background:transparent;color:var(--t70);border-radius:9px;padding:9px 4px;font:700 13px 'Sora',sans-serif;transition:all .25s var(--ease)}
+.chip.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:var(--ink);box-shadow:0 6px 20px -6px rgba(214,177,125,.7)}
+.nota{font-size:11px;color:var(--t50);margin-top:7px;line-height:1.4}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--ok),var(--gold),var(--danger));outline:none;margin-top:6px}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--white);border:4px solid var(--gold);box-shadow:0 0 18px rgba(214,177,125,.8);cursor:pointer}
+.range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--white);border:4px solid var(--gold);cursor:pointer}
+.calc-out{padding:22px 24px;display:flex;flex-direction:column}
+.gauge{width:100%;max-width:360px;margin:0 auto;display:block}
+.gauge .agulha{transform-origin:180px 170px;transition:transform .7s cubic-bezier(.34,1.56,.64,1)}
+.gauge-lbl{text-align:center;margin-top:-6px}
+.gauge-lbl .k{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--t50)}
+.gauge-lbl .n{font-size:clamp(30px,3.3vw,46px);font-weight:800;letter-spacing:-.045em;font-variant-numeric:tabular-nums;margin-top:2px}
+.gauge-lbl .m{font-size:12px;color:var(--t50)}
+.comp{display:flex;flex-direction:column;gap:11px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.comp-l{display:grid;grid-template-columns:86px 1fr 112px;gap:12px;align-items:center;font-size:11px}
+.comp-l .t{font-weight:700;color:var(--t50);letter-spacing:.06em;text-transform:uppercase;font-size:10px}
+.comp-l .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:13px}
+.trilha{height:10px;border-radius:10px;background:rgba(255,255,255,.05);overflow:hidden}
+.trilha i{display:block;height:100%;width:0;border-radius:10px;transition:width .8s var(--ease)}
+.f-ok{background:linear-gradient(90deg,#1f8f63,var(--ok));box-shadow:0 0 14px rgba(94,224,166,.5)}
+.f-md{background:linear-gradient(90deg,#9c7642,var(--gold2));box-shadow:0 0 14px rgba(214,177,125,.5)}
+.f-vc{background:linear-gradient(90deg,#b8372d,var(--danger));box-shadow:0 0 16px rgba(255,107,94,.6)}
+.delta{margin-top:16px;padding:12px 14px;border-radius:12px;background:rgba(255,107,94,.1);border:1px solid rgba(255,107,94,.25);font-size:13px;font-weight:600;color:#ffb3ab}
+.delta b{color:var(--danger)}
+.delta.positivo{background:rgba(94,224,166,.1);border-color:rgba(94,224,166,.3);color:#a6f0cd}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: PRAZO ═══ */
+.prazo{display:grid;grid-template-columns:.85fr 1.15fr;gap:24px;margin-top:20px;align-items:start}
+.eventos{display:flex;flex-direction:column;gap:9px}
+.evento{display:grid;grid-template-columns:22px 1fr auto;gap:12px;align-items:center;padding:14px 16px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:all .3s var(--ease)}
+.evento .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--line2);display:grid;place-items:center;transition:all .25s}
+.evento.on{border-color:rgba(255,107,94,.45);background:linear-gradient(90deg,rgba(255,107,94,.14),rgba(255,107,94,.02))}
+.evento.on .ck{background:var(--danger);border-color:var(--danger);box-shadow:0 0 14px var(--danger)}
+.evento.on .ck::after{content:"";width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.evento b{display:block;font-size:13px}
+.evento small{font-size:11px;color:var(--t50)}
+.evento em{font-style:normal;font-weight:800;font-size:13px;color:var(--danger);font-variant-numeric:tabular-nums}
+.cal{padding:20px}
+.cal-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;gap:14px}
+.cal-top small{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--t50)}
+.cal-top .n{font-size:34px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.grade{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.dia{aspect-ratio:1.5;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--t50);background:rgba(255,255,255,.04);border:1px solid transparent;transition:all .35s var(--ease)}
+.dia.obra{background:rgba(48,116,127,.35);color:var(--teal)}
+.dia.perdido{background:rgba(255,107,94,.2);border-color:rgba(255,107,94,.5);color:#ffb3ab;box-shadow:0 0 14px -4px rgba(255,107,94,.7)}
+.dia.inaug{background:linear-gradient(135deg,var(--gold2),var(--gold));color:var(--ink)}
+.dia.estouro{border:1px dashed var(--danger);color:var(--danger);background:transparent}
+.cal-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:10px;color:var(--t50)}
+.cal-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.cal-leg .a{background:rgba(48,116,127,.6)} .cal-leg .b{background:rgba(255,107,94,.6)} .cal-leg .c{background:var(--gold)} .cal-leg .d{border:1px dashed var(--danger)}
+.cal-msg{margin-top:14px;font-size:13px;font-weight:600;line-height:1.45}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: ANDARES ═══ */
+.torre-ind{display:flex;flex-direction:column-reverse;gap:4px;position:absolute;left:calc(var(--pad) - 44px);top:50%;transform:translateY(-50%)}
+.torre-ind i{width:18px;height:22px;border-radius:4px;border:1px solid var(--line2);background:rgba(255,255,255,.02);transition:all .5s var(--ease)}
+.torre-ind i.feito{background:rgba(214,177,125,.35);border-color:rgba(214,177,125,.5)}
+.torre-ind i.atual{background:var(--gold);border-color:var(--gold);box-shadow:0 0 18px var(--gold)}
+.andar-cab{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.andar-num{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);background:linear-gradient(135deg,var(--gold2),var(--gold));padding:7px 14px;border-radius:30px;box-shadow:0 8px 24px -8px rgba(214,177,125,.8)}
+.andar-de{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--t50);text-transform:uppercase}
+.resolve{font-size:12px;color:var(--t70);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.resolve s{color:var(--danger);text-decoration-color:rgba(255,107,94,.6)}
+.passos-a{list-style:none;display:flex;flex-direction:column;gap:8px;counter-reset:pa}
+.passos-a li{counter-increment:pa;display:grid;grid-template-columns:30px 1fr;gap:12px;padding:12px 14px;align-items:start}
+.passos-a li::before{content:counter(pa,decimal-leading-zero);font-size:11px;font-weight:800;color:var(--gold);padding-top:2px;letter-spacing:.06em}
+.passos-a b{display:block;font-size:13px;margin-bottom:2px}
+.passos-a span{font-size:12px;color:var(--t70);font-weight:300;line-height:1.45}
+.entrega{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-top:12px;padding:14px 16px;border-radius:14px;border:1px solid rgba(94,224,166,.3);background:linear-gradient(90deg,rgba(94,224,166,.12),rgba(94,224,166,.02))}
+.entrega small{grid-column:1/-1;font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ok)}
+.entrega .k{font-size:26px;font-weight:800;letter-spacing:-.04em;color:var(--white)}
+.entrega span{font-size:12px;color:var(--t70);line-height:1.4}
+.parceria{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:12px;padding:16px 20px;border-color:rgba(214,177,125,.4)}
+.parceria .logo-dmg{height:46px;width:auto}
+.parceria .x{font-size:28px;font-weight:200;color:var(--t50)}
+.parceria .recoma{font-size:26px;font-weight:800;letter-spacing:.04em;color:var(--white)}
+.parceria small{flex-basis:100%;font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: PAINEL_DEMO ═══ */
+.tela-prev{display:block;width:100%;margin-top:12px;padding:0;overflow:hidden;cursor:pointer;text-align:left;font:inherit;color:inherit;border-color:rgba(214,177,125,.45);transition:transform .3s var(--ease),box-shadow .3s}
+.tela-prev:hover{transform:translateY(-2px);box-shadow:0 20px 50px -20px rgba(214,177,125,.6)}
+.tp-barra{display:flex;align-items:center;gap:6px;padding:8px 12px;background:rgba(0,0,0,.3);border-bottom:1px solid var(--line)}
+.tp-barra i{width:8px;height:8px;border-radius:50%;background:var(--t30)}
+.tp-barra em{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t50);margin-left:8px}
+.tp-corpo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
+.tp-k{display:flex;flex-direction:column;padding:10px;border-radius:10px;background:rgba(255,255,255,.04);font-size:10px;color:var(--t50);text-transform:uppercase;letter-spacing:.1em}
+.tp-k b{font-size:22px;letter-spacing:-.03em;text-transform:none}
+.tp-cta{display:block;padding:11px 14px;font-size:13px;font-weight:700;color:var(--ink);background:linear-gradient(135deg,var(--gold2),var(--gold))}
+.pnl{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:3vh 3vw;background:rgba(4,10,13,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .4s var(--ease),visibility 0s .4s}
+.pnl.on{opacity:1;visibility:visible;transition:opacity .4s var(--ease),visibility 0s}
+.pnl-jan{width:min(1280px,100%);height:min(820px,94vh);display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:#0f2028;border:1px solid rgba(214,177,125,.35);box-shadow:0 60px 140px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.04);transform:scale(.55) translateY(14vh);opacity:0;transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .5s}
+.pnl.on .pnl-jan{transform:none;opacity:1}
+.pnl-barra{display:flex;align-items:center;gap:14px;padding:10px 14px;background:#0a161c;border-bottom:1px solid var(--line)}
+.pnl-dots{display:flex;gap:6px}.pnl-dots i{width:11px;height:11px;border-radius:50%;background:#ff5f57}.pnl-dots i:nth-child(2){background:#febc2e}.pnl-dots i:nth-child(3){background:#28c840}
+.pnl-url{flex:1;max-width:520px;margin:0 auto;padding:6px 14px;border-radius:8px;background:rgba(255,255,255,.05);font-size:12px;color:var(--t70);text-align:center;font-variant-numeric:tabular-nums}
+.pnl-fechar{width:30px;height:30px;border-radius:8px;border:1px solid var(--line2);background:transparent;color:var(--t70);cursor:pointer;font-size:13px}
+.pnl-fechar:hover{border-color:var(--danger);color:var(--danger)}
+.pnl-app{flex:1;display:grid;grid-template-columns:220px 1fr;min-height:0;position:relative}
+.pnl-menu{display:flex;flex-direction:column;gap:6px;padding:18px 12px;background:linear-gradient(180deg,#11242D,#0c1b22);border-right:1px solid var(--line)}
+.pnl-marca{padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.pnl-marca img{height:30px;width:auto;display:block}
+.pnl-marca small{display:block;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.pnl-menu nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.pnl-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:none;background:transparent;color:var(--t70);font:600 13px 'Sora',sans-serif;text-align:left;cursor:pointer;transition:all .2s}
+.pnl-item:hover{background:rgba(255,255,255,.04);color:var(--white)}
+.pnl-item.on{background:linear-gradient(90deg,rgba(214,177,125,.2),rgba(214,177,125,.04));color:var(--white);box-shadow:inset 3px 0 0 var(--gold)}
+.pnl-item i{font-style:normal;width:18px;text-align:center}
+.pnl-item em{margin-left:auto;font-style:normal;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;background:rgba(255,107,94,.18);color:var(--danger)}
+.pnl-user{display:flex;align-items:center;gap:10px;padding:12px 8px 0;border-top:1px solid var(--line)}
+.pnl-user i{font-style:normal;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--ink);background:var(--teal)}
+.pnl-user b{font-size:12px;display:block}.pnl-user small{font-size:10px;color:var(--t50)}
+.pnl-conteudo{overflow-y:auto;padding:24px 28px}
+.pnl-conteudo::-webkit-scrollbar{width:6px}.pnl-conteudo::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
+.pnl-load{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#0f2028;font-size:12px;color:var(--t50);transition:opacity .4s}
+.pnl-load i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(214,177,125,.2);border-top-color:var(--gold);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.pnl-load.fora{opacity:0;pointer-events:none}
+.pv-topo{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.pv-topo h3{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.pv-topo small{display:block;font-size:11px;color:var(--t50);margin-top:4px}
+.pv-filtro{display:flex;gap:6px}
+.pv-filtro span{padding:7px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid var(--line2);color:var(--t70)}
+.pv-filtro span.on{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.pv-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+.pv-kpi{padding:14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line);animation:entra .5s var(--ease) both}
+.pv-kpi small{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t50)}
+.pv-kpi b{display:block;font-size:26px;letter-spacing:-.04em;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.pv-kpi span{font-size:10px;color:var(--t50)}
+.pv-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+.pv-card{padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);animation:entra .6s var(--ease) both}
+.pv-card h4{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t70);margin-bottom:12px;display:flex;justify-content:space-between}
+.pv-card h4 em{font-style:normal;color:var(--gold);font-weight:700;letter-spacing:0;text-transform:none}
+.pv-barras{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px}
+.pv-barras div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.pv-barras i{width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--gold2),rgba(214,177,125,.25));animation:cresce .9s var(--ease) both;transform-origin:bottom}
+.pv-barras i.atual{background:linear-gradient(180deg,var(--cyan),rgba(111,227,236,.2));box-shadow:0 0 18px rgba(111,227,236,.4)}
+@keyframes cresce{from{transform:scaleY(0)}}
+.pv-barras small{font-size:10px;color:var(--t50)}
+.pv-barras b{font-size:10px;color:var(--t70)}
+.pv-alertas{list-style:none;display:flex;flex-direction:column;gap:8px}
+.pv-alertas li{display:grid;grid-template-columns:8px 1fr auto;gap:10px;align-items:center;font-size:12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03)}
+.pv-alertas li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 8px var(--warn)}
+.pv-alertas li.r::before{background:var(--danger);box-shadow:0 0 8px var(--danger)}
+.pv-alertas li.g::before{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.pv-alertas em{font-style:normal;font-size:10px;color:var(--t50)}
+.pv-tab{width:100%;border-collapse:collapse;font-size:12px}
+.pv-tab th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--t50);padding:8px 10px;border-bottom:1px solid var(--line)}
+.pv-tab td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.pv-tab tr{animation:entra .5s var(--ease) both}
+.pv-tab td b{display:block;font-size:13px}
+.pv-tab td small{font-size:11px;color:var(--t50)}
+.pv-conf{display:flex;align-items:center;gap:10px;min-width:150px}
+.pv-conf .trilha{flex:1;height:7px}
+.pv-conf .trilha i{transition:none}
+.pv-conf span{font-weight:800;font-variant-numeric:tabular-nums;width:38px;text-align:right}
+.pv-tag{display:inline-block;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.pv-tag.ok{background:rgba(94,224,166,.14);color:var(--ok)} .pv-tag.at{background:rgba(242,185,87,.14);color:var(--warn)} .pv-tag.r{background:rgba(255,107,94,.14);color:var(--danger)} .pv-tag.n{background:rgba(111,227,236,.12);color:var(--cyan)}
+.pv-sem{display:grid;grid-template-columns:56px repeat(5,1fr);gap:6px}
+.pv-sem .h{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--t50);text-align:center;padding:6px 0;text-transform:uppercase}
+.pv-sem .hora{font-size:10px;color:var(--t50);padding-top:8px}
+.pv-sem .cel{min-height:54px;border-radius:8px;background:rgba(255,255,255,.025);padding:4px}
+.pv-ev{padding:6px 8px;border-radius:7px;font-size:10px;line-height:1.3;background:rgba(48,116,127,.45);border-left:3px solid var(--cyan);animation:entra .5s var(--ease) both}
+.pv-ev b{display:block;font-size:11px}
+.pv-ev.adm{background:rgba(214,177,125,.2);border-color:var(--gold)}
+.pv-ev.per{background:rgba(94,224,166,.14);border-color:var(--ok)}
+.pv-ev.dem{background:rgba(255,107,94,.14);border-color:var(--danger)}
+.pv-360{display:grid;grid-template-columns:280px 1fr;gap:12px}
+.pv-perfil{text-align:center}
+.pv-av{width:84px;height:84px;margin:4px auto 12px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:800;color:var(--ink);background:linear-gradient(135deg,var(--teal),var(--petrol));box-shadow:0 0 0 4px rgba(168,216,219,.15)}
+.pv-perfil b{font-size:16px;display:block}
+.pv-perfil small{font-size:11px;color:var(--t50);display:block;margin-top:3px}
+.pv-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px}
+.pv-linha{list-style:none;position:relative;padding-left:20px}
+.pv-linha::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line2)}
+.pv-linha li{position:relative;padding:0 0 14px;font-size:12px}
+.pv-linha li::before{content:"";position:absolute;left:-19px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.pv-linha li.at::before{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+.pv-linha li b{display:block;font-size:12px}
+.pv-linha li small{color:var(--t50);font-size:11px}
+.pv-val{display:flex;flex-direction:column;gap:12px}
+.pv-val div{display:grid;grid-template-columns:120px 1fr 80px;gap:12px;align-items:center;font-size:12px}
+.pv-val .trilha{height:8px}
+.pv-val em{font-style:normal;text-align:right;font-weight:700;font-size:11px}
+.pv-h4-esp{margin-top:18px}
+@media (max-width:980px){.pnl-app{grid-template-columns:1fr}.pnl-menu{display:none}.pv-kpis{grid-template-columns:repeat(2,1fr)}.pv-grid,.pv-360{grid-template-columns:1fr}}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: PROVA ═══ */
+.parceiros{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+.parc{padding:22px;position:relative;overflow:hidden}
+.parc::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(214,177,125,.25),transparent 70%)}
+.parc small{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.parc h3{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:8px 0 6px}
+.parc p{font-size:12px;color:var(--t70);line-height:1.5;font-weight:300}
+.numeros{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.num{padding:18px}
+.num .n{font-size:30px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.num .l{font-size:11px;color:var(--t50);margin-top:4px;line-height:1.35}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: KANBAN ═══ */
+.kb-topo{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.kb-prog{min-width:260px}
+.kb-prog .t{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--t50);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.kb-prog .t b{color:var(--gold);font-variant-numeric:tabular-nums}
+.kb-prog .trilha i{background:linear-gradient(90deg,var(--petrol),var(--cyan));box-shadow:0 0 14px rgba(111,227,236,.5)}
+.kb-dica{font-size:12px;color:var(--t50);margin-top:8px;max-width:460px;line-height:1.45}
+.kb{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:10px}
+.kb-col{border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:7px;min-height:160px;max-height:56vh;overflow-y:auto;border:1px solid var(--line);background:rgba(255,255,255,.025);transition:border-color .25s,background .25s,box-shadow .25s}
+.kb-col::-webkit-scrollbar{width:4px}.kb-col::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+.kb-col.alvo{border-color:var(--gold);background:rgba(214,177,125,.07);box-shadow:0 0 30px -10px rgba(214,177,125,.6)}
+.kb-col h4{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--t50);position:sticky;top:-10px;background:linear-gradient(var(--ink2) 70%,transparent);padding:6px 2px 10px;z-index:1}
+.kb-col h4 em{font-style:normal;display:flex;align-items:center;gap:7px}
+.kb-col h4 em::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--t30)}
+.kb-col[data-st=ok] h4 em::before{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.kb-col[data-st=parcial] h4 em::before{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+.kb-col[data-st=nao] h4 em::before{background:var(--danger);box-shadow:0 0 10px var(--danger)}
+.kb-col[data-st=naosei] h4 em::before{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.kb-col h4 span{font-variant-numeric:tabular-nums;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.06);color:var(--t70)}
+.card{cursor:grab;user-select:none;padding:10px 11px;border-radius:11px;border:1px solid rgba(255,255,255,.07);background:linear-gradient(160deg,rgba(48,116,127,.32),rgba(23,68,76,.55));font-size:12px;line-height:1.38;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s;animation:entra .35s var(--ease)}
+@keyframes entra{from{opacity:0;transform:scale(.96)}}
+.card small{display:block;font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.card:hover{border-color:rgba(214,177,125,.5);transform:translateY(-2px);box-shadow:0 10px 24px -12px rgba(0,0,0,.8)}
+.card.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 0 30px -6px rgba(214,177,125,.7)}
+.card.arrastando{opacity:.35}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: RADAR ═══ */
+.rd{display:grid;grid-template-columns:1.05fr 1fr;gap:26px;align-items:center}
+.rd-g{padding:14px 10px;position:relative}
+.rd svg{width:100%;max-width:580px;display:block;margin:0 auto;overflow:visible}
+.rd-topo{display:flex;align-items:center;gap:22px;margin-bottom:14px}
+.anel{width:118px;height:118px;flex-shrink:0;position:relative}
+.anel svg{width:100%;height:100%;transform:rotate(-90deg)}
+.anel .arco{transition:stroke-dashoffset 1.6s cubic-bezier(.65,0,.35,1),stroke .4s}
+.anel .v{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.anel .v b{font-size:36px;font-weight:800;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.anel .v small{display:block;font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--t50);text-transform:uppercase;margin-top:3px}
+.nivel{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.rd-leitura{font-size:14px;color:var(--t70);line-height:1.55;font-weight:300;margin-top:6px}
+.prio{list-style:none;display:flex;flex-direction:column;gap:9px}
+.prio li{padding:14px 16px;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.prio .ix{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:14px;background:rgba(255,107,94,.14);color:var(--danger);border:1px solid rgba(255,107,94,.3)}
+.prio b{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:4px}
+.prio b em{font-style:normal;font-size:11px;color:var(--danger);font-variant-numeric:tabular-nums}
+.prio span{font-size:12px;color:var(--t70);line-height:1.5;display:block}
+.prio .mini{height:4px;border-radius:4px;background:rgba(255,255,255,.06);margin-top:9px;overflow:hidden}
+.prio .mini i{display:block;height:100%;background:linear-gradient(90deg,var(--danger),var(--warn))}
+.rd-vazio{color:var(--t50);font-size:12px;margin-top:10px}
+.acoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:50px;font:700 13px 'Sora',sans-serif;text-decoration:none;cursor:pointer;border:1px solid var(--line2);background:rgba(255,255,255,.03);color:var(--t90);transition:all .3s var(--ease)}
+.btn:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
+.btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:var(--ink);border-color:transparent;box-shadow:0 12px 34px -10px rgba(214,177,125,.7)}
+.btn.gold:hover{color:var(--ink);box-shadow:0 16px 40px -8px rgba(214,177,125,.9)}
+.cliente input{background:transparent;border:none;border-bottom:1px dashed var(--line2);color:var(--white);font:800 22px 'Sora',sans-serif;letter-spacing:-.02em;outline:none;padding:2px 0 6px;width:100%;max-width:420px}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CTA ═══ */
+.passos{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0}
+.passo{padding:18px}
+.passo small{font-size:10px;font-weight:800;letter-spacing:.18em;color:var(--gold)}
+.passo b{display:block;margin:8px 0 5px;font-size:15px}
+.passo span{font-size:12px;color:var(--t70);font-weight:300;line-height:1.45}
+.contatos{display:flex;gap:32px;flex-wrap:wrap;margin-top:26px;font-size:13px;color:var(--teal)}
+.contatos small{display:block;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--t50);font-weight:700;margin-bottom:3px}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: HUD ═══ */
+.prog{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));box-shadow:0 0 14px var(--gold);z-index:20;transition:width .6s var(--ease)}
+.hud{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:0 var(--pad) 20px;pointer-events:none}
+.hud-m{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--t50)}
+.hud-m b{color:var(--gold);font-weight:700}
+.dots{display:flex;gap:6px;pointer-events:auto}
+.dot{width:6px;height:6px;border-radius:50%;border:none;padding:0;cursor:pointer;background:rgba(255,255,255,.2);transition:all .35s var(--ease)}
+.dot.on{width:24px;border-radius:5px;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.hud-c{font-size:11px;font-weight:700;color:var(--t50);font-variant-numeric:tabular-nums;letter-spacing:.1em}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: RESPONSIVO ═══ */
+@media (max-width:980px){
+  .veu{background:linear-gradient(180deg,rgba(12,27,34,.2) 0%,rgba(12,27,34,.94) 46%)}
+  .slide{justify-content:flex-end}
+  .slide.topo{justify-content:flex-start}
+  .calc,.rd,.parceiros,.mapa-wrap,.prazo{grid-template-columns:1fr}
+  .tl,.passos,.numeros{grid-template-columns:1fr 1fr}
+  .kb{grid-template-columns:1fr 1fr}
+  .kb-col.pend{grid-column:1/-1;max-height:32vh}
+  .kb-col{max-height:none;min-height:90px}
+  .hud-m,.cap,.torre-ind{display:none}
+  .stats{grid-template-columns:repeat(3,1fr);width:auto}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: IMPRESSAO ═══ */
+@media print{
+  @page{size:A4 portrait;margin:14mm}
+  body{background:#fff;overflow:visible}
+  #palco,.veu,.grain,.hud,.prog,.slide:not(#s-radar),.acoes{display:none!important}
+  .deck{height:auto}
+  #s-radar{position:static;opacity:1;visibility:visible;padding:0;overflow:visible}
+  #s-radar .rv{opacity:1;transform:none;filter:none}
+  #s-radar,#s-radar *{color:#11242D!important;-webkit-text-fill-color:#11242D;box-shadow:none!important}
+  .glass{background:#fff;border:1px solid #d5dde0;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .rd{grid-template-columns:1fr}
+  .cliente input{border:none}
+  .so-impressao{display:block!important}
+}
+.so-impressao{display:none;font-size:10px;margin-top:16px;line-height:1.5}
+/* ── FIM BLOCO ── */
+</style>
+</head>
+<body>
+
+<div id="palco" aria-hidden="true"></div>
+<div class="veu"></div>
+<div class="grain"></div>
+<div class="prog" id="prog"></div>
+
+<main class="deck" id="deck">
+
+  <!-- 01 · CAPA -->
+  <section class="slide" data-cena="capa">
+    <div class="col">
+      <div class="marca rv"><div class="selo">D</div>DMG<span>OCUPACIONAL</span><em>× RECOMA</em></div>
+      <div class="eyebrow rv d1">Proposta de saúde e segurança do trabalho</div>
+      <h1 class="rv d2">45 anos construindo onde o Brasil compete.<br><span class="grad">Quem protege quem constrói?</span></h1>
+      <p class="capa-sub rv d3">Pista, quadra, arquibancada, estádio. Cada entrega da Recoma tem uma data de inauguração e uma equipe por trás. Esta é a história de uma delas.</p>
+      <div class="stats rv d4">
+        <div class="stat"><div class="n grad" data-conta="45">0</div><div class="l">Anos de Recoma</div></div>
+        <div class="stat"><div class="n grad" data-conta="220">0</div><div class="l">Pessoas em campo</div></div>
+        <div class="stat"><div class="n grad" data-conta="27">0</div><div class="l">Estados possíveis</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · SITUAÇÃO -->
+  <section class="slide" data-cena="fundo">
+    <div class="wide">
+      <span class="cap">01</span>
+      <div class="mapa-wrap">
+        <div>
+          <div class="eyebrow rv">Situação</div>
+          <h2 class="rv d1">Uma fábrica. Obras no país inteiro. <span class="grad">Uma data que não se move.</span></h2>
+          <p class="lede rv d2">A Recoma é diferente de uma construtora comum. Ela fabrica o próprio piso, leva a própria equipe e monta em qualquer estado, com inauguração já marcada.</p>
+          <div class="tripe">
+            <div class="glass rv d3"><span class="ic">01</span><div><b>Fábrica própria</b><span>Máquinas, resinas, borracha e adesivos. Risco químico e mecânico todo dia.</span></div></div>
+            <div class="glass rv d4"><span class="ic">02</span><div><b>Equipe que viaja</b><span>Mão de obra própria montando longe da sede, semanas fora de casa.</span></div></div>
+            <div class="glass rv d5"><span class="ic">03</span><div><b>Prazo de evento</b><span>Campeonato, abertura, jogo. A data é do cliente, não da obra.</span></div></div>
+          </div>
+        </div>
+        <div class="mapa glass rv d3" id="mapa"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · DOR 1 · FÁBRICA -->
+  <section class="slide" data-cena="fabrica">
+    <div class="col">
+      <span class="cap">02</span>
+      <div class="dor-tag rv"><i></i>Dor 1 de 4 · Fábrica</div>
+      <h2 class="rv d1">Antes de virar pista, <span class="grad-red">o piso passa pelas mãos de alguém.</span></h2>
+      <p class="lede rv d2">Na linha de produção estão a extrusora, a prensa, a resina de poliuretano, o solvente e o granulado de borracha. É o risco que ninguém vê na inauguração e que aparece primeiro numa perícia.</p>
+      <ul class="lista">
+        <li class="glass rv d3">Exposição a agentes químicos sem medição em LTCAT vira passivo de insalubridade e de aposentadoria especial.</li>
+        <li class="glass rv d4">Máquina sem risco inventariado no PGR é a primeira coisa que a fiscalização pede.</li>
+        <li class="glass rv d5">Audiometria e espirometria fora do PCMSO deixam o trabalhador sem acompanhamento.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 · DOR 2 · VIAGEM -->
+  <section class="slide" data-cena="viagem">
+    <div class="col">
+      <span class="cap">03</span>
+      <div class="dor-tag rv"><i></i>Dor 2 de 4 · Mobilização</div>
+      <h2 class="rv d1">O caminhão saiu. <span class="grad-red">O ASO ficou para trás.</span></h2>
+      <p class="lede rv d2">A obra abre em outro estado na segunda-feira. Parte da equipe é recém-contratada, parte está com exame vencendo no meio da montagem. Ninguém quer descobrir isso no portão do cliente.</p>
+      <ul class="lista">
+        <li class="glass rv d3">O cliente barra quem chega sem documentação, e a equipe fica parada a 1.000 km de casa.</li>
+        <li class="glass rv d4">Exame que vence durante a obra deixa a pessoa irregular para a função no meio do serviço.</li>
+      </ul>
+      <div class="custo rv d5"><div><small>O que isso custa</small><span>Diária, hospedagem e transporte de uma equipe que não pode trabalhar. E o dia não volta.</span></div></div>
+    </div>
+  </section>
+
+  <!-- 05 · DOR 3 · ALTURA -->
+  <section class="slide" data-cena="altura">
+    <div class="col">
+      <span class="cap">04</span>
+      <div class="dor-tag rv"><i></i>Dor 3 de 4 · Altura e içamento</div>
+      <h2 class="rv d1">Arquibancada, torre de luz, placar. <span class="grad-red">Tudo é lá em cima.</span></h2>
+      <p class="lede rv d2">Montagem de arquibancada retrátil, torre de iluminação e cobertura juntam trabalho em altura (NR-35), içamento de carga e canteiro de construção (NR-18) na mesma frente.</p>
+      <ul class="lista">
+        <li class="glass rv d3">"Apto" genérico, sem os exames definidos no PCMSO para altura, não sustenta a empresa se alguém cai.</li>
+        <li class="glass rv d4">Treinamento de NR-35 vencido tira o trabalhador da frente na hora da inspeção.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 06 · DOR 4 · TERCEIROS -->
+  <section class="slide" data-cena="terceiros">
+    <div class="col">
+      <span class="cap">05</span>
+      <div class="dor-tag rv"><i></i>Dor 4 de 4 · Terceiros locais</div>
+      <h2 class="rv d1">O reforço foi contratado na cidade. <span class="grad-red">A responsabilidade veio de São Paulo.</span></h2>
+      <p class="lede rv d2">Em obra longe da sede é comum completar a equipe com mão de obra local. Se essa pessoa entra sem ASO, sem treinamento e sem ficha de EPI, quem responde é a contratante.</p>
+      <ul class="lista">
+        <li class="glass rv d3">A documentação de terceiros espalhada em e-mail e WhatsApp não aparece quando o fiscal pede.</li>
+        <li class="glass rv d4">Acidente com terceiro sem fluxo definido vira um problema jurídico seu.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 07 · IMPLICAÇÃO · ACIDENTE -->
+  <section class="slide" data-cena="acidente">
+    <div class="wide">
+      <span class="cap">06</span>
+      <div class="eyebrow red rv">Implicação · O dia em que acontece</div>
+      <h2 class="rv d1">Um acidente não termina<br><span class="grad-red">no dia do acidente.</span></h2>
+      <p class="lede rv d2">Ele abre uma cadeia de eventos que alcança a obra, a folha e o jurídico, e volta meses depois.</p>
+      <div class="tl">
+        <div class="tl-trilho"><i></i></div>
+        <div class="tl-p glass ini"><span class="tl-q">Dia 0</span><b>Queda na arquibancada</b><small>A frente para. O cliente pergunta quando a montagem volta.</small></div>
+        <div class="tl-p glass"><span class="tl-q">Dia 1</span><b>CAT e S-2210</b><small>Prazo curto. Erro de classificação conta contra a empresa.</small></div>
+        <div class="tl-p glass"><span class="tl-q">Dia 16</span><b>Benefício no INSS</b><small>O evento passa a compor o cálculo do FAP.</small></div>
+        <div class="tl-p glass"><span class="tl-q">Meses depois</span><b>Ação trabalhista</b><small>A defesa depende de ASO, PGR, treinamento e EPI.</small></div>
+        <div class="tl-p glass"><span class="tl-q">Ano + 2</span><b>FAP sobe</b><small>Alíquota maior todo mês, sobre toda a folha.</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · IMPLICAÇÃO · FAP -->
+  <section class="slide topo" data-cena="fundo">
+    <div class="wide">
+      <span class="cap">07</span>
+      <div class="eyebrow red rv">Implicação · Na folha</div>
+      <h2 class="rv d1">Quanto o histórico de acidentes <span class="grad">custa na folha?</span></h2>
+      <p class="lede rv d2">O RAT vem do CNAE e você não escolhe. O FAP vem do histórico de acidentes e afastamentos, e é o único fator que a gestão de SST consegue mover.</p>
+      <div class="calc">
+        <div class="calc-in glass rv d3">
+          <div class="campo">
+            <label for="cf-func">Colaboradores</label>
+            <div class="inp"><input id="cf-func" type="text" inputmode="numeric" value="220"><span>pessoas</span></div>
+          </div>
+          <div class="campo">
+            <label for="cf-sal">Salário médio mensal</label>
+            <div class="inp"><span>R$</span><input id="cf-sal" type="text" inputmode="numeric" value="3.200"></div>
+            <p class="nota">Folha anual estimada (13 salários): <b id="cf-folha">—</b></p>
+          </div>
+          <div class="campo">
+            <label>RAT do CNAE</label>
+            <div class="chips" id="cf-rats">
+              <button class="chip" type="button" data-rat="1">1%</button>
+              <button class="chip" type="button" data-rat="2">2%</button>
+              <button class="chip on" type="button" data-rat="3">3%</button>
+            </div>
+            <p class="nota">Confirmar pelo CNAE preponderante da Recoma.</p>
+          </div>
+          <div class="campo">
+            <label for="cf-fap">FAP <b class="gold" id="cf-fap-v">1,50</b></label>
+            <input id="cf-fap" class="range" type="range" min="0.5" max="2" step="0.05" value="1.5">
+          </div>
+        </div>
+        <div class="calc-out glass rv d4">
+          <svg class="gauge" viewBox="0 0 360 200" role="img" aria-label="Medidor do FAP">
+            <defs>
+              <linearGradient id="g-arco" x1="0" x2="1">
+                <stop offset="0" stop-color="#5EE0A6"/><stop offset=".33" stop-color="#D6B17D"/><stop offset=".66" stop-color="#F2B957"/><stop offset="1" stop-color="#FF6B5E"/>
+              </linearGradient>
+              <filter id="brilho" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <path d="M40 170 A140 140 0 0 1 320 170" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="22" stroke-linecap="round"/>
+            <path d="M40 170 A140 140 0 0 1 320 170" fill="none" stroke="url(#g-arco)" stroke-width="10" stroke-linecap="round" filter="url(#brilho)"/>
+            <g id="g-ticks"></g>
+            <g class="agulha" id="g-agulha"><line x1="180" y1="170" x2="180" y2="52" stroke="#fff" stroke-width="3" stroke-linecap="round" filter="url(#brilho)"/></g>
+            <circle cx="180" cy="170" r="11" fill="#0C1B22" stroke="#D6B17D" stroke-width="3"/>
+          </svg>
+          <div class="gauge-lbl">
+            <div class="k">Contribuição anual RAT × FAP</div>
+            <div class="n" id="cf-anual">—</div>
+            <div class="m" id="cf-mensal">—</div>
+          </div>
+          <div class="comp">
+            <div class="comp-l"><span class="t">FAP 0,50</span><div class="trilha"><i class="f-ok" id="cf-b1"></i></div><span class="v" id="cf-v1">—</span></div>
+            <div class="comp-l"><span class="t">FAP 1,00</span><div class="trilha"><i class="f-md" id="cf-b2"></i></div><span class="v" id="cf-v2">—</span></div>
+            <div class="comp-l"><span class="t gold" id="cf-b3l">Simulado</span><div class="trilha"><i class="f-vc" id="cf-b3"></i></div><span class="v red" id="cf-v3">—</span></div>
+          </div>
+          <div class="delta" id="cf-delta">—</div>
+        </div>
+      </div>
+      <p class="fonte">Simulação sobre parâmetros informados. O FAP real é divulgado por estabelecimento pelo Ministério da Previdência Social.</p>
+    </div>
+  </section>
+
+  <!-- 09 · IMPLICAÇÃO · PRAZO -->
+  <section class="slide topo" data-cena="prazo">
+    <div class="wide">
+      <span class="cap">08</span>
+      <div class="eyebrow red rv">Implicação · Na inauguração</div>
+      <h2 class="rv d1">O evento tem data. <span class="grad-red">O atraso tem nome.</span></h2>
+      <p class="lede rv d2">Marque o que já aconteceu ou pode acontecer numa obra de 30 dias e veja onde a entrega vai parar.</p>
+      <div class="prazo">
+        <div class="eventos rv d3" id="eventos"></div>
+        <div class="cal glass rv d4">
+          <div class="cal-top">
+            <div><small>Entrega da obra</small><div class="n" id="pz-dia">Dia 30</div></div>
+            <div><small>Dias perdidos</small><div class="n red" id="pz-perd">0</div></div>
+          </div>
+          <div class="grade" id="pz-grade"></div>
+          <div class="cal-leg"><span><i class="a"></i>Montagem</span><span><i class="b"></i>Parada por SST</span><span><i class="c"></i>Inauguração</span><span><i class="d"></i>Depois do evento</span></div>
+          <p class="cal-msg" id="pz-msg"></p>
+        </div>
+      </div>
+      <p class="fonte">Cenário ilustrativo, com durações de referência para cada tipo de ocorrência.</p>
+    </div>
+  </section>
+
+  <!-- 10 · VIRADA -->
+  <section class="slide" data-cena="virada">
+    <div class="col">
+      <span class="cap">09</span>
+      <div class="eyebrow rv">E se fosse diferente?</div>
+      <h2 class="rv d1">E se a equipe embarcasse <span class="grad">já protegida?</span></h2>
+      <p class="lede rv d2">Exame certo para o risco, documento no prazo, laudo que se sustenta e terceiro conferido antes de entrar. Antes do primeiro dia de obra, e não depois do primeiro problema.</p>
+      <p class="lede rv d3">Siga o trabalhador. Ele vai passar pela DMG antes de chegar ao estádio, e o prédio vai subir com ele, <b>andar por andar</b>.</p>
+      <span class="pill glass rv d4"><i></i>Próximo: térreo da clínica</span>
+    </div>
+  </section>
+
+  <!-- 11 · ANDAR 0 -->
+  <section class="slide andar-slide" data-cena="andar-0" data-andar="0">
+    <div class="torre-ind" aria-hidden="true"></div>
+    <div class="col">
+      <div class="andar-cab rv"><span class="andar-num">Térreo</span><span class="andar-de">Andar 1 de 7</span></div>
+      <h2 class="rv d1">Mobilização <span class="grad">antes do embarque.</span></h2>
+      <div class="resolve rv d2">Resolve: <s>o caminhão saiu e o ASO ficou para trás</s></div>
+      <ol class="passos-a">
+        <li class="glass rv d3"><div><b>ASO liberado em D+1</b><span>Exame feito hoje, ASO disponível no dia seguinte. Admissional em lote com agenda dedicada para a turma inteira antes da saída.</span></div></li>
+        <li class="glass rv d4"><div><b>Validade que cobre a obra inteira</b><span>Antes de embarcar, checamos se algum exame vence durante a montagem e antecipamos o periódico.</span></div></li>
+        <li class="glass rv d5"><div><b>Pasta da equipe pronta para o cliente</b><span>ASO, treinamentos e fichas de EPI organizados por obra, para enviar ao contratante antes da chegada.</span></div></li>
+      </ol>
+      <div class="entrega rv d6"><small>O que a Recoma ganha</small><span class="k">D+1</span><span>do exame ao ASO na mão. Ninguém barrado no portão do cliente por falta de documento.</span></div>
+    </div>
+  </section>
+
+  <!-- 12 · ANDAR 1 -->
+  <section class="slide andar-slide" data-cena="andar-1" data-andar="1">
+    <div class="torre-ind" aria-hidden="true"></div>
+    <div class="col">
+      <div class="andar-cab rv"><span class="andar-num">1º andar</span><span class="andar-de">Andar 2 de 7</span></div>
+      <h2 class="rv d1">Apto <span class="grad">para o risco real.</span></h2>
+      <div class="resolve rv d2">Resolve: <s>arquibancada, torre de luz e placar</s></div>
+      <ol class="passos-a">
+        <li class="glass rv d3"><div><b>Bateria definida por função no PCMSO</b><span>Montador de arquibancada, eletricista de torre e operador de fábrica não fazem o mesmo exame.</span></div></li>
+        <li class="glass rv d4"><div><b>Aptidão específica para altura e espaço confinado</b><span>O ASO registra a aptidão para NR-35 e NR-33, com a avaliação clínica e os exames complementares que o médico define.</span></div></li>
+        <li class="glass rv d5"><div><b>Controle de validade por trabalhador</b><span>Alerta antes do vencimento de exames e treinamentos, para ninguém ficar irregular no meio da obra.</span></div></li>
+      </ol>
+      <div class="entrega rv d6"><small>O que a Recoma ganha</small><span class="k">ASO</span><span>que se sustenta numa perícia, e não um "apto" genérico.</span></div>
+    </div>
+  </section>
+
+  <!-- 13 · ANDAR 2 -->
+  <section class="slide andar-slide" data-cena="andar-2" data-andar="2">
+    <div class="torre-ind" aria-hidden="true"></div>
+    <div class="col">
+      <div class="andar-cab rv"><span class="andar-num">2º andar</span><span class="andar-de">Andar 3 de 7</span></div>
+      <h2 class="rv d1">Engenharia <span class="grad">na fábrica e na obra.</span></h2>
+      <div class="resolve rv d2">Resolve: <s>máquina, resina e solvente sem laudo</s></div>
+      <ol class="passos-a">
+        <li class="glass rv d3"><div><b>PGR da fábrica e PGR por obra</b><span>O inventário de riscos reflete a linha de produção e cada canteiro, e não um modelo genérico.</span></div></li>
+        <li class="glass rv d4"><div><b>LTCAT com medição em campo</b><span>Ruído, agentes químicos da produção do piso e poeira medidos por engenheiro de segurança, base para a defesa em insalubridade.</span></div></li>
+        <li class="glass rv d5"><div><b>Vistoria e plano de ação</b><span>Visita técnica na fábrica e nas frentes ativas, com prioridades e responsáveis.</span></div></li>
+      </ol>
+      <div class="entrega rv d6"><small>O que a Recoma ganha</small><span class="k">1</span><span>laudo por realidade, assinado por quem esteve lá.</span></div>
+    </div>
+  </section>
+
+  <!-- 14 · ANDAR 3 -->
+  <section class="slide andar-slide" data-cena="andar-3" data-andar="3">
+    <div class="torre-ind" aria-hidden="true"></div>
+    <div class="col">
+      <div class="andar-cab rv"><span class="andar-num">3º andar</span><span class="andar-de">Andar 4 de 7</span></div>
+      <h2 class="rv d1">eSocial, FAP <span class="grad">e terceiros sob controle.</span></h2>
+      <div class="resolve rv d2">Resolve: <s>reforço local sem documento e FAP subindo</s></div>
+      <ol class="passos-a">
+        <li class="glass rv d3"><div><b>Eventos S-2210, S-2220 e S-2240 no prazo</b><span>CAT, monitoramento de saúde e condições ambientais enviados a partir do que foi feito, sem retrabalho.</span></div></li>
+        <li class="glass rv d4"><div><b>Leitura anual do FAP</b><span>Conferimos os eventos que compõem o índice e apoiamos a contestação quando cabe.</span></div></li>
+        <li class="glass rv d5"><div><b>Conferência de terceiros por obra</b><span>ASO, NRs e EPI do reforço local conferidos antes da entrada, num lugar só.</span></div></li>
+      </ol>
+      <div class="entrega rv d6"><small>O que a Recoma ganha</small><span class="k">100%</span><span>dos terceiros conferidos antes de pisar no canteiro.</span></div>
+    </div>
+  </section>
+
+  <!-- 15 · ANDAR 4 -->
+  <section class="slide andar-slide" data-cena="andar-4" data-andar="4">
+    <div class="torre-ind" aria-hidden="true"></div>
+    <div class="col">
+      <div class="andar-cab rv"><span class="andar-num">4º andar</span><span class="andar-de">Andar 5 de 7</span></div>
+      <h2 class="rv d1">Quem viaja <span class="grad">também cansa.</span></h2>
+      <div class="resolve rv d2">Resolve: <s>semanas longe de casa sob pressão de prazo</s></div>
+      <ol class="passos-a">
+        <li class="glass rv d3"><div><b>Riscos psicossociais no PGR (NR-1)</b><span>Jornada estendida, distância da família e pressão de inauguração entram no inventário com método reconhecido.</span></div></li>
+        <li class="glass rv d4"><div><b>Treinamentos com registro</b><span>NR-35, NR-18 e integração de segurança com certificado e controle de reciclagem.</span></div></li>
+        <li class="glass rv d5"><div><b>Leitura de afastamentos</b><span>Acompanhamos CIDs e retornos para agir antes que o padrão vire FAP.</span></div></li>
+      </ol>
+      <div class="entrega rv d6"><small>O que a Recoma ganha</small><span class="k">NR-1</span><span>em dia com a exigência psicossocial e equipe que volta inteira.</span></div>
+    </div>
+  </section>
+
+  <!-- 16 · ANDAR 5 · PAINEL -->
+  <section class="slide andar-slide" data-cena="andar-5" data-andar="5">
+    <div class="torre-ind" aria-hidden="true"></div>
+    <div class="col">
+      <div class="andar-cab rv"><span class="andar-num">5º andar</span><span class="andar-de">Andar 6 de 7</span></div>
+      <h2 class="rv d1">Tudo da Recoma <span class="grad">numa tela só.</span></h2>
+      <div class="resolve rv d2">Resolve: <s>documento em e-mail, planilha e WhatsApp</s></div>
+      <ol class="passos-a">
+        <li class="glass rv d3"><div><b>O RH agenda direto na agenda da clínica</b><span>Sem ligação e sem e-mail. Escolhe a obra, o colaborador e o exame, e o horário fica reservado.</span></div></li>
+        <li class="glass rv d4"><div><b>Ficha 360 de cada colaborador</b><span>ASOs, exames, treinamentos, atestados e CAT, com a validade de cada item contra a obra em que ele está.</span></div></li>
+        <li class="glass rv d5"><div><b>Indicadores por obra e por terceiro</b><span>ASOs a vencer, absenteísmo, turnover e conformidade de cada empreiteira em tempo real.</span></div></li>
+      </ol>
+      <button class="tela-prev glass rv d6" type="button" id="abrir-painel">
+        <span class="tp-barra"><i></i><i></i><i></i><em>Painel exclusivo · Recoma</em></span>
+        <span class="tp-corpo"><span class="tp-k"><b>220</b>ativos</span><span class="tp-k"><b class="warn">14</b>a vencer</span><span class="tp-k"><b class="green">94%</b>conformes</span></span>
+        <span class="tp-cta">Abrir o painel ao vivo →</span>
+      </button>
+      <p class="fonte rv d6">O mesmo modelo de portal que a DMG montou para o Grupo Vigent. Dados da demonstração são ilustrativos.</p>
+    </div>
+  </section>
+
+  <!-- 17 · ANDAR 6 · COBERTURA -->
+  <section class="slide andar-slide" data-cena="andar-6" data-andar="6">
+    <div class="torre-ind" aria-hidden="true"></div>
+    <div class="col">
+      <div class="andar-cab rv"><span class="andar-num">Cobertura</span><span class="andar-de">Andar 7 de 7</span></div>
+      <h2 class="rv d1">Um benefício <span class="grad">que viaja junto.</span></h2>
+      <div class="resolve rv d2">Resolve: <s>adoeceu longe de casa e sem a quem recorrer</s></div>
+      <ol class="passos-a">
+        <li class="glass rv d3"><div><b>Telemedicina pelo app DIM+</b><span>Consulta por vídeo de qualquer cidade da obra, para o colaborador e para a família.</span></div></li>
+        <li class="glass rv d4"><div><b>Cartão de desconto em farmácias</b><span>Cartão Vidalink no app, com localizador de farmácias perto de onde a equipe está.</span></div></li>
+        <li class="glass rv d5"><div><b>Rede DIMEG e clube de descontos</b><span>Consultas e exames com desconto na rede própria, com mais de 100 mil atendimentos por ano, e clube de vantagens.</span></div></li>
+      </ol>
+      <div class="parceria glass rv d6"><img class="logo-dmg" alt="DMG Ocupacional"><span class="x">×</span><span class="recoma">RECOMA</span><small>Sete andares. Uma parceria.</small></div>
+    </div>
+  </section>
+
+  <!-- 18 · ENTREGUE -->
+  <section class="slide" data-cena="entregue">
+    <div class="col">
+      <span class="cap">10</span>
+      <div class="eyebrow green rv">Recompensa · O estádio no dia marcado</div>
+      <h2 class="rv d1">Mesma obra. Mesma equipe. <span class="grad-ok">Entregue no prazo.</span></h2>
+      <ul class="lista ok">
+        <li class="glass rv d2">A equipe embarcou apta, com validade que cobre a obra inteira.</li>
+        <li class="glass rv d3">A fábrica tem PGR e LTCAT que refletem a linha de produção.</li>
+        <li class="glass rv d4">O reforço local foi conferido antes de entrar.</li>
+        <li class="glass rv d5">O eSocial saiu no prazo e o FAP é acompanhado todo ano.</li>
+        <li class="glass rv d5">O RH acompanha tudo no painel, e a equipe leva telemedicina e farmácia no bolso.</li>
+      </ul>
+      <p class="lede rv d6">A inauguração acontece. E o nome da Recoma aparece na arquibancada, não no processo.</p>
+    </div>
+  </section>
+
+  <!-- 17 · PROVA -->
+  <section class="slide topo" data-cena="fundo">
+    <div class="wide">
+      <span class="cap">11</span>
+      <div class="eyebrow rv">Quem já constrói com a DMG</div>
+      <h2 class="rv d1">Construtoras que <span class="grad">já operam com a gente.</span></h2>
+      <div class="parceiros" id="parceiros"></div>
+      <div class="numeros">
+        <div class="num glass rv d4"><div class="n grad" data-conta="25" data-pre="+">0</div><div class="l">anos de experiência em SST</div></div>
+        <div class="num glass rv d4"><div class="n grad" data-conta="50" data-pre="+">0</div><div class="l">empresas atendidas pela DMG Ocupacional</div></div>
+        <div class="num glass rv d5"><div class="n grad" data-conta="4" data-pre="0">0</div><div class="l">unidades próprias: Osasco, Itapevi, Carapicuíba e Cajamar</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 · KANBAN -->
+  <section class="slide topo" data-cena="fundo" id="s-kanban">
+    <div class="wide">
+      <div class="kb-topo">
+        <div>
+          <div class="eyebrow rv">Diagnóstico ao vivo</div>
+          <h2 class="rv d1">Onde a Recoma <span class="grad">está hoje?</span></h2>
+          <p class="kb-dica rv d2">Arraste cada cartão para a coluna que descreve a realidade de vocês. No tablet: toque no cartão e depois na coluna. "Não sei" também é resposta, e conta.</p>
+        </div>
+        <div class="kb-prog rv d2">
+          <div class="t"><span>Classificados</span><b id="kb-n">0 / 18</b></div>
+          <div class="trilha"><i id="kb-barra"></i></div>
+        </div>
+      </div>
+      <div class="kb rv d3" id="kb">
+        <div class="kb-col pend" data-st="pend"><h4><em>A classificar</em><span></span></h4></div>
+        <div class="kb-col" data-st="ok"><h4><em>Em dia</em><span></span></h4></div>
+        <div class="kb-col" data-st="parcial"><h4><em>Parcial</em><span></span></h4></div>
+        <div class="kb-col" data-st="nao"><h4><em>Não temos</em><span></span></h4></div>
+        <div class="kb-col" data-st="naosei"><h4><em>Não sei</em><span></span></h4></div>
+      </div>
+      <div class="acoes">
+        <button class="btn gold" type="button" id="kb-gerar">Gerar radar →</button>
+        <button class="btn" type="button" id="kb-reset">Recomeçar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19 · RADAR -->
+  <section class="slide topo" data-cena="fundo" id="s-radar">
+    <div class="wide">
+      <div class="eyebrow rv">Radar de exposição em SST</div>
+      <div class="cliente rv d1"><input id="rd-cliente" type="text" value="Recoma" aria-label="Nome da empresa"></div>
+      <div class="rd">
+        <div class="rd-g glass rv d2" id="rd-svg"></div>
+        <div class="rv d3">
+          <div class="rd-topo">
+            <div class="anel">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/>
+                <circle class="arco" id="rd-arco" cx="60" cy="60" r="52" fill="none" stroke="#D6B17D" stroke-width="9" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+              </svg>
+              <div class="v"><div><b id="rd-nota">0</b><small>de 100</small></div></div>
+            </div>
+            <div>
+              <div class="nivel" id="rd-nivel">—</div>
+              <p class="rd-leitura" id="rd-leitura"></p>
+            </div>
+          </div>
+          <ul class="prio" id="rd-prio"></ul>
+          <p class="rd-vazio" id="rd-vazio"></p>
+          <div class="acoes">
+            <button class="btn gold" type="button" id="rd-pdf">Baixar diagnóstico (PDF)</button>
+            <button class="btn" type="button" id="rd-voltar">← Ajustar respostas</button>
+          </div>
+          <p class="so-impressao">DMG Ocupacional · Diagnóstico preliminar de SST gerado em reunião comercial. Não substitui o diagnóstico técnico com vistoria em campo. comercial@dmgocupacional.com · +55 11 97569-1076</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 · CTA -->
+  <section class="slide" data-cena="final">
+    <div class="col">
+      <div class="eyebrow rv">Próximo passo</div>
+      <h2 class="rv d1">O radar mostrou onde. <span class="grad">A vistoria mostra quanto.</span></h2>
+      <div class="passos">
+        <div class="passo glass rv d2"><small>01</small><b>Diagnóstico</b><span>Aprofundamos o radar com os documentos atuais.</span></div>
+        <div class="passo glass rv d2"><small>02</small><b>Vistoria</b><span>Engenheiro na fábrica e na próxima obra.</span></div>
+        <div class="passo glass rv d3"><small>03</small><b>Onboarding</b><span>Equipe, terceiros e eSocial migrados.</span></div>
+        <div class="passo glass rv d3"><small>04</small><b>Próxima obra</b><span>Primeira mobilização já com a DMG.</span></div>
+      </div>
+      <a class="btn gold rv d4" href="https://wa.me/5511975691076?text=Quero%20agendar%20a%20vistoria%20da%20f%C3%A1brica%20com%20a%20DMG" target="_blank" rel="noopener">Agendar vistoria da fábrica →</a>
+      <div class="contatos rv d5">
+        <div><small>WhatsApp</small>+55 11 97569-1076</div>
+        <div><small>E-mail</small>comercial@dmgocupacional.com</div>
+        <div><small>Site</small>dmgocupacional.com</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="pnl" id="pnl" aria-hidden="true">
+  <div class="pnl-jan" role="dialog" aria-label="Painel exclusivo Recoma">
+    <div class="pnl-barra">
+      <span class="pnl-dots"><i></i><i></i><i></i></span>
+      <span class="pnl-url">🔒 portal.dmgocupacional.com/recoma</span>
+      <button class="pnl-fechar" type="button" id="fechar-painel" aria-label="Fechar painel">✕</button>
+    </div>
+    <div class="pnl-app">
+      <aside class="pnl-menu">
+        <div class="pnl-marca"><img class="logo-dmg" alt="DMG"><small>Portal do RH · Recoma</small></div>
+        <nav id="pnl-nav"></nav>
+        <div class="pnl-user"><i>RH</i><div><b>RH Recoma</b><small>Administrador</small></div></div>
+      </aside>
+      <section class="pnl-conteudo" id="pnl-conteudo"></section>
+      <div class="pnl-load" id="pnl-load"><i></i><span>Carregando painel da Recoma…</span></div>
+    </div>
+  </div>
+</div>
+
+
+<nav class="hud" aria-label="Navegação">
+  <div class="hud-m">DMG Ocupacional · <b id="hud-ato">Situação</b></div>
+  <div class="dots" id="dots"></div>
+  <div class="hud-c" id="count">01 / 22</div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script>
+/* ═══ BLOCO: CONSTANTES ═══ */
+var PESO = { ok: 1, parcial: 0.5, naosei: 0.15, nao: 0, pend: 0.15 };
+
+var EIXOS = [
+  { id: 'mob',   nome: 'Mobilização',      acao: 'Admissional em lote, validade que cobre a obra e pasta da equipe pronta para o cliente.' },
+  { id: 'fab',   nome: 'Fábrica e laudos', acao: 'PGR da fábrica e por obra, e LTCAT com medição de agentes químicos e ruído.' },
+  { id: 'alt',   nome: 'Altura e içamento', acao: 'Bateria por função no PCMSO e aptidão NR-35/NR-33 com controle de validade.' },
+  { id: 'esoc',  nome: 'eSocial e FAP',    acao: 'S-2210/2220/2240 no prazo e leitura anual do FAP com contestação quando cabe.' },
+  { id: 'terc',  nome: 'Terceiros',        acao: 'Conferência documental do reforço local antes da entrada, por obra.' },
+  { id: 'psico', nome: 'NR-1 psicossocial', acao: 'Inventário psicossocial considerando viagem, jornada e pressão de prazo.' }
+];
+
+var CARTOES = [
+  { e: 'mob',   t: 'Equipe recém-contratada faz o ASO antes de embarcar' },
+  { e: 'mob',   t: 'Validade dos exames é checada contra a duração da obra' },
+  { e: 'mob',   t: 'Documentação da equipe chega ao cliente antes da equipe' },
+  { e: 'fab',   t: 'PGR da fábrica reflete a linha de produção atual' },
+  { e: 'fab',   t: 'LTCAT tem medição de agentes químicos e ruído' },
+  { e: 'fab',   t: 'Audiometria e espirometria constam no PCMSO da fábrica' },
+  { e: 'alt',   t: 'ASO registra aptidão para altura (NR-35)' },
+  { e: 'alt',   t: 'Exames do PCMSO diferenciam montador, eletricista e operador' },
+  { e: 'alt',   t: 'Treinamentos NR-35/NR-18 com controle de reciclagem' },
+  { e: 'esoc',  t: 'S-2240 atualizado a cada obra ou mudança de risco' },
+  { e: 'esoc',  t: 'S-2220 e S-2210 enviados no prazo' },
+  { e: 'esoc',  t: 'FAP conferido todo ano e contestado quando cabe' },
+  { e: 'terc',  t: 'Reforço local tem ASO e NRs conferidos antes de entrar' },
+  { e: 'terc',  t: 'Documentação de terceiros centralizada por obra' },
+  { e: 'terc',  t: 'Acidente com terceiro tem fluxo definido' },
+  { e: 'psico', t: 'Riscos psicossociais inventariados no PGR' },
+  { e: 'psico', t: 'Viagem e jornada estendida avaliadas como fator de risco' },
+  { e: 'psico', t: 'Afastamentos por saúde mental acompanhados' }
+];
+
+var EVENTOS_PRAZO = [
+  { id: 'aso',   t: 'Equipe barrada sem ASO no portão do cliente', s: 'Remarcação e exame na cidade da obra', dias: 3 },
+  { id: 'nr35',  t: 'Treinamento de NR-35 vencido na inspeção',    s: 'Frente de altura parada até reciclar', dias: 2 },
+  { id: 'fisc',  t: 'Fiscalização interdita a frente de trabalho', s: 'Adequação e pedido de desinterdição', dias: 5 },
+  { id: 'acid',  t: 'Acidente com afastamento',                     s: 'Investigação, CAT e reposição de equipe', dias: 4 }
+];
+var DIAS_OBRA = 30;
+
+// Benefícios exibidos na fachada de cada andar da clínica (o último é a placa de parceria)
+var BENEFICIOS = [
+  { andar: 'TÉRREO · MOBILIZAÇÃO', itens: ['ASO liberado em D+1', 'Validade que cobre a obra inteira', 'Pasta pronta para o cliente'] },
+  { andar: '1º ANDAR · EXAMES', itens: ['Bateria por função no PCMSO', 'Aptidão NR-35 e NR-33 no ASO', 'Alerta antes de vencer'] },
+  { andar: '2º ANDAR · ENGENHARIA', itens: ['PGR da fábrica e de cada obra', 'LTCAT com medição em campo', 'Plano de ação com responsáveis'] },
+  { andar: '3º ANDAR · eSOCIAL E FAP', itens: ['S-2210, S-2220 e S-2240 no prazo', 'FAP lido e contestado', 'Terceiros conferidos na entrada'] },
+  { andar: '4º ANDAR · PESSOAS E NR-1', itens: ['Psicossocial no PGR (NR-1)', 'Treinamentos com certificado', 'Afastamentos acompanhados'] },
+  { andar: '5º ANDAR · PAINEL EXCLUSIVO', itens: ['RH agenda direto na clínica', 'Ficha 360 de cada colaborador', 'Indicadores por obra ao vivo'] },
+  { andar: 'COBERTURA · PARCERIA', parceria: true }
+];
+var NAND = BENEFICIOS.length;
+
+// Dados da demonstração do painel exclusivo (ilustrativos)
+var PAINEL = {
+  abas: [
+    { id: 'geral', ic: '◧', t: 'Visão geral' }, { id: 'agenda', ic: '◷', t: 'Agenda' },
+    { id: 'obras', ic: '⌂', t: 'Obras', badge: 1 }, { id: 'colab', ic: '◉', t: 'Colaborador 360' },
+    { id: 'terc', ic: '⇄', t: 'Terceiros', badge: 2 }
+  ],
+  kpis: [
+    { t: 'Ativos', v: '220', s: 'em 5 frentes' }, { t: 'ASOs a vencer', v: '14', s: 'próximos 30 dias', c: 'warn' },
+    { t: 'ASO em D+1', v: '98%', s: 'últimos 90 dias', c: 'green' }, { t: 'Absenteísmo', v: '2,1%', s: 'mês atual' },
+    { t: 'Turnover', v: '3,4%', s: 'média mensal' }, { t: 'Terceiros conformes', v: '94%', s: '4 empreiteiras', c: 'green' }
+  ],
+  meses: [['Mai', 31], ['Jun', 44], ['Jul', 38], ['Ago', 52], ['Set', 47], ['Out', 61]],
+  alertas: [
+    { c: 'r', t: 'Quadras · Curitiba: 3 terceiros sem NR-35', q: 'hoje' },
+    { c: '', t: '6 ASOs periódicos vencem durante a obra de Recife', q: 'antecipar' },
+    { c: '', t: 'Audiometria da fábrica: 9 pendentes', q: 'agendar' },
+    { c: 'g', t: 'Turma Goiânia: 12 admissionais liberados em D+1', q: 'ontem' }
+  ],
+  obras: [
+    { n: 'Arquibancada retrátil', c: 'Rio de Janeiro/RJ', e: 46, conf: 0.99, st: 'Montagem', tag: 'ok' },
+    { n: 'Arena multiuso', c: 'Goiânia/GO', e: 38, conf: 0.96, st: 'Montagem', tag: 'ok' },
+    { n: 'Pista de atletismo', c: 'Recife/PE', e: 22, conf: 0.88, st: 'Mobilizando', tag: 'n' },
+    { n: 'Quadras poliesportivas', c: 'Curitiba/PR', e: 17, conf: 0.72, st: 'Atenção', tag: 'r' },
+    { n: 'Fábrica', c: 'Sede', e: 97, conf: 0.93, st: 'Operação', tag: 'ok' }
+  ],
+  terceiros: [
+    { n: 'Montagens Alfa', o: 'Arena multiuso', p: 12, aso: 12, nr: 12, epi: 12 },
+    { n: 'Elétrica Beta', o: 'Arquibancada retrátil', p: 8, aso: 8, nr: 8, epi: 7 },
+    { n: 'Serviços Gama', o: 'Quadras poliesportivas', p: 9, aso: 9, nr: 6, epi: 9 },
+    { n: 'Pinturas Delta', o: 'Pista de atletismo', p: 5, aso: 4, nr: 5, epi: 5 }
+  ],
+  agenda: [
+    { d: 0, h: 0, k: 'adm', t: 'Admissional · 6', s: 'Turma Recife' }, { d: 0, h: 2, k: 'per', t: 'Periódico · 3', s: 'Fábrica' },
+    { d: 1, h: 1, k: 'adm', t: 'Admissional · 6', s: 'Turma Recife' }, { d: 2, h: 0, k: 'per', t: 'Audiometria · 9', s: 'Fábrica' },
+    { d: 2, h: 3, k: 'dem', t: 'Demissional · 2', s: 'Arena Goiânia' }, { d: 3, h: 1, k: '', t: 'Retorno ao trabalho', s: 'Arquibancada RJ' },
+    { d: 4, h: 0, k: 'per', t: 'NR-35 · 5', s: 'Quadras Curitiba' }, { d: 4, h: 2, k: 'adm', t: 'Admissional · 4', s: 'Reforço Goiânia' }
+  ],
+  colab: {
+    ini: 'CM', n: 'Carlos M.', f: 'Montador de arquibancada', o: 'Arquibancada retrátil · Rio de Janeiro/RJ',
+    chips: ['Apto NR-35', 'Apto içamento', 'DIM+ ativo'],
+    linha: [
+      { t: 'ASO admissional · Apto', d: 'Liberado em D+1', a: '' }, { t: 'Treinamento NR-35', d: 'Certificado registrado', a: '' },
+      { t: 'Telemedicina pelo app DIM+', d: 'Atendido em viagem', a: '' }, { t: 'Audiometria periódica', d: 'Vence em 18 dias', a: 'at' }
+    ],
+    val: [{ t: 'ASO periódico', r: 212, tot: 365 }, { t: 'NR-35', r: 41, tot: 730 }, { t: 'Audiometria', r: 18, tot: 365 }, { t: 'NR-18 integração', r: 300, tot: 365 }]
+  }
+};
+var LOGO_DMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggAAADgCAYAAABmdJ6lAAByi0lEQVR42u2dd5yU1fX/P+fep8zMdnoRFBUsYImixpaAscUkxpTdVKOm/pLvN/Gbb2J6Mjsp3xRjiqYp9p7dVE2MmihoYgdEYBFRRFBApGyb8rR7z++PeZ5lQMrusrsseN8vx112Zp7nPredc8899xzAYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGPZ5mJmy2axgZsHMZGrEYDAYDIbX84YQkLEiIAAwEekdvC939p7BYDAYDG9ErP39AVtaWiQRKQAKAFasWFGbSo2osazAyufzxWnTpm2M308UBU1EbLqGwWAYjos65t1PTwQAQzWPMff6RlQumJlfjQVhWFgOJBGp9evXV9XV1b1fKfUey7KOlVLWCSEsrXVea72KmR8OQ7qptjb1bPw9AYD3ct1u/31G2cphBpdhKMcQbdcfh8WcMW/ePJo1a1b8OwDMw6xZsyrHxn5jEWRmagUEWlvR1NSk9odFW9vo0dQ8a5Yy85lREPbWoBJEpLtLpTNsKa9wbfvYyvf9wIe0bFhCAAC01t1KqStete2fTCYqDefnAkCtra1obGwcttaOim2dgemosZVnqOt5oK7Xug9M7nGbUcVz79NCNpkD9uFJjFoA0VTR95mZ7l63Lq2CwEF9PdDx+q/Zgmjzq+vERScdubk/loC+Wh+unr+ybnTGtShdpVCPnjIVRRcBQEbXsi26qN331Qu3Tc3nclvbpKWFZVMjNIyiMCzZL7cYkm2FYrH4NUvK79m2bQGI/vXwI7j7nvupK5+nSQdMxKTxY/mkmcdhxhGHsRCiRgjRPC4M3x0EwWsAHGboskmsbE1IVlMkJUNrMMDMGhSbzIiIIUS8nVEeA1slpICGBut4AIr4f7r8OcUMAShmCjR0kYi6AHR4nveSJcSaolIv+V1d62g75WU4+k9UTMwDJhCJCL0xrQ7g/fQg1AsNN4WuUpGLlTDefiyddtppI2QmU1tt2w1EVKWFyEReWKO1TjFpV0gJ0hAQIAFJkIDc5i6iR9FS0JBCMACOhwjF3xNSAqrcY1hDQUBuV1cqUeYJQkQMKK0UBMBhqJgZYRT5odZkOY58hoiW7KtKQjabFTki3QSoOUuXjnDYekek1LnXPr30cBJUTyRs6izStio4g5k0tK4uhsVmAFdls1mRy+X0Ti0Tra2irbGRc0QaRD3mop732tp4F98v163qOntL6PxaRF0ldLPYfv3p6wKYNGnmaMK7F7fPuWDpclfI+9jju5tOos09z7uT+xiMBWHAhVPRK16WdtM/AcAvvLRGff27P5SL25bjA+8+D+9+x7k4ZMpBcGwbRIDrOPFXmaWUcjg+VxiG3UT0cqR1Gyu1IIqixzZv3vzklClTvO0m+r1qVUi2dQqFwkQhrM9CwLaEIK1hVa5OtdYkYiVJa42yQiW2znRl5Yu1Vq7W+una2tprh7L/bOnqOs2xnA/YUnpCwCmXX0dx+S1sZ3InItJag4h4O0VGa63ToVIP1NXU3NrS0iKHgyUhsZBUWmbmzp1rzZw58zAp8SYm6ygBHGJZ9mRmPQFAnRAiRUJYgob/tBFGUbvveU01NTX/YmaLiKJ9RjlgFjkiPZfZennpc/8bav3fbio1iUFQUQjWaofKstYablUVOja89tBLLz73jp9eeGFxZ9aA5B7b/O2GG1IYOVI88c9V6t6rLvUrP9u8k+1NZqbmefPkGLfmjoYxo95fzHdDSPm6Ddrkn0IKWJYDgBB4xbUW0a9ePGrDT3M0O9pRmQxGQRjwyb1UKp1h2dZ9lrRowaLF+PgXLhPpVAq/+9mPcOyMI3Z3GY099z8YaAS2M9crpaC1bmOi+4m51XGcx7YX0ntLOWgvlabUWHaLtOTMgbhuEIalLq/zuNG1o5cP8oqQmBnz5s2TJ59yyj2u45w1UBeOlIJXKl1YU1Nz694UWLFi0GMh2bJlS53jOKdLKc8C6FQpxZG2bad3dYntXsNxTtMAbKXUa76v31lV5Ty1t8ZEf5WDvzy7ekKH9q9zUu65XqEAFUVRz/NVKmjMhEQpFRIcRqXujva3fPmsWU/vROASM4OIOHvLLbX1B089g0P1Nig13badMWRJq5gveFqp9cISD3ndhb9+573vfHZnq/zkbz/7x0PjMyNqH3bTqYOjKNIAix2Y5RhlxYYBQFiWlc5kEHreP33lf/zTxxzzyj6/LWQUhGGrHJAQgl955ZXMyJEj/+267nGrX14bvf/iT0uQxJ9unoNJE8YiCENIIUBSDtwG+SCjtYZIzLLx4NJaSyFEshpXSqn7gyD49eWXX35fLpeLEkfLobImJBNwd3f3UelMpkUKcTiAANvuafdLtgJIFT3vB1Xp9LcGcwJJVvdBEJwspZwLQMb1TnvYfiyEkEpr3yuV3ltdXX3vUAusxMKU3LOzs3NaJpP5CIAPW5Z16PZ1Hvc5AKCytUfsa/OGAmAppdZ5Sr2j2nUXDXclIRG2f1m9ekJHd+k+4bgz/Hx3ACIJ5l1OV0SkbDdltW/c2Po/bz2laYcm+1iZAIArH3vyo5aUX3ec1JG26wCaAWZolLs7ifKWXr6ruxNaX//SyvZvX/Gxcwo7um4ybn7+8GOfqmuov0ZFkdpdeeNCa2it0zU1dhQEz0olzr7wmGmvmO2G4bUy3W+ehZlRW9vwDtd1jwMQ/fRXv5Mvrn4FP/jmZZg0YSzCMIBjS0hJ+9SDJxN13F4yFlzJJBgJIYRt22+vqqr629e/8Y2HOzvz5xGRjs3dg75lEu+tq2Kx+JZUKnVvrBxEAGyUzfFyD152/PAXLF26tJqI9GAFuGpsbEx8TRqFEG5cx3tafimEsACwFCLtuO7thULhzUSkuDeT6MBZ1piI1IYNHYd4nve7TCbzhGVZ34mVAx23l4p/l0KIpPwiVkRpAJS9oURqrSMp5YSUlH8slUqHDGWd91OBw13z12Y6895twrFn+N3dAQAbvSuzKBXyOgj8a8BM06dPp+2Vg2xzM2XnzrV+/ej8X6bTmVsymeojobUKvFIU+J4KAl9FYaDCwFeB56koCKJMOl1XO2LkF6dMG/m33z766MRcLqez2azYbtxoZia3vuoPgec9b1mWBEH34qEFiKxidz4Qtn2EEurWljVr0kAzTBA7oyAM+EIbACxLvA8AP7/yRdzzr3k4/eQTccZpby6vwqWzP7afjK0KkdJau45zck1t1d+9ILhl06ZNE+NJUQ7ixCYAIIqiDzuO83fLsibEwkYO3DNqbVvWkRMnTz5zsPptrOTorq6u0cz8nkFYKQsAkW1ZDY7j3OF53mFE9LrJdpAsO3rNmjVpLwi+OWJE9eOu637Gsqx6rVWiFFCiDOxPVkUhRKIkHGxZ1p1r164dFSuYw27eawYol8vpjkzhm1YqNcvvLoYA2b2d+yzHFWEQLS60b3wcRNzY2LjtVkBz+fojrdTXa0c2fAFgFQR+xGAB7ml7AYagslepALPUKtS+VwgbRo6apWFfd8Pcuanm5mZGhQCPrZT0uaOPbgfzny3HAXMftp8ItlfIh04689ZiV6k5PuVgFASjIAzo5M6PPvpomghHAKCHHnlcbdy0RR93zFFk2TaYGTI5ObBf6UU9gkzK8kovImjl2vZHq2tqHtvS2Xl+rCTQQGvliVBdt25dmpm/I6WsBhAOoHKwdQK0LMq47sewdY95UMaC67pnuq57UCw4B7qjSAChZVkHaY1LAaC5uZkGa0zElgOVz/vHjR8/4T7Xtr9vWXJUrMBpIaTcHwfDjpQEy7Jmjh079pZVq1alBtMK1R8SX4EbV6w+JFTqc153twax7G08ISJiEgQdqadyTU35bGwx2ub6OdJX3P/vN7uO+03fKykoTdSbcUqCiGGV8t1hprbmnC1sXUpEnN1OgLe2tsb/5v94hYIGQfR2e7NsGiVZyndrHYWfvb6tbSoR6ewwtfYYBWEf5YADpo0QQowDAM34TyadXjth/NjoDdamUmsIrXXkOs6kuurqv5ZK/veSwToYE6NlWYKIvNiSMQh9SpQDVxGduWnTpiPirZOBvo8GAK31BxIZO4jKHENsjTUwGMpBLDh0EARfSKethyxLnp4oBrGi8oZZoVVYEs4dP3HiVcxsNZed9YZFHUyP28Li4D2O49Tr8rGe3peNiIJSCaV84TEANL1HWG+Lm3YuydTWulopBvXtKIqOlY50ddVHrmhpSeeIdKUVIbFYdLy84ekwCNdb0hLch77NAGmltJNO1xDLD1XWi8EoCHtEsgqrqiJBccc/bNrBT59w7DG/nDJp4lIAkFK+YZxehBCI95CVEEKnUs63CsXinAULFlgYhIkxisbo2Dt5sAY0AVCObddkqqvfXfG3gRKogojY87zDbdt5S3yEbDDHBsXCerCsaQCAMAx/Ydv2L4moGlu3fd6Qk64oO5RoS4j3Axgfe/cPi7poAjQzCx3pM7VmRt9kNwMsmblUVV33DABui31pgK3xFL7/j4fGa8I5QRQygUTfOywLFYYsSByGEWPeDACNra2vu05JTX7NsuWG8lFH7msjQUWKIfgsZpZxgCijJBgFYY8VBAYA3/e9JJDQ2JGjOz9xyUWtDbV1z/Ss2t647Rtm0ulPHjljxpXxCYABzmS5Dih7+w8mSXypD27cuLEm2TYZUOFKdKGUoiE+gji4ExNTOAiKDsUKoAjD8BrLsi4FEDFzYjUw8x2RXyqVhs28x/HJgltWrhylNM+IAp966ZS4dUIjAa100fOi9nhCrJwcAQA1DVUHptKpiTqK+hnFgqCZdaa6xklXV88EgMZtjRgMMOWaZgRRqDaTEH3PBcEsojAkFeppN7700ui4fkyvNQrCHq8OGADWrVvXwYyXAaC2tvrQEKWCFwR/KJa8PMrHtd6IvS1xQAvTrvv/SqXS9+KjXgPW9koppsHxC9immbXW2rbtozM1NbMGqv8mfhSbNm2qtYS4YKCF9s7Rcvt5fiDaOt5W+KVt259E2R8kOYVgKMtSpNPpYWNNbI77Gis5Uik1QmsF6kv3YwBEiKKoxGGpVLlgAoBku8G2rIwQQqIcMaHf/YGYoUI1asdjqfwz8oNO9EOwEwBmDQGu1oXCiMr6MRgFYU8meTCznDlzZhhE4aMAUF9Xd/LhE6bap540829BGFwZC0ml35inaxMlIXJd91ud+fxFRKRaWloGZFU5adIkRj8VBN2HBhFCaCEEBON9AyhcBQBUV1efJYQ4AtuFdOxN+XV/OhXRQDuMSiLSnud93XGc/8IbfEthp/WkgVJp+KVacW3LIYKFvorv8vFVMLQfCrnTGA/a90YIKQmvjyHSp6BXmhiao5EA0NbWts13kq1epVQJe6CFaCKqStUaB0WjIAzs2I813L9qrcKU60ybMKHhgwAQeN4Pi6XS34QQthCIoLXSGlopha2vJNzvfqtBULLCTDnuVR0dHTObmpoG6lx4nxWESsHaBwFbDgghxDkbN26cMEBH1nSsfDTFK23dl2foj6JT7qcUDZS1IgkAFIbhObZtfxdbT2AY5WAHpNPpYT5M+/4NHWlP6K6d+rUwWU4SxiJe3GsCWAghLMsRQsryqYMd5OPYtq9pqEiNAIDcd7+rd6L79m/zj5IY6xBQkdkSMwrCAA6r+OhSOp1+TCn9FyEEqmuqv7Fhw4Zjxo4dm39tw4YLN21p/wMAG0JYQkBKKUlKifJrm+OPClsDx+zNlwbAeuDMHgKAdmyrxk2lrmRmNxYweyRIFixYoFE2Zw+41WAHc6FyHXtcKpV6/54K2MQ5sch8oBBiFgPQuv9joi/PxQOUxypWkHQ+nx8PoqvioEwDonjs4Nm4ty+tdc+rL98b9Ncw3dSOKIpzvvW+fEkeufKRFYReOVHcThRSZmaGZoYQpBzHlURCRFFYKHR3rwtKXrvWWtiOa8VerjvvzLRjf6Nka4NF+QL93GQAEVhbtnE+GAbsb9kcKc7F8FUhxCmuY0+sqaltXbVq1UVTpkx5DEDjunWvvX3s2JHvDIJw5tpXNxxe9Lwa3/dZEuHIw6aS67o83OpFlMeaqhDyezL5SwBRynVPzufzn62pqflFEpZ5X2jgJAQwCatx7ty5vyGiaA+yJJbnVs97l0ylxkBrtX1M4V22S89H1XYGid1fgjFwIbCJiIMw/KEl5VQNRGJgHBLLcXcFGNAUnwLoR90ML6SUslQqDTvLighBzDsc1wwCA8S0fVbZ8i6VBhGkoAi7SO6slLJIUCQZwrJs2bF584IojH7hOO6TRa8z79g1jioWDpGF/CWZVOYjbjotgzAIgfKZivhosS7fF0E8GGlHjohCs9ZEEZjVdh0V2JpSfMCVWINREHpjRZBEtMr3/W9KKa9Np1NTx44d98Dql1+59oUXV995xx1/feLP/7ynenN7x+SS5x+WTrs45KDJuPhDjXzUkYcDgMgXCndFoVoGoE5Ds4DQQoB1Ipz1Nh2bhBAoZydh3XNeokeFFly25m07JDQzQQshBEgpJZnYESAhBKWIRJoJNZLEKCnFWMuyRlpbV4aIrRt7oigQAHZd92vFYvGPAPYoScrxxx/fV1+C/k+k5W0Adhz7+BNPPPEYAAvQj1MqyeTKzFIp9d744nugc/VR+g6AVSjZWiiVwnOFEBcCUGLPrYK656HEVhU1CENmZg9AoJUOuZz8JI6XxyBBzMyUpD5nZk1EmrfzgyBQT1bhrUkuCAymnhakHmlS/gczSGwdR+VtetqmweM8QPT6tSttFbSAxUA7p3n45WOwAZR6CsqxrwAJIiktC8KyesYNMxCGAaAZzBqO46Iz1Bm4O3e+1KEmJ5W28u1bgq4tnT9Z+8qLP7riYx8rbPexlwA88ON/PNBS29Bwed3okdOiMELi46q1RqqqCvn2Dnvb9ttOGWEamamutgIii5IxFYdW1EpDqwhKKXBZgeD41AZVXtCCsSAYBWGQYGYKw3B5LLR0Op1KTz5g4udra2o+N+3QKa8efMTksVvaO6zqqmocPPkAPmzqwVRTXc0ARMn359RUVX9mu/lnrzB31arU1MgeXTWq6hAp7ZMsx3qbY1unSSHTZcdMrYSQ/REIAoCybXtsqNRniegb+1DscwKgbEumfQ8fiBWEPvP73/9exvkjTrQd5+RdzHc7F6N9rvmtX5J7uMSO20szsxMEwTelsESF4tgfywzHp4EkAISR6g6DcLHW+hGteWkU+S8WCmEXMwq+HwbMxZ7xkUqluFjc9nqOEymllLZtW3pCCBQrlTyi7d0APCJCqYRUKsWeR9QTzAElcCrFaQCe55X/lny50tcwDQjfJ9d12Y9/Vn4kDSAIAiGlDCdPnvxqsqAYLp1aRURU9qFUgkna6RRFYYDQ80rtGze/xkIsT6dTSwQj1MS61F3ojJSOpC0irbQrST6Xa5qdTyxKyXWTAEYqDOe+8sKLX4Xi/3ztnW97NHn/u3+8+xgviN4kLWvl8qXzn2jN5YKvvv1td/3qkUeeybe3X6yCKKVjnVET6XxXlyWF/a+dmuMAaIqu27xu7TIB8rQGiLgqilSDVuxEUXAIEQ5JV9fUOW7KtRwLURiClYo4tpWUN1kCI52HyWS7vykHkoiUH0UfcKS8E1tjzevtFKJtjvpppTUEyVIQvKM6lbpnxYoV7tSpU4cyCmOlQsJCCN7Rdmk+7x/rOPRZEuIiS0oX5cx7/ZE3DICCINhcLBZPaGhoeKmvVoTEtM/MNoC5AE5FP0MUV2QP7K2klX4QrvS90kl1dXWb+7rNkDyr7/u/dBznC+hD/ggNsEisSH0XxwqA5QXBL9Ku+8X+ZhhMvlcsFj+USqVuj1djop96h0rGhu8HT4YqutkrFh8YPXr0cjNFDvp8JYhI375i1Zs8r/iEtB07394eRpF6sFQq/dliemjT5nUbfvSRj7QP1D1bWlrkyzjASU92stKyPg9QRmsVKaX/7efzl37prFlLBu2BGxtl9j3vGVs7esLIUKk3u27q7ZZjz6ofOaIhDAKEUaSElGGVmzrpw4cfsngnKasNxoKwZ0hgfIUgTJIaaWiwYkU93u9EEEQQsux440p5CojumTp1arS3U8MyMzU3N1NFvH5NRIsAfKZYLN4C2/mZZckTIKAA3Vfrcjk6oeOMKvn+hQC+twcK4x4dcxRCsBACO0grvCsLiHZs65BCic8CcGdiFemDYqPXr18/hoh6HZkx2UYRQggNzXtkBND9Py5TYT0QfhB8nIjQHx8MXfbIVBDC8oNgfRBFuRXPPnv9zJkzw0pFBABaW1t7sl02Vwbiwbbn7nvDYOWfiC+O5h2UsaLcQ5YCvVfF7bEghG4YRnZnZ/edpfb2K79x/tsf23a0Elq0lm3z5hEATJ81i9Fafqtt9DxatnEjtzY1qV3OJfPmSQBomj1bXT3/6e9XN4z432J3N4MQSZaitqpqdt6Sf/nhP/7xNu/cc9dMWLBANhx/vAaAtnnzaPqsWdw2bx5h1iy9K6GdZRaYN69ncJTL2oq2xkbOEalca+s6AOsALAEw57t/uHuqCsKPOin301X19ePCMPCQzgzbtNyGfdyCAAB+GDaXHXc5ZGZd+VLJ7yp+MWulVMTMHETBv5LERsPR7M7MInnGZ5/dWOMFwZyK51TbP+uuXvEz65IXLFy1ilMVwqcvggrz57OtlPpPXI6oL2VgZl0oFNkPQu7j90JmZt8P/tLXturpI1H0saTMSqle3df3/XD9a6+tD1Wk+vqcleXOF4s/qyxLX/tA2ZqUP04p1R1ft69t39PnS6XS3evXr59SWT/le5iUu0MwoAkArnl80ZSf/GveeyqFbEtLi8xmswMW9TRJfvS7JxbMnLNwsX/doqVqzsLF0ZwFi/WchYvVNQue8W97/iX+zaNPXV35+QF+YGJm6nm+int87777pvzq0afuuPbppXz7ypePHrwyGN7QJjsACMPwhp0pCDt5qVjgrF21atW4vgrLvaUIAUCpVPppH5+18plVpFTU2dn59r4KrKR+Yke/h/qhIChm5pdfWbd25UtrXmJmVr0XvIqZdRhF+Xw+f2xl2/em3Flm4fv+Pb2tN6WUYmYulkrLNmzY+F2tNfdVKA+gglBWcHz/e+Xiq7BvygFr5iiMn+cXScrpWDHoc5+PhZhMFItEiWVm2dLSIvch/5bhMK5psIRiEhjtt48v/MRNbc/xNQsXR3MWLtbJ65qFi6Oblq3QV89/+qHGlkZZqcAMJtlsVrRUjIOfz3v0O3OWLDliuM/BbwTE/ja4kj10Yj6gP5eQUoyeOHHiIb01O+8t4lwEgplFKpX6iu/7LShvGfXFNEcAtBRCWrb93qQO+lNvfbxv5fcwbuyYNXXV1VcopbmcY6rXZVeWlFVE1NTb9kpiH3wjCGYIId6CXmagFEJoAAiD4M9SWqtiHzreS31crVmzJi2lPDcuXZ/6qRBQgLRKpdK1mXT6f5qbmzlJDd1XPw5mFrlcTsffVUSk45ciItXU1KRiPxWjKOymXVtaWiQR8WDvuTM4AAEavH0HZiEECBQe2XYkY4jaK5fL6SYilc1mBYjwxVmnfPdTRx31bDzPmdMMe5H90gfhnnvucUOtR8i+CXkCoKSUtud5RwJ4BMPciTOJJEhEuqur67+lZR1rSTkNfXMULMdqt61TNjLXEFF3P+IK9NsHAQD8MKha3775L+lM6nOZdPrwPpS/nCbXst69adOmHxFRVy/KTrHAb7Isq0prHYndayUMQIZhWPQ873opU6fuadtJSf11gCUAPGrUqGMBHIW+nr6InXV9339006ZNX0gSPPXVo7/SuXLTpk0HkGWd7kj7CIY+AMwuCdHNGi9GUfDYiy+++DhROTlVS0uLbNrFXvkblbjPqp2tsKdPn06VWRp7qPC1yOVyu2pDahs9msBM9MTTCwIv6HAsu04pFaG8ei/nUyGytFL35HI5ffW73mWvO/549TpFobl5l/famQUkyQsR+yK8Lrxzck3jmGgYNC0cAFavXt3g+/7Kfpi8y2bXYvF3yQppH3luCQDFYvGD8V56X838OlKq2FEonNCX565cETLz/f2o76hs5vaWAEBnd/d3+7FVoqIo0oVC4fzKuthVedvb2+uDIFjR+/KqkJm5UCzeW/5+16f662+R9LFCqfTT3ZV3V23ted5l/akrZlZhGHbm8/nj+nn/HgffDR0dh3ied2UYRq/yTgjDkH0/fKpQKn16xYoV7iCNK9ofrRPMTMn2z0Dz68fmX3pj23N807IVfN0zy/j6xc/y7c+/xFc9+uRDX7r5vqrBum+lmmv8C4wFYa8wefJkVymVQt8sCFs/S3T80qVLHSIK9iBK31CimVnMmzfvD6effvpnAbwFvT+2l2wzpDmIZgB4aqgtJ0SCmVlu3LjxljCV+rxtWXW9XRlrrbWU0iJJ7wFwF3Zt9hcon9x4m5TyUPQ+moHQWiMM1M3MTN3F4h5PbMT93t7TZQuEPK6f37WCILqmurp6YV+PWFZE8NP5UumTjpT/Z9v26PjtIJ5PKsNLKssSAhAzHVgzDz744Eu6S6VvEdEDnATHeb2lhitW1LsqS/J9jrc0QETQWsvkb/vyHJbdeuSYfz73sYOERWcrFZ6cTlWlLNtKa60EA8Sa2Um5jlcoPfVfp8z8dqXFoRXllMxNTU3q8vsevChdXfNen8IPdt13sv9fJ9Mvf/7gf17N1NV8jYBJRFTY9GrnPfmN3d86KdXpNeVy+if3zb1YSPkuFYaB1tohIZTj2paK9K2XnT3rT9lsVmxjSYhTV19+34OfE47zVh2EEROJspVPRtD8kpZitbDsx/739JPackQ6y1mRo2YGzFaCURCGQNYA4CAIRkrLqunn92FJa+K4cePGAHgF/YjStzfMk8wsZs+eHfm+/2sp5ela6z6cidcMCKQyqUP6u9LR5Uy6/X0CtW7dOnfixInP5/PFf9qW1RgLmN4oOOUJSFhv37x58yQienkX8RzKiZks60NxRMbe3EMDQgZBsCyK/L8R1XB3d7EwID21H/Uct3V1FEVH9PFKDMAKo2hTGPq/i4V9X/wNEuWAfd//P8dxvh4raIEQwgHghGFYYkZnuf5R5ziOCwhoHTEzhVLKN2eI/ub7/ueJ6Npe3E/MmzePZs2axRXPgB0pANls1srlcj1Hk5Pw4fviHnZiYv/pvQ9Ncusz37aFfJ+bSo8QtgVBoqfFkzgplmUj39n5KABk5861crNn92xftcS+DWuEWCyF+JGrrStzOfoUAHzxjNN+n73hhr9aIyaMj8jvzp1//qbke5f/a97ba2vq5lTV11rlRHblY7HVNTXYuGbNegB/mj59+g77npNKNY458KBZXqF7m9gmWilAMwKvlP/NE/PnhiF+dSnNvB/IYV+YZ42CsI/T2tpKzEx5zxubAarjRDEUn7FPHM14u4mVtwoaTYDQQtA4y0rNYOa12HeCSWkAcBznvkipFZaUh6HXe/k90f0O2q5Oes2eLamZ29vbBTNTV1fXLUo575OydxEiE0Fv2/bYqqqq9wC4ckdtligNnucdbkl5Bpfj8vbmHlyuXH33qFGjuirrem8pwN3d3ZPcVHpKHxUEDUCEYXhXfX39yn6E1o7znPg/chznq4AOAWELIZxiyftHyQ9aSEfzu7q6Nkkppeu6o2zbnW451nmuY1/g2E4VgEAIkZKWnJMvFt8BjTVE1BlFaqVSwUvFYnF9Pp/f8uKLL3YTkY9dOL5u3rz5ZMdJnSOlmE5EowFkvvrVr29h5kVhqP9ERE9Wtvu+phz85vH5Z1i2OyddlTk48EqIokiRijiOYx1Hotbaclxn02sbfvW/bzn1u7ECGX36F1dPHjl6zHEKKM38zMwHF1yzIATw9I/umXtC/ci6h66Z/8wdpe7SZZfOfvMruUsu8QCsqtC0xJVnvv1zjut8z7JtWSoWwjgdAwhQpWLRUlLsMl82CxS8Yl6pIIiiRAHncnhzBpN0nOqMm35XqZg/91ePPPnzMXWZbzdOnx4SsMPcDgajIAwIjY2NyQpnZCw4IgBSa62FYNr9alFEAFhKaQtLnEtE9w7T5G87tSIQUWcQBP9GWUHoXY73OECRUmpqf7ZWKhO59E890KKhoUETEa9Zs+ZfrptaIKU8QWut+hIaUDN/aP78+b8lonAH5U8E6XuklA3o3RYMA5BRFJWKvv+Hivqy96KCACHEQVJQTSz0e6sgCK01g/mvvG3CnN5YDwQR6YJXeG/Kdb4KIACEE4ThxlKx+IX6+vo7d/C1tQCeAXB7e3v7sZzG5a7rnKm1jqSQoiqdvmDbPphGJpMpjBw1qmPS5MmbC8XCK0rzC1rrdYEXrvFCb0vKtl8UrjuiKpX6iiXEuyzL2lE7nKO1/qLv+9eGYfg9Inp1X1ESstmsyBHpK//9+DGW5dzppt3RXrEQApCMctqsyiqzbNcpdHY/E27hb8RB1eQv5j1yqbSsr9mOO0qzxsUH/ubRpibv8189860Lv3be7FeufnLhfztp9x4SOOEX/378ztD3nnCEXBcS0tD8plTKfV+6uvqtBEBFkQaRlUwjTAAxS7m77THNMi4zo8LHRcfZqJhZe6WilkLIhlGjvvLaxo2CiC7LZrMiZ6wIRkEYDBKT6dq1nCEZfiqZUMvKgZBaaxQKhSXFUmluKQyX29JqF4JsS4gjHMc+KZVKneA6dk0cXi7KpJz/Vyz6jxJRS3/D4e4NAcLMFKpwPoBP9lYIxMoULMsaO3369AYAG4a64OvLigYmT55cKpWCmwCc0AfdgACwbVnHTTvyyDcD+Hdra2tPZMWKyIN2pKJ3VipFvVh1W2EYPjyqrm5B0g96a93YjebR7/5kp+wDpJTUBwWBAQil1KYgCBZXVVUx91LzTcZVPp8f51juT+N72kEQri4WCxc0NDQsSj67evWGQ4RQhynSQljW6snjxi0BgIaGhkXz588/b8aMGde5rnthrJxVCmwSQpDrulUAqgBMBHB0z7s1ZXN6GEZdRHBt23aTtzzf3xBF0XOBH2yOtEq5jnuA6zgzUin3c0LIMzdv3vxxInpk2CsJzNQMMN71royt6FepTHq075XCZI6mHXR4FYbc3dX5q69fcGb3VwH89vH5/1MzYsTlge9DKRVJItQ1NJzidnXd/fMH/nPG/5xx6goi+sfvnlhwT82IEedZtvvNKAyhtYpSzNJJpUlIicArKYAJPfkwKjsSs96JEE+choSQEdFOtNueX1lqZvaKxSiVzvzvr//95MP/dfqJd+9rFp/9nf3Ji5SISI8eHV5mS/usRDgIIWTJ857avLnzXUuXLj5p3NjRl045YMJvDxg/5s4JY0ffMmb0yG/U19W+bcvmTW8uFkvXMpFgJktK6di2uLazs/DmJObAvqAnERET0wpVjgvctzTOzE6pVHL7aLoGMwuNPV9VJzKryNFdYRS9Fq/we1P+ckwEy3IcIT4WW5MqvyeIiPOedzqBTkD5vLfo7fjQWt8eWyNk2YTKe55Jprz91b+OrqkyjHhvLEQMAErpVWvXrl3Xl+8mdWdZ1qctKadorTlSKu9F4QcS5WDVqvUHdXcXbh47tn7hAQeM//vkiRPvHtsw4qlisXTXhg0dhwDA8ccfr9rb2z/r+8HjACytdWLRk9iamVTrcr9VsRKRvBQRacexa23btgHA94OXNm3Z8tl1S9ceVlNd/daRI0e8d+zo0efV19Ue8+qrG9/W1d39oGXJabW1tX/0fX9GciR4uA7cltZWQUQ8shidbadSp/m+F+1iAcdCCKlU1OHUZeaBma6Y++ihtuN8NfR9HYZhxEpLRJEsdncFmZrqCU7aySYhrv0g/E/geTqKgoAIWkppCWkhikIVlO8rkm2F1923rJja24092q7HaPRKASXSrGGnU4It+kJ27lyLjAXBKAiDYD1IEu8cJ4T8MgAFXTYP+77/21defvn0MWNG/O2UU04pAcDDCxeOXrLkuSOWLFkyKencEyZMWFZVlfmUF4YfYaYurbW2LKvGTVlXLlq0vqp8m33jKJWyrPXM3I0++k8wOBOGIt2ffiQg9sQatVXiMcuRmczLYNxVsYrvjRAU5SlHnB87K1YKhCTPxkellDZ6t3rXAEQQhi9GUfS37coyEJMY7UF/H9N7RQSIszTCcuxFM2bMCJJgUb2xHhCR2rRpU62U8sOJYArC8Gd1VVVPAEB3d/eMsWMbHqyuzlzouk4tAEWAchzLTadT72oYUTW3o6NwIhHp8ePHF7RWX9Nal5K03dvXSfx3UaE8SJS3R0hrHQEQnu8/tnnzpreOHjnyd5mJtW/auHHjV9dv2PiVNWvWfmLJkucPmDJl0tz77r337YVC4WrLssZCiN+sXbs2M5zHcGNjowYzwaL32rbDvJsuRkLA94Ni16ZNAYhYh/7pJOWoKIpYAJLK0S3ARDIIQ3YzmaNHz5qVKU8QeqVWSjDDYmYCsyZwOe3yTo69MsAkhJ3v7tZa6cfK9XhkosBzHKUx8VWISEjqpZFKhEHAUshTa6LoKBCxOf5oFIQB1xEAQErrm1KKagAKApbvh9emUqnPTZ06NQSA9Zs2ndTVlb/9TdMOX3jgQRPmTznkkIX5QmHe5s3tn8pmsxYzU8Z1b/dC/xPxaiZyHeeEqVPrL4onVLEv1ENUKHQKou4+f5XhKFVM9WtRGwvo/pl+pF6/vvz7vDgZTbFY+L1SKoyFQy80FBEnn7LHWI7z/uTv2WxWEJHeuLEwgYjOjietXjsngumP9fX1WxKv+IFSEJLIjH21O8Q1NrY/9wzD8MU+KicCAGzbniWEmAaAoija5Jf4BmamLVu21Nm2fVM67U5B+ZhjYrUSAGkAoW1Zk9IZ+458Pj+emSmTyTwUKTUv/pzuS30JIWQYhqsK+XzThAkT1hUKpRvHjh01d9SoUT8aN2bUjydNmnDtwYccsLArn/9EU1NT0N3d/SXf9xc5lnV6Q0PDe4frGE78Za5dvrzatd2ZWkdEvOs2Kntfk7TYlXHH8HoEcoVgprIJiMEQhc7O8mqfWYMIFdoz8a77BEspEXhB16b1G97/hbe8+Q4i4qamGT2WtDhipmZmgtZX+V35TilkbyyAxKy15Thphn0ysDWgksEoCANlPeB8Pn8MwOfEq0M7iqKVnmd/JQm/3N6V/+SI2tp5NTVVH6quSh9QU12dqUqnR1VlMm8ZMaL+mssuu+zOl156qY6ZRVUq9YdQqVuFEBYAtixxYey8p/YFK4LWOmLuSajeS2FGDMBmllV7oRX1yJGBBoBZs2YpZqa6urp5zPxoWTYI1cvnBgDYUl64aP2iKiLSzc3NAgCq6+z3WJY1MfYloV5cR4ZhFHR3F/8IlE/IDGgbib4pGZVOl0RoiMtJvRzhBAA6il7tpzJzYuKnopSa39CQXlPednA/6LrucfHK3t6uXgllE3no2PbBlmV9Oil/pNQ9/VRCyff9r40aNeoV3/fnZDKpi4gQAQjjMoSZdGpUVTpzre/7Hxw/fnwhiqLfl8ew9b6+WKT2BlSSKdux0qx5Jxb+iv6gFBzHSdePq7fLc5L9kAqj1bbjSBBFcV0zMyvbdkSpWHi4+O53FwCwJj5SWha4l3v95WuRyHd2Z7/1rnP+DACfvvrqzI/un/vl7/35nse/e9ffn/jxP+d+8YtXXJEmIv786SfPK5UK3xdS9upUAgFs2zakY00GkCSpNBgFYWDGVdl86rxbSlmF8kRBoVK/q6+ndiLiQqHw/qq0e41j26l4MtHxRKEBRFrrsKqq6n3jxo3/NQDBzFQqFH6ltC4AIBDeNGbixOl7ahoeQqVJg3o/EWodOxcDUgjt9Ecg7knq4x3sOwoiijwv+FNf6lwIIbTW2nGcYw+umnpm8nirVq1KCaaLeqswxQoJKRU98OCD981nZmpqahpYwaL73bYUxx3o+xixrI39KaXtuocmf7Bte3Ei6KUUZ/RmhRgL6HeuWbMmHS8ZFyutkxgU3MtyCKX0M/Pnz/9Td3f3WbZtX6y1jmLLlRWHy7bKobMJJMT3VzC7UsrHmZkYOHXt2rWT4xM3w2oMJ74BKii5zHCZeXdJkkgzK8tx6kqd3vlExF89+7R1frHUHAUh3HTaBkAkhKiqr3fynR3z/aD4rWaAP//LX7opN/XO+DTB7uuBSDmuKwv5wl1PdWy4KpvNisvvu2/MMTPe9PeJBx14+aTDDj1p8qFTT5xwwOSfHfLm0/+avffeEcxMLyyaf1Whq/NfjuNK3k1v18wQlkSVm64FgJYdhZQ2GAWhv1MtM5MlxAkAGELYSqn20MddzEwdHR0NtuP80Las5NijFa+GkpeMJ5fIcd0P5/Pe6UTE9fX1i7RSjwCAYztufVXNqfuKgkDlA8e9LqcQsQMyQzNzBLzOyW+3cgt7YHZnQSL2yk8mTAYAzyv+IYqiV/ogSCAgtJSSbFskK0aMGjXqNCHouFjQ9Da6JJj51jhvwLbOngNynkX33weh71VNzAyWMuyj0hdvs+iGnr8xv7zVoiHqUd4O311dktI80m5oqIkVFY81R+hbkCcEUfjv2bNnR0TyvxKFNLFsVJRZaq2VbVmHTPAKF27Y0P5aFEUsSIysqak5cDiO4aS/29W1ETMUUe+KJ4i4uqbqC9m7/jkZAL7w1pNv3PTaxsauLe3PsNaB53ndm9au/X2+c/MFX549exMR8cHHnnCxnU7NDIJAUS/mfyKCUgqao9bWOIeGk669vGHc2FlePh+Enh+Fnh/5XjFoGDv2rJHVDd8mIr7q0kt9sqw/cjlmA+82OQoDkSp/qtnIZaMgDNBKmYiI24FaIpoW9zWhmV8Jgu71RMTCts+wLOtQ7DpqXvl8OYEtC2fHA0Mr5meSD0Q6Oq63K9C9TU1NjWBwX50GiQiRELsOgrJzK8QeLbAJkyb1/COXy2lmFqNHj17HzPf0ac0tIJgBIcS5K8srRk0kP2dZUvbyGhqADIJgVXt7+/07vLccAB+EPmZgrGgkZt3nI7dMRLD6ON6TLQwVqahCN7KTcUeS8r0cDywEdXe84pUAIIoiW4i+B97s7i6uW7t2bUZKcWJiMdqFNYultC+TEgdqzUUphSDblsNZyXd0ty+IPCIqq+u7nvxEGIa6uq5uUkNd1RWfv+ceN8ssvnbO7D88d+djJ3Vt3DJj49rXjrz0Lad88EtnnrkWAH54333Hp9Kp/xOCepvGmQmQxe580N3R+SIApE5+y1GO47zXy+c1M1sAy/jIogyKRS2l+Mj//fXeQwFQ1+b2DcXubi0AuavTCUQEFUUoFvOdgPFBGE7sF3EQGoA0xFbvexVFYRAECgBStn0Y9X6FS1LKA3uuE6p2xMZcS4iGfUBBIADseV6tZdvV/ZgMgygSxf7oBwDCfpdaA6+tW0c7WPVSqVS6TUh5McVHq3qxlUFEmm3HGT22rqGlo6NzjZTiHQBYay178X2OhVjrxIkTN+3wXLbacwHTV3Vq21MH2uudIWTbZwrDcHT/tBnRXaE0zLAsK75e8FTKsd+rNbCzatVasxCCWPOyI44Y3c3MFATBgUKI5DRJ74NdEMiyrFrLsnbnSCsAwJH2tKLnfZPBpJSKuvP5/HAew7YQhbwXrHcz6UOYdz9wCRCB70UNo0a9/4i0e9fniG65ej7bn5lJPq7CC0A5e2ZbWxuPOfvt51tu6je2bY9QYaTRSzNF2fGFfWYUAMB106OFEFVKqW36JAEURiERaIRMOxMBvBCEfl6pSBGl7N3E3RBh4EMrvdSIZGNBGAxUvKfZw8aNG6lnvde3iTSoqB1VYa3YZ4J3SCnHEVFdXydCIuoGZHe/OlJiju5fL+QxSvGOZGg6nX4kiqInhBDUW2fFOOicrqpKn1RXV9uYSrl2HGq7N+0vwzAsaK1v3WlnG4A9BiH6fpGKPeMtfaxzjj9/UF/uFwebQhiGL1dc57RNmzbVMjN1bNlyS7FUekkIYcVOgtsrB1oIQUop5fvRnK25JOiM/gjquprqaY899nwhiKIuZt611UoDQrCeeuiUU1Oum2HgpZSUzw9HBYGIuKWlRTbNmBEoFf09OQKqe9uwREyKRwBAw/HQiLNAZrNZ0dTUpHO5nHbc9GU1dfXjtdbhLpQDRtmJV8U/tWKtiETaduyRYKZCqbQqUnqzZdnMFfXIzGzbNjPrzTpQL4OZ0m66VlqWtRvlgEkQhWG4Rbv0CAC0tbUZHwSjIAwc69atKwDoEWyWZVUdc8wxDgAUff857CiYx07GaqjU2op/Tkh+i5TaMpzNk5VlYyEOkuUTGH2JtAcAvuvqPp5+KN9Xaz2g1qjkSBoRqcCP7uxr3ccpbZKAO711otQASCn1YE1NzZLkBMwu6qv/FoT+bcmUbedEm/tZp8f2xYDR2NgIAAj96D9xsCVl2/Y0J53+MBHx5MmT1xby+YuCMNxcYRHoecW+PTIIou/V1KQfJCLesmXLUVKK98V1KPrQr5Xj2O88+eSpY6DVH4lo10dFBcrdJ1b4wyh6bMSIEZ29jQEx1CRC0Vf8l1Kh0G6V02Dq3g14piiKooqG5lwup3O53FbLKcEPw4D1TmIMJBFCHde1nFTactyU5aTSloCQVTU1ora65nAQ8bfPe9tKVupXbjqduH9EACIpJTmplNCar/z6O896EURcU183vqqmluKooTsbu9px0xT50f1fnz37pddliDQYBWFPhAgzi4kTJxa1Uot6FnhEkwuFwoHMTO1RdH8Yhm2xJSHalWAIo6jESrTEGrFlS+v4HvOf5Ty9DygI5cRCSh3bH0EWhGH7+vXrO/upmOxJvdBrFU6Kr1/58p+jKFobt6HuY/+WfXwOKKVadzk+1EAclRP9ri9i3tyP9oFS6rClS5dW98GTP04tjXla6xVJ/ads+5vt7e1TAGDMmDEPdxYKZxeL3r9R3rLseflBsKGrq+srmUzqu8wsmFmk0lU/sixZvwvllZNoirpsFUwcS6UQYqTtpH573W2/37y5vVPHiuluDWqxknN3X3NQDCW5XE5ns1nxxdNOfE5rfYW07Z50z7ufBwHsLvFYOR32DuubiNh2XcsrlrZseW3jveteXnPba6vX3PraK6/8NSh5LzquK4SUF1927V9qmFlMDws/6Ni86Sowyeq6OjtTU2NrZu7YsuXyh9et/lGWWfz4L/+p0cwXatY793cgKGlZstDZ2aF19GMAQHOzkcrDiP3BB6GsxjL/0wYuBKAsKdPKcc4jokUAOvL5/FdIiLuschS9sEKgJRq2BCD8IPh5TXXVMwBQCIKj05Z1HJgRKRWVSsHC2Ow6PDWDeLU7f/58WwCn9FGZKVsqQa9MmzbN70uipq3fF/0XmprJ2rolVKkA6njFt97z/LssC5+N97QHowo1ytsLq7q69L27WmkzRwOgIPQ/sBQzv9DH9iVmhmXbkw88cOqBANrQi/S6sSIhiajT84JbLQvf01qHtm0fkKmuvnl1R8f5B9bXt49paFi4dOnSM0eMGfO2lOMcojWJIPTWRb7/2OTJk9cm18oXiz+vSqfPi4W/iLdIKv2DBCp8D5OfQRhGKlIvSiEmNdTXnjXt0INPXbJsGc869WTJzNwTnmkXfTuVcmYTUSsP4+xrueZmzgJCSP5Jd3vHm+pGjnifXyxyeQXOPSeTGLzt6GTGTp6Lt+nf5eOTW3sOg0kIAog6Nm66YUvHxv/LvfvdL1Re4Af33DPaj/xL06n0Nw6eMfkrRPRtZubZRF+4/F/z/qlUdCKAYjGfn/fFWac9ls1mRa6pSV/1yBNfq6qtOTHw/a2nJeITDbFSoqUl7ShUKBRL//ul2actSjJZGrFsFISBntgR+f4/lJSrpJQHxbPv59evX3/7+PHjX6qurr6nu1j8kCOtqxzHfl0UujCMQs8r/eLVV1/9bpKQxwZyQogMAFZKL6qtzTydJP0ZrooSM6NYLB4vpTwWW3On9BppWysrJuq+7JEToGV/DVLMuzzyF69+o5ujSH7cssjpz7P1RksBBIIw/NOECbUbd5WgS0o5AEKmXwoVA0ApilYQiZJtW2n0bhuJiCiyLasmtLy3VCgIvdRHmAD8Loqij1mWNVVrHTiWddq4dNU/Ojo6/qu+vn7BjBkzAgD/2NEFVq5cOXb8+InfT6fdT8bKQeLUKHZgxerUSr3MjOeUipaHoV6uNa946aUXlk6bNu1cacnrz5n91jrP8yOltZK068RZif+kZckPbNmy5UdEtGbYJgQi4uZyGvLw8vvuu4gZz7kp94upTCatIwXFCqw0BFhzOTcyQGCSUtNunA4FAZBSkZSayj6FLISgIPRVob3zv7905luv3tH3vnneeRsBfOun8/79kGs7N1358GMbiejKLLO4jOhuAHcnn21pYdnYCD327e/4uJuq+h8VqYDKBWMGlYM3EgkpJSzHloWOzrWFfOGLX3rb6a1GOTAKwiCNqZ5VzqYgCH4lpbwiXuWMa2homLN+/foLxo8fX6jJZFpXr351QU1d6kI3lTqZmMew1l1a44l8vuuP48ePf5KIwMzwPO/bjuO8U2sdCCGciPVvU0T+cM/qSEQcBMEnpJTpcsAY0SdX9yiIVvTbijM4q3ok0StbW1ufOv/88x+2LDdJxCUH+FYyjCIvCsOWHay+thU6mvbW1lw5pwLzy0KIjQAm99L5skfRkkQfXrp06XUAwt5YiiqsOJtKpdJniejvUkpHax04jnWSENXz8sXizZ3d3X8tdAbLuro2dHdLSfWZTFVDdfVBddW1Z6dT7sdcxz4o3jJgIYQVRQpK+xvA9AKzXqmUWqaUWloqlZ59+OGHX2lqatpRQqw/FQqFV1zX/Xkq5Z5SsUDYqXAU5W0IJaUcUV1dfSGAHwz3+QzMdBlRAcA3r5r7nz8X8oVGx7XfQcAY1qgjIRxmgIkBrQVBQAc7tGrFViKmQv6J6iphy6DgSxYMYobtOPA97/++dOZbr2Zm+sw111gHHjDlc1WZqjNIEPLFwlPdr6377Y8uumjzl2ed/s9fPTr/Mitl33r5P+c9dhnRU1fPn2+v6+7u6T9Nsym6/IEHDsyka39jp9Ou75UgrHK2aAIj8HxopQKO1IogDO+2QjXnS+e8dVWS5tqIY6MgDJoVIY6V/5swDN9h2/YZADzXdc+sq6tr2bRp06dHjRq19sADx70IIFfWdluc7SehJUuWOFOmHJJ1XPcbWqlASOn4QXDv8ra2W+LrD8tOnKyIuru7p5MQ70fvsxUmQkdGSoVKcRvQz1CnWsv+KwmCR48evctjUE1NTaq7WLzB1vpMMfB7DAoQVqTC/9x///0LduGcmNT3QGwx9NsCUlVVtUlrvQrA5NhM35trCQDatu1TDjrooLOI6O9cTsyzW4U3VhIkET2Qz+c/m0qlri4rCcq3LFltWenPpVOpz/m1/kYVNXRq1mRZVrUl5VjHceLuoQNmllJKKwzDZe3d3V9CFC0aO3bsqzvr0/PmzROzZs2q3IYgInpy1Sp+27hx4cUk8RnHso5l5l1uO/W8R3TJqlXtvyaijn5sow2pJQHMlAXo80TzAczP3jA3WztKjSxJPUlpNVKH5Z0HoYk2+JHjuu7jANC0bQTVuG8Qv/zSHd9UfunAVKZug0w7XZYiS3Dof+v9Fzy+hVk0z5vnHD3j+KtrG+o+VnZqYIwU487vqKk9/xf//vf720877ZX/JrrtJ3ffV5RpuQ4APn388VFFHRIApIXY3N3ZeemW9vaRzFpZwlYg0iShwsB/WTC9skHqZ6467zwfABpbWmQuDsBkMAyqkASATs87LIrUOi5TYmb2/WB1R0f3fz///CuTtv9eFlmxcuXKse3tXe8ted5jzMxKKZ+Z2Q+Cl4rF4oFAOenPMH1uYmYJIgRB8Kf4uUNm1r18ReU68l/q6uoalVyzt/eOfzpKqcfie0d9vXexFCyKs+3t8N7J39rb2+vDMHyuH/fZ6UsppZk50lpzd7H40fh+cifPKwGgq1B47x6UIWRmLpQKP97VvXbXz5VSl/e1rZVSETNzyfP+vWLFCjd2HOxLWm8JAF7Be28QhBsq6qCUPNd2RMzsMXOQ/CEIgtaurq7R21+34rXLMlWmbH5248aaKIqeqehLu+9rxeJF/an3vUWWWTSWMyUO0vXL89qVDz/+jdtWrOJrFy0Nrl64OLx64eJwzsIl/h0vrOZfPz7/NqB8dHKg7tvS0iJ3er19JGuusSDsQ1SYQp8LguACZm61LDlZa+07jj3ZceyrHNf6dle+8IwKo9c0sy8l1VrSGictOSXluhPjlZ0nhEiFUfRqFIaNVVVVq4ftnmVsGieiKAiCz9m2/Z5+mN/LJx80P1FbW7spyX44tG2nd2t2jdugIwzDVgDfhAYPxBmc+KicDKPoRRUEf68wW+/c3LA1ZkO/J7I4/0W/qgsAir7/VHU6ja3OjqI3zyoAqJTrnjZhwoQvEtGPytHwdnq6Z/t2ULEl4U+dnZ1LIaq+T8zvrwxcFMc+SLb9knTNCMNwiR9FP6zJZO6oENCayt71qo/jnADYRNTted51Uspf9rafS1t+gplvi62Ow82K8DrH0R7TOzNlm5sJzc2Y3tpKiZWvMfnZ2Kh39SxZZoHmZjF9+nROvnvk6NGUo9nR5ffdN8ZNu/8vDPxy8/U4FWpRLBaUEPKCHz7w4NFff1vumavnz7c/c/zx0a6SMLW0tEg0Nm5niiz/o62xkXMAN+2kzYe1ZcewX1gSJAB0dnZODcNw3tbFjPLKC4kdo5TqWeX4YfjY5u7uGcN5pRFbDiwAyJdKZ0dRlGdmFb90X1fx+VLp4r4+b4UFwWbm//TfguAtTBL57Gz1mKwc29vbjwvDsBB/Xw2AFSFkZi6VSldsv0LdWd9qb+96T9Jt+m1BKOyZBaFUKk2Joui1pPf24f6KmVUYhl1dXV1vja9p9WeMAUBXV9dbi553ZRAGC4Mw3BIEQRSGIfu+XwqCYIXneXcUi8UPrV+/vqqi39IA9H/BzFQsFidFUbQhHsO7qgcVW4u8IAhOq+i3cjglb8ruov8N+L3iFfxvH3vsoOsXL9sw55k2nrNwsZqzcLGes3CxnrPgGT1n4WL1uyef5iv+Ne89PcJ/kEiu3djSIrMtSx0jzfY+Yn97ICJSLS0tsq6u7vnnnnvu7GLR+0IQhC8Awt1uwcfbra7sKFKrSyU/27Fly1kja2qWtrS0DEunxHh1xkQUFQqFd6Vs+w4pZRX66N2vtWZmlkEYrivl8/cDWxPH9LXa46x6/Wwz0Yuz3uWVY319/SJmejB+zj21dJT9L6LI01rf0fuvqb3ZvzUzUyqVeklr/Z+49/alHpLsijWpVKqlq6vrdCKK+iIoY0uCYGaqra19KJNKfeGR/zxyYr67+9iOjsIJHR0dJ3Z3dx+3efPmN6VSqQ9lMpk7xo8fX6jotzwQ9QCAMpnMy1pzbyw/SSROl5m/Nnfu3BQRhUSkEkfnvaoYzJ1rJRYDTrYVBllxScZ6RxR1lgqFkm1ZmredF1lIyQDnvZL/fGIBGODJjFpaWmScMVV9/+67J54x6ZC/HDjDnTHUCpPh9Vj740M1NTWp2CQdALhq5cotN48aJd9nWc45UsojiXikZnYICBh4VTM/ywoPaB3eVVtbuylZoQwX5aAiwAvFE5paupSdgw4ufcV1nG/HXuWqr857sXldsNYPxImR+ru9QBBDomwKIlK+79/JkO8sH9fSe6LnagBWxPqBTCazcHfOiT3IAZAle1ZfgohUqeTfZdt4D/q+1SG01sq27TFE4q6Oju7/R0S/r7AmqN6cbkhWfY2NjSCiCMCa+LW9xYNQ3k4Y6PFE5bLgdgAfjTM57upUh0TZgfe8N5988lPd3YUntI7+/PLLL/+TiIK9sZWYHO87eMyYo6565PH/6+7s/g4RPVX5/nSA0NpaFs7NzSjnO2xOxDyAZuwu+mA2mxXLpk+nI3uuUY5J1MIsmojar5j76K/rRto/icJQI87oSkIgXVNj+yXv9m++65yl2WxWNAOc60Pb9OjhcW/KNjfTsunTqbGxEW0A54h0U6xxX/HAvxszVZkfpqqrDpFSfsuI52Gw4N7fHqhCmCaraRFPXgCA+fPnZxoOOKCGisUUEfmFQmFLfIYbFRNkryKYDbA2T/HP17XN9hNrPp8/z7bdbzmOdTLKked4+7S3va2uSCku5Etvr6+v+Wdfj3Fuja3PDoCHALwZfUvAowFIzw8Xbnzt1dMmT55c2tUeZMX9GiKlHreknNbH++3w/qVS6cJMJnPr7p4/eb+9q+uC+pqaP6P3oay3Nz9YRa/406p01WX9OTqbCLJ8Pj/eTaWetKSciH5oSrrswCCV0giC8KotWzblDjjggM3Js1ZYWeKQ/ztXGiqjFLa2tlKcLpwHcz856Q+rVq1KHXDApEcsSx7XB0W5p90ipZ4qFgq5urq6vydWlKHaB0/a8pblK09g4Mnu9vZiGIZ/LpaKN/vr1jycu+QSbyisF8s2buTTJ0z6UTpT/WU3nQaYoZnR3dVxv9ThhRuCYEvzrFk6sdwM1Pz4xZaW9IQR496dSqcucV33bCflIlJRsc6tO7nx8EmLTXwEY0EYWI0njtRVMblt07lmzpxZBFDcxfejvVR0BoBcLrdD7f8zn//84RnLnZ1OO++1bfuMOC5KVDYE9Es5UAAsFUX33n//Px6MJ9v+rfCef54wdeoePLruddvGE2q7H/p3A/JL0Jr7ebwycU5cHUXRfX0pCEd7fsxR6/5PsJURJvPF4l1WOv25/kzYomxJ0FIKpNPu58eMGfP2fD5/dXu7dycRvbIrJWBXilGcw4EQB+8aZAErAQSeF/zdsuRxvU1glYRxFkLAkvKEqqrqv5VKfo6ImuPtkyFREpLlgGLWKvD9VMrN1DU0fKS7s/NDurZmxc8f/PfDliOfKnrRpu72LasliZLjOAiC8pom0FpIEYXycL06N2OHsSMAAF+/7Q+He15hbEpm2p1qN5AgpcASWnTkZs9+FQBagcu+//f7HrSEfQG0yijW/9lU7Lz5501NJSA+H46sAPqUK4Gy2SwBwPoJE+SkMWPGWXZmSlV1zUER61Mcx5ntptPTUpkMvFJBBYFfjqRkG+FsFIRBYNWqVfVa61opZQhkQFTaZiLziAilEooAUjrF6TRzEdupDJmKf2fK/6x8Y/uwpjqdZlEq30endZwYdTdUASgAQlQTEVFVFVGpVKLa2lo3DMMRzHKs41gHCiEOt2x5gpTyKMe2q+LJjWNNvr+2bkY5KZFi5p/FWzK9OhO/Y6ZCa01iD+IgqNdnc9zlyo+Y7lRKfVZKmUb/IivGpzf032prazf2xbysSO/xdooQA7MCU6H4ZWSrD1iWbOiPFUEIQbFZPrJt+1Dbti+3bftLxaJ3N6AfKhajp7u7N6+78cYb87HyPNw8zBUAlEqlG5RSn5NSjuyNZSe2MiTjJySCSKWcbMn3M0T0lXhrZMie1UmldMH3JbPWXqmobNuyLLfq8Op6eTgTfzpVLCHl2EUhKAATgRhasQCVYzNHm9SFAO5qaWmRTUlcAWYCEV89f77tFcOrSYi3aBUVJEkNYgUSEFIWrvzP47/8Y1j6+UOzZ0ffesc5/8AOImL+fN5j701Xpf4ripRUxbM+cenbTltZae1Lfv/ZPx4anx5R8zsmMY6IfQZbcbxHjBMg5YcHAJhYXV8HISVUFCEKA+2Vipq4HGkRIGawOclgFISBN9WNGTPmS5ZtfwHMJQYkuI5A4EqHH+bEbFohVwjYeZ+k5D8w16KcFTUeGMkV6uuTjzLqtyta5XqLy4NJEAH15XKXAx6yqK2rAwEWMzKOY+9Ih06sGxJ75mCqAVhhGP4hlUr9a0/9LZ7H85gqpvZ/QHPvgwYlkRUBPB2G4aNSyjNQzq/R16OdFKooDHy/z5kira2JpfYg5LPYowmwwoqwouT7N1mQ/4teHlfcgbBM+pQCwI7jjAPwKQCfsuyoUF09fuNXv/bVzV/56tfbibgYKVVQURRwrOSIiufRWiOOKBYBYAFYGpqEsHoM03qHQaIEQ2sq22b0Vl1sJxkbuewUSyQECQgqeV6KGSKdlr1tf7F5y5aVlrQ31NXVnFIuug5TjnNZEATriOgXQ+uTEJanqSRjJ8Ch7+vkOCERUXVdTYZIZOKcBvFcollIi7o3b6nf2ZW9114T1eMmZ9xMCn6plCEhiak8/Qkh64nwk8ZOOfudDz6cW7fp1cWJxeCiG25IHTJu3IF1VXVfS2cyF2dqa9HVvkUXdTQGwMrmiq2GeIuUS6TrUowz6+prM5GKykmi4p6uicGugooUR0GgOLFKMQsiSGCrxUbatlEQjIIwoBAAOJaTsmyrFkDtPv48umKmTEy7smJC35PrijAMO/Jh+O10Os17+5gXyT4LS0FEqlAo/cG27TMBuP25bxSpB1asWPFEX3NsKKXQV6ViEBVjKhaLVygpG6WUB2DPvDbFdn2PbMuqgmVVAThoX1kr9KJdGABqamp029KlF0ydethH0mn3Z0Qk4rDM/xcEwaNE9ORQOy4Sc5ySKR7z8aKFAbBi/bpuSqR1FMlIq10+s9JaR1HEmllBRT39Q2vFYKCmoe7tdsGaVZVKP/+T+x9cw5rJTaUnumn3oEx1dX3o+9orFhhAkZnDnd0n5SNi0t0lr5jSSmuqkPq07ZiRW82BtAPLWGiCJRkFYTCkqo6tAzoCyrkIKlPC9le4Jtfo6/d3lo62F9chDHy+gWSukV4YfmN0be3ygZgAp07dsy0G1rrvzQwgk0nd3l0oaNtxbAlEQggKw9CJA/RUTjAshNAQImQg1FpL0jodBcH9M2fODPsanEViAJI16T3fpkisCFVVVet83/+OlPIGDIxZvLLvVTrs7o1VHW9rf3v9oqBCJRKve2/nipBybHvqEUdMPz+ddn9RKHiUTjs/i08+pUOlvgDgo0O+xCHalQMg7bAbCCK9m2RNBBCRIGyfmj1WRwLfjyzbTruZqqOrGuqPji2dUFGIIAgiBgsJSGZItYsjoVE6JGIhJYQop9kEUV+bm4AoJKMgGAVhMEgGQc9gwECE7u/vNQYpNXF/iQDYvu/fUFtV9dsBTj61Bw9KOgzDXgsf2mp27QYwZwAEbR8FnxqIyWugVqUc75ffHEbRGbZlXYjylstAjW0aMkuJ7mdPEjsUortrUwYA25afYeY7iOjnQRCcadv2eRpaC6Kzt2wpTh6q7I+CLU3o38Y7gUC7ENpbJk/mtK95N71IamatfY+TTQENpnhnVSZ/Y2bIKHr9nNHcDORysGXaAcHW/XmSyl5mnBSHhzTdTy0IhtfVi4oA2EEQ/LvddT8/wKmr90yI9NMfKclDwcxWxUvu6jWX51oV3+lf/x+QdM8DVPFbT+1wwbK+ECn1BAA79tLf92aj/s9IDICKpdJrGze1Ly0bafQuMnLqJNTzTN/3zyr/jX6ltY4EwLZljU5VyZN6YY0YEIp+XmvNuq+3onLQK9iuW95ma2ys7Bzln62tERE8UKwV8S7HsWCwZLCkcmtsPW4tBMBUVFJ39CgF2+HraDS0SkPrfs0DBAJp4sj3zdFGoyAMwgMJGAVhB5YDAWn7fvhMFEUfHl9OJTtsYp5zP03XcVQ+RURRxUvt6jWbZkcV3+nfJKTUAPTTgRt6cTtSA1FHIZ//cBRFq4UQvc6xsN/owADAdF+kdY7LkRN3V/9aCEFCiE+3tLRI17UeYebn461JdhznkMEudHNiyZDV7UJaeSEE+nI0lAEIIlhCpHdiXaJcLqe1UkWU815wP9UdFkLAdqwNvuu+WtYPtkZdnd7aSgBgW7KaiJzyKYS++TbFZkEQuMSaunamhBiMgrCn04ShQjkAYIdhuKRUKlxQVVX1yjBMPrVv7TcOQCRFjYHde0r8Eerr618MgqBJab0OZUPtG0lJAElatGjBk3eHQfBcPL/p3c1/DJx2zjnnHExEXSBa0XMpYNzgW4DKP46YesAGR8jnpG0zqI8KMxFCFR4UWwt2OLZKJW8JNPc/QxgRkxCsVLSxedasQvy3rR+ILRe1NfV1qaoqlL0p+3w3tiwL0pKr0jj4VQDI9S/0u8EoCEZF6EU9KAB2EEUPd3d3v6OhoeGl2O9gwOuI98SBjYEXXnhjNQ7raMDHXqwkyKqqqid9z3t3FEUvALCVihSw31vW4lNMVsd5553na53kEtztliNLIdLpdHo0M5PWulQxgIZAuSJuYRYziUJt0z+lbcenHfsw0LUGR/rQbDYrGhubthnbrfHKnln/zfdKGgzRn+BVzAzWmorF4n1ExHEKaq64UflpBCZZtt3fIFMsbRuK+eGmGRS0tLCEyexoFIQBfaByUIE3spLA2Jry2fLD8LotmzadN3LkyJcHM7+E3KMF8b41B8gBsHhIIYLBWZGWUzJXVVXN7+4OzwyC6CEpLQvlhFp6P+/3AFBTFvTRX5VSpXgc8G4EbBQEXCQilkL0ZBFkpV4ZioK3xeXLWKk/RZ5fQtnDuneDglmoKILjukfbp58zngicZGksL+wbNTNT5OUXBJ7/hJ1yBaEP4dTjKpJSimIh30Gu/AMAHLlt0iZqamrS2WxWlEqlk3U/cpmXtz6IfM8LhYXbYqOEUQ6MgjDgE+Sm+LneUJ1Law2tI6XL56GtKFJrgyC4MOU4n4wz6Q3qtoLWmvagzXDooftOXasBUBD2pL56qySMGJFZvW6ddW6k9Q/iHAVSa6203n8VaM38JiLiTCbzdBiqfwJiV4qRBgCl9YsvvLDleeZVKaX1IRWr5tVDUeYckc4yi8ZDJi22LOv2dHW14F5GNSUAWittu85Yh72ZYKZl06dX5nHhZoAuO+ecQqjVNzyvFJKUktG7cOFcjjmtLdcVfsn76ZdOOeWF7fMjxKGU+YBzzx2dTqWPU1GEvsZWYWaVqa6WAtRy8RFHLMhms8NtG9QoCPv+3MCUz+fnKKXmobz/qt4AbcgAlBACQliWUqxLvn9dV1dwsuu6tyZpeQdzsL300kt7ZAbY5zQ5tecCVg+y30WSknnKFPJsKb8VBMHZQRA9KYSwhIBEnItgf1obxD/e2tXVNao8H9CPldZBHFZ5m22WCqWBFPMVxx47vlAqjT2egMPLxgP1iu/7jw9ZF21uBpjJTVvfivzgedt1bQar3vQjDWgnnZJuKnUBiPjItjbekQLyxdNPnqeK3qXMGo7jSiKKeGuci8T3IXlpEEWWlMJJpe3NGzbc/mKx66fZLIvcdvUxPVZIlHROFVJM0FHUt2BdzMp2XTvwvBeqa9Nf3tuB2wz7oYKQ7HnV19e3e573IaX1MyifBd8flYR4G0EnmQytMIoQBOGfPa80K5NKfXLkyMzLib/BYJ9WOOigg/YsbPC+Vvm85wJjKOJjxD4JxMwynU7PXbfulbeGYfglrfVqlE85SK016x5lYZ/WFwQAZVvyIGnbHyxbEZxHI6W+moyR8rFWzXHuCQnA8jzv/6pSqZsAQFjWRZZluQCImP5SXV29fqgcenO5nM4C1DRlyqsp2/4IMdpdN2UBiHY1fuOMWCIKI7Zt99wf/mPuQc3NzdtsM1QqCZ877aTfFrrzHyvm8+ssx7VdNyVJCEEkBDEREQmSUliOI9102g6DMN+5aeN3Oh68/6KrzjvPzzWDt/cLaCsrJMRMF9muK5h615HKz8WRnUpZYO6QQny0acqUV5sB2l36asPQsF8FSqrI9vdqqVR6L2z7XinlVJSdjeQ+9ChxoBJAlNM5oyJLXZKHQQACUaQ6FOv7As+7qra29pGyACsnmhksf4OdL2b6/bAcBME+ZEgop+vak1hvQgh3KFansXBRLS0tcsqUKR6An3V3d9+aTqc/DuBjUsojKhYKXKFQvz7q3j7SOK5tf8PzvH+mUqnnUo7zi+5icX3Kti8jIY6SJBytI1ZKPQfgZ+l0+hoAKJVK51hCfBQAK61fk5a4YqhXsjki3dLSIpsOP+Spmxcuead27FvSNTUHl7q7GUQRMwtKul1F52Nm0kqpqtqaccrzP0FE384yE7bLDJsoCf9DdOs37r57bn2hcKEt7fdZtpxqu64DzS4JCkLPCwI/WGcD9wSed9OXzn3bM/GNaHvlIFGgfvvU06dalnVW4HkaDLGLlO1ggImgmdnK1NTZYeC/wEpf+LFjjnyipaVFNg3tvGXYjxZvvZ2+JREp3/ePklL+Q0o5EVsT+vQ2HeyA1Y0QgntzvYpV5U4nZqU1VKTWa60eA3BPqVT614gRI1YnE0VZJgzN3l0SonjFihXu1KlTHwRwUixgers81gCk5/lPrlzpzpoxg4K+hj3eG/1q48Yt548a1fAn9CJr4I6aMF65/jKdTn9pKI+cxv2jx1F1w4YN1SNGjDhZMb9fEp1FRFPk649wauxbpgUNwFFKPR1F0QdSqdTzALCC2T0wCA4norowDL1SqbR81KhRXQAQhuEZRHS7lHIsACilPmxZ1h176zhwkpHx2gXPTpA2fgjwh+xUylZRBBWG5VML259EYGhhS4q8YHNnd+HNX3nbaSu39xVIqPz7uZ//vHvqBReMs5XMMOtMJp0pdeUL/mvPr9t41aUXdlV8nl83dzKXA3AQ4TePL7ivqq72rKBUUjtYjPUknCIhYNk2pG0jKHkBEd0Kcr95yYwpr26TidJgFIShmMyZ+Tit9V+EEJP2lbJHUcSxaTGvmTcppTYQsJSZFzPz4vb26LmJE2s3VWrx8QDUQ1zHFFtt0lrr+UKII/tzHd8Pl65ZY8+cNo38fUFB2Ly5o2nEiLrf78m1giD4jeu6/7U3hND2igIAbNmypS6VSk23LOtEZn4LER1NQky0pEztq3NApNQGPwi++sKKFX849thjX5eEvVgsThJCXGxZ1pellLWxsvBlx3Gu2NuxQirvf9OitjcxiSbFehagDwWjDkSCKV7Vb53KteOmrEJH531Be9j0hbef1B1bG3hHfaAVELtarbe0tMi2xkbO7aQestmsyOVy+rePL/hKqqrqx1qrCFqLeJlSmUG37N1QThfeRcDzIJorJLdcMmPGou2f12AUhCEdZKVS6SAAh0WAsiwIUuQAIAUQlCJAQibhcyUYSgFSJsHNWaH8mdcvBAG5k50Ly7LYj3ySW5OWcfKtym8opQiyJwEQR4h8HegOrXUQhmHni6XSxpkTJxZ39GzJdffWwEqE+apVq1ITJ068UghxIIBibEGQGrAEkY8k4Fv5F04qQ7GyJUQ6VGphynG+SmUz6nBWEAQR6e7u7relUqkcE5VEWZGj+JnjJLrlkLEVY0yVncHY1koTEVUx8+2O41y1NyfGRFGIlcttBMXSDRuqJ9fVTRLMB0qBiVLKscQ0QmtdRUK4YHYAyFhDJCIJIbZavuJ23P5+Nogkyn1XI4kzQJBgCJTtzgIEFknWHsCn2AG5sl8wM2kgBUAKogjgkEBJGynFLAk425Iy5QXhc0rpf4Wh/6Ioj5da23WPsoQ43bKsMfE4fFkp9RXXde8cLsKKmakZoEoBfdvy5aMirUdYIi2SHKZREJAgIklEIiTyokhszm95/kunnFKqnHt2chPKNjfTNhELm5vR3NzMvRqHzHTTM89Otauq7NDzNBwHQADLcTgpm9LasmybOR8EBKfjY8ce+lqlNaO53CbmSKNh70zq+7wWR4Qkl0ALt0jj5WsYDGHU0tKS5KzYL5yXu33/aKXUzZFSJd4JURStDcPwykKhMHG4zhdZZpGdO9fafxZ0TNm5c63sftLPjAVh/1AS9qVn5W1G0z6gXSf+Dzt4DurFc9K+aF7sr6K2j7Un7aZ/7knf7k3mRerjtSrrWQNAsVg8UDrOiaT14UQ0QmtNinkzA8sKUfTomOrq9fEzSxrmDnKJVWF3n8sN4XjKZrOitzkTjLXAYDAYDMNiYdAbi0BsNTFWOYPhjWhBMBgMb2xFAVutIVwx9zHKKZ/NitZgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMhn2fFmbZ0tIiTU0Y+tpvsnPnWi3Mpu8YDAaDwWAwDGdMoCSDwTAgXD1/vm3bmYsk8bqLjp5+D5gJJgiRYWfE/WMus/XCM21fZq3H6DB8pbtj09WXnXNOYTgnbnujsF8ny8hmsyJbDrdKplz76hzCNLzqignDsN32Zp9Kku40jB8/vqqhfo4m8UNgzxI2DFS/yWazwy4PCzNTNpsdLn066c9DXpakf9QAxOBpUohP2k7qu/Xjx1ebmc8waOxoD7SlpUXGk8XeLtc2A7Flb8WBjyfQHQm7ZHLdO4KuXKYku+D29bc3J9Xt793S0rLX99t33Nf3Tp+aO3eudcOSZ99385JnT9lRfQ1VG+1oH3tv7m1z3J93NK72Zv/Zvn2yzCKuJxricggA+M0TC7993aIlHVfPnz9qb/UfwxtgxZn8fv2SJZOunr/48JaVK+sqV1p7vVzPPz/pmkWLps1ltrbR5A2v40/LXhl5zRNPT79lxabanU1se2G1bu1qoh1SZaqir1/7zDOHtTy6Jj1c6mlvjrG5q1alrlm0bNoNTz970HAbYy1Ll464dkHbgVfPn28Ph3I17mUlN0n9fO2Stm/MWbS48JtHFo3Zm3O1YSvW/vQwWWZBRPq6xcveI4TIqVAdSUIhX/D96xe33SMC/bWLZx61MpvNilwuN4TpUMvlumXps+/XTN9ReX8aQWLl0mc7r1+87MaJuuG75xw7fkj23JJnv3PZCzN8Vj8Lw+irnzx2+tNJytYckb55+fONAN6TyrifaJo8uTQU5UrucfuKF69wpDOvu9TxlCWc33Wp7lOla1eH/sboxrbld4jQ+xYRvTZU+5PJfVpWrRpXKPm/Dz1/GjOJ6979vm4h5bKQ+RdE9OBQ75dmmUWOSN/49OL3sGPlogiHCQ0qVBfy1y9edidHXpaINg52uZLr37Bq1TgqBbcxoUGQeGbyYYd+djaRN9TtdNvy5aOCiHOru70Pkw7rQiJc37b8RYr0jy855sg5Q9lOSRvdtnL1uwTzm1Ky7srOwoabC1rPYqGrHat6/c2L2r7zsWOnXzeU5UrudePS5T8B0QcCz3PPfnpxIIX9iiBxe+aoab9tIlJD6UOSK8/bmpkoKJXMYmmYsN9oaMlgvOGZZ7+Zqar+EzQ/T0pfYIHeohX+R5I8xsqkFl6/fPkJuVxO8xCZ0LPMIpcjfcvSFV+zM9WtSuv5zOIcR1qnkdI/kZZ96Xq764+cmEAHedU3ffp0AgCf1Tinquos1v74nr/PmycAIAzCw8MgeK9dU+MOdTtGYXTa5i2b3qMiuksTFaH1+2xpv1mF0Vcg5IfgVs3768qVY4d6hVwqlUIOeR4J+qWbdr6pGHOU5tHpVPqBG5c+fz4R8ZD2KSJ9w9Ll/5WqH/En1niWBJ1rkzg9Uuo7JOXHpJO5t2Xp0urBrifaemVP+epuUtzFSr8jAIZsVRoLPLQ8t2ai1uIxIvHBMAp/DKXPYKXO5VD9O1VVdc1Nzz73GyLi7NbsjoPK9PgejrSmdGzZcvGrG1b91bLsPBHe71jO+QC3peobrr257flGIuKh2gZJHlwH/gql+GbLsr8rpf2DSAUvOGnnquKy534OELJDbNkgIZgBsqRnFARjQRjQCUIQkZ7z1OKzrLTz/SDwv3DJ0UdcVfGRR+fP5xuXVb3wIAK+8Ya5c48H4A+21p5M5Lcse/44CPqhVyhe9vFjjvxpxUfm37T42YcytbVP3fbcixd/9PBDrmthlk2AGuw6U2Goi93dyrLTxR3Up0eCOtHRMeRtqZV+jSx5CVn2xy86YuoNFW89c+OSFfcLKRZuKfo/JKKPxxP9oK5wkv5x0ZFHbgaQ3e7tH9+4ZPkCDXwewF3Nzc1Dphy0PPviYUUd/dIvFb//8aOO/HbFR564buHSB6vqatu8UvFLRJTLzp1rAYgGqYYYAC4+6KBOIvrFzc+/aCkvnL5pzRoHQGEI5wDc0PbsHCGkI0J5xKeOO/q1irfvv2HRsvvcupo7rlvc9ugniG5taWmRTU1NakjKpnV73YiRUwodnS0fPfyQr1W89bcbl698VLP6b2b+A4ChsWrGffrjxx1z7XbvXH3DoqXPsBA/vn31Sz/6MNG6obW2CoCZAk8YBcEoCAM7BgFAOPaXoyBccsmMw69qaWmRbaNHE2bN0tPb2qyZMyi485nnL5Upd4E3evQ7iegPscY+aJNEsoJQzB8mjdWZGdN+3tLSIkePHk2/2biRPzd6NM0++oj5Ny1Z/l+UkpsBoG3InL8tELMUluy53/RZsxgAJJHUDCuUcsgtTBpc79rW4otmTLshWVG1ATy9DVbTDFp57dNtvxSW+MJNr7xy2UVEm/fGUajs3Lmp6iCQecfxA89fZLnOSQCQy+X0YJtlkz5VDIMPanBp2vhRP8lms2LCu94l1x1/vMK8eeITx81Ydv3TS/+fdJwQAJpnzVK5Qa6TVkC0MMNb/kItg62oUBiSvtPY0iKJSLWuXj1dSuvtKored/Gxh732yxUr3PGLFkVobMRogGYT3Xn9orZLWOAbzHw7DZUwBhCqwI1Cpauran6XZRYTFiyQDanjqWkGBQK4hYT4buuLL9Y2HXJI51BvyQDA1VfPt7sO2uwcOHFiWNLiUS2lZ2k5BsA6NDcDudyQjS0yrljDin1/iyHZI2aWIJ7KSj+SmFRzs2dHOSLdOH16yMyU797wvOd7rwktZw7J5BVPQkqpUwn0cBORahs9mmbPnh21NjWp2bNnR9lsVlx01OG/+djUqX8ByntxQyKIJe90EmIiAYBK+fyQj1ZNcEByETMTWlvRRKRyRBrLWlU2mxVuVfo/Uso6kfcP7plTBnkiBYCWpUudG5Y8e9kNzyxdeED96La6MRMXT6ob1SYd60NgLgzV9kJjrEBq1sdq6BWnjR7Tncvl+DMzZ0Y5Ip2L+9TH3zTj6oumT7u+0goy2DQRKUhWANDhWUNTH42NAIBi3j9dBaFvuzVPMjNtue22sKmpSTURqY0AMzMR+H4JecC1L744GkQ8VE5wBEkqjMKuQsnPEel1d9+tMB0KzGRLymulU1BpZwitLUREfNPitjNvXLr8XnGS21Y/duLiLkVLPB39QanIIiH2yuLRnFwwCsLAmw7KEycIcKSgzubmZkI8cWy1qhEfcuqpJTBKINgA0DZv3mB2xh4NnZXKKI40M1OySk/I5XJ75bi4VS4hdKitHSzj9xoEgKH9HQgCzuVyOuXKLaw5gj005Wlubqbs3LlWPsRNQogfgOSNKce+2Em5n3TSqUtAdD8LkRZCDEmtNScDV7AtWfgAE5d1Pa7oUxpvMJh1HREFLKyAiLi5ufn144qFx8RSl0pD6lujATAJ0tIX280QDCIJEELNQ+WgKIiIr1/S9gHhuP/USm8klv+dcZyPS9f9uC2tH1hCakbIe2n8k+37RkkwCsKASWGONWIFxiuhUsfncjndNm9eT0CbVkA0trTItctWTbRtawIILwFbTeqDNRaTM86WbT9LTNOJiNHa2qMlxysYblmz5tCWlWuOGuJ6C5k1KyhkmUXb6NE0GkhiIzAATuvqIZ8kSEPpSB1IRNw2enRPG16zYIHMZrPC98IZACsieq1SYA4GZQfTnJ42adIUK+V+UOvoE5ccfcSVF04/7N8XHzF17seOmPqojtQasE5prYdkUku2GLSmNQAfMJdZtra2iuR8fRIs6c/PrjrozuUrT9h7ant+iCcy+YywrBoVdB+czWbFvB4nSab2BQsEEbEmHKW17kJDwyYAyO1IiRgsFYF2vDKOQi32QuOAlf7fMAwf+PgxR174yTcdef9Hjpz20CWHH/oIQz6iGdKPSAz2+NpZ4QJpFASjIAwgrfFzWLZ9q5NKnXn9M88clZs9O0r2gpuIVGtTkwq1/5lIRYJs8ScAaBvsCSK2YtiSWqUQM297buWJFY5RlKz0it2lf4ZKfSnR8AezSG1tjQwAoa9e1lrDBh2cI9KYNUvPJopyRJpJnwZC2JCuVkPdliwpbzvuW/6wevXBudmzIy7XCX1m5swwl8vpKIw+TgJPfPTgg1czMw3FlowjZXUURYgifg4Abpg7N9XSUvaPsBznUDBU81B5fLfGFiDXvkumU5NWPbP07U1NTaoZYMT1QUTcqYI/lcLgZ3GfGrIJl7RgEHFKZ4ZE+CbbeKOchkdVFG1EpC7L5XJ6NlHslEn8mZkzwxuWLh1nOdZHBdGfPzNxYpGZxVAd4RMAiFnbWu/gfgoMBmqGbGGQlCqtwmglANxzzwr3lytWuABgkZ5u25YjmYd+ccDlEGmO65rwykZBGNhJgplpUvrQa1npJ6Vd9cANTy+ZNbfsvY05jz464oYly7+Sqa39ulLRdy8+7LC1yepwMMvVRKSZmezDp/5FQf0r1OqeG5YsPzUeonzb8uWjbl72/HUgOoC0/tlQaOy5XLlMLx935MtSiHlk2z+Y8/TTJ2LePHHzokVVt7at+Ipf8t/KrF868+AGb+hNQkKFUUQdW7ruvrXtubcQERMR3/zIojE3ta34nZTyVFtYidfUoAq+5mS1VZCrSXOnY8nmXy1dWn3J7NleUxOpm5cs/0Shu/vtTNwxfYgUhKamcvt97Iip93IQ/NlyUq03Lll2NgACEV89f/moG5etuNJy7DdRhO8AQGtr65CNcy4fa6DRGT0kk3xyvPS8aaO6lOL/TdfWvveGJc9edfX8ZeOBclTJOQsWHy/I/ieYO0no7zIzDcWJk63YYECG4vXe+UIKBrNUpdJQHZElABBCPG2n3Y9ct3DJMeedN82/dNo0/7ZnXzje84JvBCW/YAsx5MGTmDQBEIXuyARIGibsF6cYkm2G2VPIm7N45fmWDK+FZc1dWTvqtWsWLi4CYrQGW4VS4WufftMxP46Pig3FBMYAqIlItaxZ8wGvu3STBv4z5+mla7FwSeh7epS0ydPAuz98+CGL462SQV8RNwMUH5X7bIGDu12n6onJ9dZ6ZdmpKAyeS1WlPuE4zicAhIMuhbevMK0aVBDdJcAPKsZfrnt6SRcTlQLwQTZrT0f63RcedeSDSVCswe5XWWbRRLTlxqeXXUKWuCEVqlVzFi55ybbt+iiMXvHz+d9V1dYc0USk4i8NSZ9izdS64MVLgoy+loV13zVPL3712gWLS5BqLBRppUofvPhN0+dmsyyammjILEFahVIAUWc6rYZw/Osss/gU0a3XPd0GsuVVQoSfnrPwmVc7sMSxLGsca14YlbxzPnnisa++NMSB0hiKIaWfEvbr6kQqCSGioBRFQ1Oe5mYwM920YsU3SOFQsuT8OU8vWSKlpDAMRzq2/T3hWB+NhJJDsWDZRhgxWAsZpOoaQiOah4ls3Z8epvLozvVLlp+gAv80DTTYlrPctnnuhUceuX5vl+umRUtPC4DTWWvHsq0lnZv8B784+00dQx3dMTmO96ulS6trtXVmAH2YJe1Vnauf/+v/vOMd/u9XrZvSdND4VUNdR9cuXv6YJbDx4hmHn3/DY08fpFPiHZGmCdIWyzjf9Y9PnXLKliQWwFDX1ZzFi8eSprMJNJGkWLF6xhF/aQbE7SvWTP7IYQe+OMSdquc45Q3PLHuzr6O3UqRqnZS7pNTV/uDnTj31tSHuUwSAb1+5cmwYRSMumjZt+VBnckz60JxHl44QtfIM5QdHQVKnFNaCTxx95EPA1kiiQ1mu2xavbvCEP75m2dTntlfW5ixdOiJjVY1ZcdhBK4awTxMAbmxslOc1f2+WCtRxJEVnFKh7PzNzxpo7Vqw+xLP12kumTPGGsjzXLVwx2hbR2JXHHLFsSMe34Y1DkhRlR+/t9cQoOynX3kuMNHxinSdtdt3iZx+7cenyP+ysrfZaXe2l+/a3r/MwLO9QsKsxnn2D1smuxpupI8MbdQCI7Ny5VnbuXKuFWQ4XYdjS0iIry7W3z/0m2e+2L8+Q11d832sXtz19fduz/wDKGfiGc10hVvqGQ5bQ4VJPezMT6I7aKTt3rlVWGoZnnezV+oozpm4/R+7NhHZGQTEYDDtVEOYsWvKn6xe3Xb2rVY7BYDAYBh/LVIFhWBDvV7/y9PwPTwiOUuU/kTnuZDAYDAaDwWAwGAwGg2FHlLcVzNaCwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGw17g/wPrcsdXfvyo1wAAAABJRU5ErkJggg==';
+
+var CIDADES = [
+  { n: 'São Paulo', lon: -46.6, lat: -23.5, base: true },
+  { n: 'Rio', lon: -43.2, lat: -22.9 }, { n: 'BH', lon: -43.9, lat: -19.9 },
+  { n: 'Brasília', lon: -47.9, lat: -15.8 }, { n: 'Salvador', lon: -38.5, lat: -13 },
+  { n: 'Recife', lon: -34.9, lat: -8 }, { n: 'Fortaleza', lon: -38.5, lat: -3.7 },
+  { n: 'Manaus', lon: -60, lat: -3.1 }, { n: 'Belém', lon: -48.5, lat: -1.4 },
+  { n: 'Porto Alegre', lon: -51.2, lat: -30 }, { n: 'Cuiabá', lon: -56.1, lat: -15.6 }
+];
+
+var PARCEIROS = [
+  { setor: 'Construção de edifícios · Grau de risco 3', nome: 'Estrela Engenharia', texto: 'Plano SST Flex com unidades em Cotia, Sorocaba e Piracicaba: uma gestão só para obras em cidades diferentes.' },
+  { setor: 'Construção de edifícios · Grau de risco 3', nome: 'Vigent Construções', texto: 'Atendimento por obra, incluindo a do Aeroporto de Guarulhos, e avaliação psicossocial da NR-1.' }
+];
+
+// Ato da narrativa SPIN mostrado no HUD, por cena
+var ATO = {
+  capa: 'Abertura', fabrica: 'Problema', viagem: 'Problema', altura: 'Problema', terceiros: 'Problema',
+  acidente: 'Implicação', prazo: 'Implicação', virada: 'Necessidade', 'andar-0': 'Solução', 'andar-1': 'Solução',
+  'andar-2': 'Solução', 'andar-3': 'Solução', 'andar-4': 'Solução', 'andar-5': 'Solução', 'andar-6': 'Solução', entregue: 'Recompensa', final: 'Próximo passo'
+};
+
+// Câmera e estado do mundo 3D por cena. obra = progresso do estádio (0–1); torre = andares visíveis
+var CENAS = {
+  capa:      { pos: [44, 20, 40], alvo: [16, 3, -2],   obra: 0.55, torre: 0, modo: 'neutro' },
+  fabrica:   { pos: [-12, 9, 18], alvo: [-29, 3, 0],   obra: 0.55, torre: 0, modo: 'fabrica' },
+  viagem:    { pos: [-13, 4.5, 19], alvo: [-15, 1.5, 7],   obra: 0.55, torre: 0, modo: 'viagem' },
+  altura:    { pos: [-2, 12, 12], alvo: [8, 6, -11],  obra: 0.55, torre: 0, modo: 'altura' },
+  terceiros: { pos: [28, 5, 24],  alvo: [18, 1, 11],   obra: 0.55, torre: 0, modo: 'terceiros' },
+  acidente:  { pos: [-1, 10, 14], alvo: [9, 4, -9],   obra: 0.55, torre: 0, modo: 'acidente' },
+  prazo:     { pos: [16, 9, 14],  alvo: [16, 8, -14],  obra: 0.55, torre: 0, modo: 'prazo' },
+  virada:    { pos: [2, 9, 20],   alvo: [-9, 3, -3],   obra: 0.55, torre: 0, modo: 'virada' },
+  entregue:  { pos: [46, 24, 40], alvo: [16, 2, -2],   obra: 1,    torre: 7, modo: 'verde' },
+  fundo:     { pos: [6, 34, 52],  alvo: [0, 2, 0],     obra: 0.55, torre: 0, modo: 'neutro' },
+  final:     { pos: [40, 30, 52], alvo: [4, 3, -2],    obra: 1,    torre: 7, modo: 'verde' }
+};
+var ESC_TORRE = 1.35;   // a torre da clínica é maior que o resto da cena
+for (var k = 0; k < 7; k++){
+  CENAS['andar-' + k] = { pos: [-4, (1.9 + k * 2.6) * ESC_TORRE, 15.5], alvo: [-9, (1.4 + k * 2.6) * ESC_TORRE, -6], obra: 0.6 + k * 0.06, torre: k + 1, modo: 'clinica', andar: k };
+}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: ESTADO ═══ */
+var estado = { slide: 0, kanban: {}, selecionado: null, eventos: { aso: true } };
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: HELPERS ═══ */
+function $(id){ return document.getElementById(id); }
+function moeda(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+function numero(txt){ var n = parseInt(String(txt).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? 0 : n; }
+function pad(n){ return n < 10 ? '0' + n : String(n); }
+function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
+
+// Anima texto numérico de um valor ao outro
+function contar(el, de, ate, ms, fmt){
+  var ini = null;
+  function passo(ts){
+    if (ini === null) ini = ts;
+    var p = Math.min(1, (ts - ini) / ms);
+    el.textContent = fmt(de + (ate - de) * easeOut(p));
+    if (p < 1) requestAnimationFrame(passo);
+  }
+  requestAnimationFrame(passo);
+}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: NEGOCIO ═══ */
+function calcularFap(func, salario, rat, fap){
+  var folha = func * salario * 13;
+  var base = folha * (rat / 100);
+  return { folha: folha, melhor: base * 0.5, neutro: base, atual: base * fap };
+}
+
+function calcularAtraso(ativos){
+  var perdidos = EVENTOS_PRAZO.reduce(function(s, e){ return s + (ativos[e.id] ? e.dias : 0); }, 0);
+  return { perdidos: perdidos, entrega: DIAS_OBRA + perdidos, estouro: perdidos };
+}
+
+function calcularRadar(kanban){
+  var porEixo = {};
+  EIXOS.forEach(function(e){ porEixo[e.id] = { soma: 0, n: 0, ruins: [] }; });
+  var classificados = 0;
+  CARTOES.forEach(function(c, i){
+    var st = kanban[i] || 'pend';
+    if (st !== 'pend') classificados++;
+    var p = porEixo[c.e];
+    p.soma += PESO[st]; p.n++;
+    if (st !== 'ok' && st !== 'parcial') p.ruins.push(c.t);
+  });
+  var eixos = EIXOS.map(function(e){
+    var p = porEixo[e.id];
+    return { id: e.id, nome: e.nome, acao: e.acao, valor: p.soma / p.n, ruins: p.ruins };
+  });
+  var media = eixos.reduce(function(s, e){ return s + e.valor; }, 0) / eixos.length;
+  var prioridades = eixos.slice().sort(function(a, b){ return a.valor - b.valor; })
+                         .filter(function(e){ return e.valor < 0.75; }).slice(0, 3);
+  var nivel = media >= 0.75 ? { t: 'Exposição baixa', c: 'green', cor: '#5EE0A6' }
+            : media >= 0.45 ? { t: 'Exposição moderada', c: 'warn', cor: '#F2B957' }
+            : { t: 'Exposição alta', c: 'red', cor: '#FF6B5E' };
+  var leitura = media >= 0.75 ? 'Base sólida. O ganho está em manter a rotina e acompanhar o FAP.'
+              : media >= 0.45 ? 'Há obrigações cumpridas, mas lacunas que uma fiscalização ou perícia encontrariam.'
+              : 'As lacunas estão justamente nos pontos que mais pesam em fiscalização, acidente e processo.';
+  return { eixos: eixos, nota: Math.round(media * 100), prioridades: prioridades, classificados: classificados, nivel: nivel, leitura: leitura };
+}
+
+// Projeta lon/lat num plano simples para o mapa de rotas
+function projetar(lon, lat){ return [(lon + 64) * 13, (1 - lat) * 11.5]; }
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: RENDER ═══ */
+function renderMapa(){
+  var base = CIDADES.filter(function(c){ return c.base; })[0];
+  var b = projetar(base.lon, base.lat);
+  var s = '<svg viewBox="0 0 420 400" role="img" aria-label="Rotas de obras pelo Brasil"><defs>' +
+    '<linearGradient id="g-rota" x1="0" x2="1"><stop offset="0" stop-color="#6FE3EC"/><stop offset="1" stop-color="#F0D2A4"/></linearGradient>' +
+    '<pattern id="g-pontos" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".9" fill="rgba(168,216,219,.14)"/></pattern></defs>' +
+    '<rect width="420" height="400" fill="url(#g-pontos)" rx="12"/>';
+  CIDADES.forEach(function(c){
+    if (c.base) return;
+    var p = projetar(c.lon, c.lat);
+    var mx = (b[0] + p[0]) / 2, my = (b[1] + p[1]) / 2 - Math.hypot(p[0] - b[0], p[1] - b[1]) * 0.35;
+    s += '<path class="rota" d="M' + b[0] + ' ' + b[1] + ' Q' + mx + ' ' + my + ' ' + p[0] + ' ' + p[1] + '"/>';
+  });
+  CIDADES.forEach(function(c){
+    var p = projetar(c.lon, c.lat);
+    if (c.base){
+      s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="16" fill="#6FE3EC" opacity=".18"/><circle cx="' + p[0] + '" cy="' + p[1] + '" r="6" fill="#6FE3EC"/>';
+      s += '<text x="' + (p[0] - 14) + '" y="' + (p[1] + 30) + '" text-anchor="end" font-family="Sora" font-size="11" font-weight="800" fill="#6FE3EC">Fábrica e equipe</text>';
+    } else {
+      s += '<circle class="cid-halo" cx="' + p[0] + '" cy="' + p[1] + '" r="9"/><circle class="cid" cx="' + p[0] + '" cy="' + p[1] + '" r="3.5"/>';
+      s += '<text x="' + (p[0] + 7) + '" y="' + (p[1] - 6) + '" font-family="Sora" font-size="9" font-weight="600" fill="rgba(255,255,255,.55)">' + c.n + '</text>';
+    }
+  });
+  s += '</svg><div class="mapa-leg"><span><i class="lf"></i>Origem da equipe</span><span><i class="lo"></i>Obra possível (ilustrativo)</span></div>';
+  $('mapa').innerHTML = s;
+}
+
+function renderTicks(){
+  var html = '';
+  [0.5, 1.0, 1.5, 2.0].forEach(function(v){
+    var a = Math.PI + (v - 0.5) / 1.5 * Math.PI;
+    var x1 = 180 + Math.cos(a) * 118, y1 = 170 + Math.sin(a) * 118;
+    var x2 = 180 + Math.cos(a) * 106, y2 = 170 + Math.sin(a) * 106;
+    var xl = 180 + Math.cos(a) * 90,  yl = 170 + Math.sin(a) * 90;
+    html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="rgba(255,255,255,.35)" stroke-width="2"/>';
+    html += '<text x="' + xl + '" y="' + (yl + 4) + '" text-anchor="middle" font-family="Sora" font-size="11" font-weight="700" fill="rgba(255,255,255,.5)">' + v.toFixed(2).replace('.', ',') + '</text>';
+  });
+  $('g-ticks').innerHTML = html;
+}
+
+var ultimoAnual = 0;
+function renderCalc(r, fap){
+  $('cf-folha').textContent = moeda(r.folha);
+  $('cf-fap-v').textContent = fap.toFixed(2).replace('.', ',');
+  $('g-agulha').style.transform = 'rotate(' + ((fap - 0.5) / 1.5 * 180 - 90) + 'deg)';
+  contar($('cf-anual'), ultimoAnual, r.atual, 600, moeda);
+  ultimoAnual = r.atual;
+  $('cf-mensal').textContent = moeda(r.atual / 12) + ' por mês';
+  var max = Math.max(r.melhor, r.neutro, r.atual) || 1;
+  $('cf-b1').style.width = (r.melhor / max * 100) + '%';
+  $('cf-b2').style.width = (r.neutro / max * 100) + '%';
+  $('cf-b3').style.width = (r.atual / max * 100) + '%';
+  $('cf-v1').textContent = moeda(r.melhor);
+  $('cf-v2').textContent = moeda(r.neutro);
+  $('cf-v3').textContent = moeda(r.atual);
+  $('cf-b3l').textContent = 'FAP ' + fap.toFixed(2).replace('.', ',');
+  var d = r.atual - r.melhor, el = $('cf-delta');
+  el.classList.toggle('positivo', d <= 0);
+  el.innerHTML = d > 0
+    ? '<b>' + moeda(d) + '</b> por ano acima do melhor cenário · ' + moeda(d * 3) + ' em 3 anos'
+    : 'Este é o melhor cenário possível para esta folha.';
+}
+
+function renderPrazo(r){
+  $('eventos').innerHTML = EVENTOS_PRAZO.map(function(e){
+    return '<button type="button" class="evento glass' + (estado.eventos[e.id] ? ' on' : '') + '" data-ev="' + e.id + '">' +
+      '<span class="ck"></span><div><b>' + e.t + '</b><small>' + e.s + '</small></div><em>+' + e.dias + 'd</em></button>';
+  }).join('');
+  var total = Math.max(DIAS_OBRA, r.entrega), html = '', perdRest = r.perdidos;
+  // Distribui os dias perdidos ao longo da montagem; o que sobra empurra a entrega
+  var passo = r.perdidos ? Math.floor(DIAS_OBRA / (r.perdidos + 1)) : 0;
+  for (var i = 1; i <= Math.ceil(total / 7) * 7; i++){
+    var cls = 'dia', txt = '';
+    if (i <= total){
+      txt = i;
+      if (i === DIAS_OBRA) cls += ' inaug';
+      else if (i > DIAS_OBRA) cls += ' estouro';
+      else if (perdRest > 0 && passo && i % passo === 0){ cls += ' perdido'; perdRest--; }
+      else cls += ' obra';
+      if (i === total && i > DIAS_OBRA) cls += ' perdido';
+    }
+    html += '<div class="' + cls + '">' + txt + '</div>';
+  }
+  $('pz-grade').innerHTML = html;
+  contar($('pz-perd'), 0, r.perdidos, 500, function(v){ return Math.round(v); });
+  $('pz-dia').textContent = 'Dia ' + r.entrega;
+  $('pz-dia').className = 'n ' + (r.perdidos ? 'red' : 'green');
+  $('pz-msg').innerHTML = r.perdidos
+    ? '<span class="red">A montagem termina ' + r.perdidos + ' dia' + (r.perdidos > 1 ? 's' : '') + ' depois da inauguração.</span> Ou a equipe vira noites com hora extra, ou o evento abre com a obra incompleta.'
+    : '<span class="green">Entrega no dia 30.</span> É este o calendário que a gestão de SST protege.';
+  Cena.placar(r.perdidos);
+}
+
+function renderKanban(){
+  var cols = document.querySelectorAll('.kb-col');
+  cols.forEach(function(col){
+    Array.prototype.slice.call(col.querySelectorAll('.card')).forEach(function(c){ c.remove(); });
+  });
+  var cont = {}, feitos = 0;
+  CARTOES.forEach(function(c, i){
+    var st = estado.kanban[i] || 'pend';
+    if (st !== 'pend') feitos++;
+    cont[st] = (cont[st] || 0) + 1;
+    var el = document.createElement('div');
+    el.className = 'card' + (estado.selecionado === i ? ' sel' : '');
+    el.draggable = true;
+    el.dataset.i = i;
+    var eixo = EIXOS.filter(function(e){ return e.id === c.e; })[0];
+    el.innerHTML = '<small>' + eixo.nome + '</small>' + c.t;
+    document.querySelector('.kb-col[data-st=' + st + ']').appendChild(el);
+  });
+  cols.forEach(function(col){ col.querySelector('h4 span').textContent = cont[col.dataset.st] || 0; });
+  $('kb-n').textContent = feitos + ' / ' + CARTOES.length;
+  $('kb-barra').style.width = (feitos / CARTOES.length * 100) + '%';
+}
+
+function renderRadar(r){
+  var cx = 280, cy = 230, R = 165, n = r.eixos.length;
+  function ponto(i, v){
+    var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+    return [cx + Math.cos(a) * R * v, cy + Math.sin(a) * R * v];
+  }
+  function corDe(v){ return v >= 0.75 ? '#5EE0A6' : v >= 0.45 ? '#F2B957' : '#FF6B5E'; }
+  var s = '<svg viewBox="0 0 560 460" role="img" aria-label="Radar de exposição em SST"><defs>' +
+    '<radialGradient id="rg-area"><stop offset="0" stop-color="#F0D2A4" stop-opacity=".55"/><stop offset="1" stop-color="#D6B17D" stop-opacity=".12"/></radialGradient>' +
+    '<radialGradient id="rg-fundo"><stop offset="0" stop-color="#30747F" stop-opacity=".25"/><stop offset="1" stop-color="#30747F" stop-opacity="0"/></radialGradient>' +
+    '<filter id="rg-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+    '</defs><circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="url(#rg-fundo)"/>';
+  [0.25, 0.5, 0.75, 1].forEach(function(f, k){
+    var pts = r.eixos.map(function(e, i){ return ponto(i, f).join(','); }).join(' ');
+    s += '<polygon points="' + pts + '" fill="none" stroke="rgba(168,216,219,' + (k === 3 ? .3 : .12) + ')" stroke-width="1"' + (k < 3 ? ' stroke-dasharray="3 5"' : '') + '/>';
+    var pl = ponto(0, f);
+    s += '<text x="' + (pl[0] + 6) + '" y="' + (pl[1] + 3) + '" font-family="Sora" font-size="9" fill="rgba(255,255,255,.35)">' + (f * 100) + '</text>';
+  });
+  r.eixos.forEach(function(e, i){
+    var p = ponto(i, 1), l = ponto(i, 1.17);
+    s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="rgba(168,216,219,.14)"/>';
+    var anc = Math.abs(l[0] - cx) < 10 ? 'middle' : (l[0] > cx ? 'start' : 'end');
+    s += '<text x="' + l[0] + '" y="' + (l[1] - 2) + '" text-anchor="' + anc + '" font-family="Sora" font-size="13" font-weight="700" fill="#F4F5F6">' + e.nome + '</text>';
+    s += '<text x="' + l[0] + '" y="' + (l[1] + 15) + '" text-anchor="' + anc + '" font-family="Sora" font-size="12" font-weight="800" fill="' + corDe(e.valor) + '">' + Math.round(e.valor * 100) + '%</text>';
+  });
+  s += '<polygon id="rd-area" fill="url(#rg-area)" stroke="#F0D2A4" stroke-width="2.5" stroke-linejoin="round" filter="url(#rg-glow)"/>';
+  r.eixos.forEach(function(e){
+    s += '<circle class="rd-pt" r="6" fill="' + corDe(e.valor) + '" stroke="#0C1B22" stroke-width="2" filter="url(#rg-glow)"/>';
+  });
+  s += '</svg>';
+  $('rd-svg').innerHTML = s;
+
+  // Polígono desenhado a partir do centro
+  var area = $('rd-area'), pts = document.querySelectorAll('.rd-pt'), ini = null;
+  function passo(ts){
+    if (ini === null) ini = ts;
+    var p = easeOut(Math.min(1, (ts - ini) / 1300));
+    area.setAttribute('points', r.eixos.map(function(e, i){ return ponto(i, Math.max(e.valor, 0.04) * p).join(','); }).join(' '));
+    r.eixos.forEach(function(e, i){
+      var q = ponto(i, Math.max(e.valor, 0.04) * p);
+      pts[i].setAttribute('cx', q[0]); pts[i].setAttribute('cy', q[1]);
+    });
+    if (p < 1) requestAnimationFrame(passo);
+  }
+  requestAnimationFrame(passo);
+
+  var circ = 326.7;
+  $('rd-arco').setAttribute('stroke', r.nivel.cor);
+  $('rd-arco').style.strokeDashoffset = circ;
+  setTimeout(function(){ $('rd-arco').style.strokeDashoffset = circ * (1 - r.nota / 100); }, 60);
+  contar($('rd-nota'), 0, r.nota, 1600, function(v){ return Math.round(v); });
+  $('rd-nivel').textContent = r.nivel.t;
+  $('rd-nivel').className = 'nivel ' + r.nivel.c;
+  $('rd-leitura').textContent = r.leitura;
+
+  $('rd-prio').innerHTML = r.prioridades.map(function(e, k){
+    var lac = e.ruins[0] ? 'Lacuna: "' + e.ruins[0] + '".<br>' : '';
+    return '<li class="glass"><span class="ix">' + (k + 1) + '</span><div><b>' + e.nome + '<em>' + Math.round(e.valor * 100) + '%</em></b>' +
+           '<span>' + lac + 'Como a DMG resolve: ' + e.acao + '</span>' +
+           '<div class="mini"><i style="width:' + Math.max(4, e.valor * 100) + '%"></i></div></div></li>';
+  }).join('');
+  $('rd-vazio').textContent = r.classificados < CARTOES.length
+    ? (CARTOES.length - r.classificados) + ' cartões não foram classificados e contam como "não sei".' : '';
+}
+
+function renderPainel(aba){
+  var P = PAINEL, h = '';
+  $('pnl-nav').innerHTML = P.abas.map(function(a){
+    return '<button type="button" class="pnl-item' + (a.id === aba ? ' on' : '') + '" data-aba="' + a.id + '"><i>' + a.ic + '</i>' + a.t + (a.badge ? '<em>' + a.badge + '</em>' : '') + '</button>';
+  }).join('');
+  function topo(t, sub){ return '<div class="pv-topo"><div><h3>' + t + '</h3><small>' + sub + '</small></div><div class="pv-filtro"><span class="on">Todas as obras</span><span>Fábrica</span><span>Outubro</span></div></div>'; }
+  function conf(v){ var c = v >= 0.95 ? 'f-ok' : v >= 0.85 ? 'f-md' : 'f-vc'; return '<div class="pv-conf"><div class="trilha"><i class="' + c + '" style="width:' + Math.round(v * 100) + '%"></i></div><span>' + Math.round(v * 100) + '%</span></div>'; }
+  if (aba === 'geral'){
+    h += topo('Bom dia, RH Recoma', 'Atualizado agora · 5 frentes ativas');
+    h += '<div class="pv-kpis">' + P.kpis.map(function(k, i){
+      return '<div class="pv-kpi" style="animation-delay:' + (i * 0.06) + 's"><small>' + k.t + '</small><b class="' + (k.c || '') + '">' + k.v + '</b><span>' + k.s + '</span></div>';
+    }).join('') + '</div>';
+    var max = Math.max.apply(null, P.meses.map(function(m){ return m[1]; }));
+    h += '<div class="pv-grid"><div class="pv-card"><h4>Exames realizados por mês <em>+30% no semestre</em></h4><div class="pv-barras">' +
+      P.meses.map(function(m, i){ return '<div><b>' + m[1] + '</b><i class="' + (i === P.meses.length - 1 ? 'atual' : '') + '" style="height:' + (m[1] / max * 100) + '%;animation-delay:' + (i * 0.08) + 's"></i><small>' + m[0] + '</small></div>'; }).join('') +
+      '</div></div><div class="pv-card"><h4>Precisa de atenção <em>' + P.alertas.length + '</em></h4><ul class="pv-alertas">' +
+      P.alertas.map(function(a){ return '<li class="' + a.c + '"><span>' + a.t + '</span><em>' + a.q + '</em></li>'; }).join('') + '</ul></div></div>';
+  } else if (aba === 'agenda'){
+    h += topo('Agenda da semana', 'Agendado pelo RH, já na agenda da clínica DMG');
+    var dias = ['Seg 26', 'Ter 27', 'Qua 28', 'Qui 29', 'Sex 30'], horas = ['07:30', '09:00', '10:30', '14:00'];
+    h += '<div class="pv-card"><div class="pv-sem"><div></div>' + dias.map(function(d){ return '<div class="h">' + d + '</div>'; }).join('');
+    horas.forEach(function(hr, hi){
+      h += '<div class="hora">' + hr + '</div>';
+      for (var d = 0; d < 5; d++){
+        var ev = P.agenda.filter(function(e){ return e.d === d && e.h === hi; })[0];
+        h += '<div class="cel">' + (ev ? '<div class="pv-ev ' + ev.k + '" style="animation-delay:' + ((d + hi) * 0.05) + 's"><b>' + ev.t + '</b>' + ev.s + '</div>' : '') + '</div>';
+      }
+    });
+    h += '</div></div>';
+  } else if (aba === 'obras'){
+    h += topo('Obras e frentes ativas', P.obras.reduce(function(s, o){ return s + o.e; }, 0) + ' pessoas distribuídas');
+    h += '<div class="pv-card"><table class="pv-tab"><thead><tr><th>Obra</th><th>Equipe</th><th>Conformidade SST</th><th>Status</th></tr></thead><tbody>' +
+      P.obras.map(function(o, i){ return '<tr style="animation-delay:' + (i * 0.06) + 's"><td><b>' + o.n + '</b><small>' + o.c + '</small></td><td>' + o.e + '</td><td>' + conf(o.conf) + '</td><td><span class="pv-tag ' + o.tag + '">' + o.st + '</span></td></tr>'; }).join('') +
+      '</tbody></table></div>';
+  } else if (aba === 'colab'){
+    var c = P.colab;
+    h += topo('Colaborador 360', 'Tudo de uma pessoa, em uma tela');
+    h += '<div class="pv-360"><div class="pv-card pv-perfil"><div class="pv-av">' + c.ini + '</div><b>' + c.n + '</b><small>' + c.f + '</small><small>' + c.o + '</small><div class="pv-chips">' +
+      c.chips.map(function(x){ return '<span class="pv-tag ok">' + x + '</span>'; }).join('') + '</div></div>' +
+      '<div class="pv-card"><h4>Validade contra a obra <em>termina em 34 dias</em></h4><div class="pv-val">' +
+      c.val.map(function(v){ var p = v.r / v.tot, cl = v.r < 30 ? 'f-vc' : v.r < 60 ? 'f-md' : 'f-ok';
+        return '<div><span>' + v.t + '</span><div class="trilha"><i class="' + cl + '" style="width:' + Math.round(p * 100) + '%"></i></div><em class="' + (v.r < 30 ? 'red' : '') + '">' + v.r + ' dias</em></div>'; }).join('') +
+      '</div><h4 class="pv-h4-esp">Linha do tempo</h4><ul class="pv-linha">' +
+      c.linha.map(function(l){ return '<li class="' + l.a + '"><b>' + l.t + '</b><small>' + l.d + '</small></li>'; }).join('') + '</ul></div></div>';
+  } else if (aba === 'terc'){
+    h += topo('Terceiros por obra', 'Conferidos antes de entrar no canteiro');
+    function cel(ok, tot){ return '<span class="pv-tag ' + (ok === tot ? 'ok' : 'r') + '">' + ok + '/' + tot + '</span>'; }
+    h += '<div class="pv-card"><table class="pv-tab"><thead><tr><th>Empreiteira</th><th>Pessoas</th><th>ASO</th><th>NR-35 / NR-18</th><th>Ficha de EPI</th></tr></thead><tbody>' +
+      P.terceiros.map(function(t, i){ return '<tr style="animation-delay:' + (i * 0.06) + 's"><td><b>' + t.n + '</b><small>' + t.o + '</small></td><td>' + t.p + '</td><td>' + cel(t.aso, t.p) + '</td><td>' + cel(t.nr, t.p) + '</td><td>' + cel(t.epi, t.p) + '</td></tr>'; }).join('') +
+      '</tbody></table></div>';
+  }
+  $('pnl-conteudo').innerHTML = h;
+  $('pnl-conteudo').scrollTop = 0;
+}
+
+function renderParceiros(){
+  $('parceiros').innerHTML = PARCEIROS.map(function(p, i){
+    return '<div class="parc glass rv d' + (i + 2) + '"><small>' + p.setor + '</small><h3>' + p.nome + '</h3><p>' + p.texto + '</p></div>';
+  }).join('');
+}
+
+function renderTorreInd(){
+  document.querySelectorAll('.andar-slide').forEach(function(s){
+    var atual = Number(s.dataset.andar), html = '';
+    for (var i = 0; i < NAND; i++) html += '<i class="' + (i < atual ? 'feito' : i === atual ? 'atual' : '') + '"></i>';
+    s.querySelector('.torre-ind').innerHTML = html;
+  });
+}
+
+function animarNumeros(slide){
+  slide.querySelectorAll('[data-conta]').forEach(function(el){
+    var pre = el.dataset.pre || '', suf = el.dataset.suf || '';
+    contar(el, 0, Number(el.dataset.conta), 1400, function(v){
+      var n = Math.round(v);
+      return (pre === '0' ? (n < 10 ? '0' : '') : pre) + n + suf;
+    });
+  });
+}
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CENA_3D ═══ */
+var Cena = (function(){
+  var ok = typeof THREE !== 'undefined' && (function(){
+    try { var c = document.createElement('canvas'); return !!(c.getContext('webgl') || c.getContext('experimental-webgl')); }
+    catch (e) { return false; }
+  })();
+  if (!ok) return { ir: function(){}, placar: function(){} };
+
+  var COR = {
+    concreto: 0x6f7f84, piso: 0x08141a, aco: 0xD6B17D, vidro: 0x8fd3dc, pista: 0xa4442f, grama: 0x1f6b3f,
+    capacete: 0xF4F5F6, ouro: 0xD6B17D, risco: 0xFF5A4A, ok: 0x4BE39C, colete: 0xff7a1a, terc: 0x4f5a60, ciano: 0x6FE3EC
+  };
+  var POS = { fabrica: [-29, 0, 0], clinica: [-9, 0, -6], estadio: [16, 0, -2], portao: [18, 0, 11] };
+
+  var palco = $('palco');
+  var cena = new THREE.Scene();
+  cena.fog = new THREE.FogExp2(0x0C1B22, 0.014);
+  var cam = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 400);
+  var rend = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+  rend.setPixelRatio(Math.min(devicePixelRatio, 2));
+  rend.setSize(innerWidth, innerHeight);
+  rend.outputEncoding = THREE.sRGBEncoding;
+  rend.toneMapping = THREE.ACESFilmicToneMapping;
+  rend.toneMappingExposure = 0.95;
+  rend.shadowMap.enabled = true;
+  rend.shadowMap.type = THREE.PCFSoftShadowMap;
+  palco.appendChild(rend.domElement);
+
+  // ── Luz ──
+  cena.add(new THREE.HemisphereLight(0x9fd6dc, 0x0a1418, 0.5));
+  var sol = new THREE.DirectionalLight(0xffe6c4, 1.05);
+  sol.position.set(-20, 34, 22); sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048);
+  var sc = sol.shadow.camera; sc.left = -50; sc.right = 50; sc.top = 40; sc.bottom = -40; sc.far = 120;
+  sol.shadow.bias = -0.0004; cena.add(sol);
+  var contra = new THREE.DirectionalLight(0x6fe3ec, 0.45); contra.position.set(30, 12, -30); cena.add(contra);
+  var luzRisco = new THREE.PointLight(COR.risco, 0, 24, 2); cena.add(luzRisco);
+  var luzClinica = new THREE.PointLight(0xffd9a0, 0, 24, 2); luzClinica.position.set(-9, 5, 0); cena.add(luzClinica);
+  var luzEstadio = new THREE.PointLight(0xfff2d8, 0, 60, 1.5); luzEstadio.position.set(16, 18, -2); cena.add(luzEstadio);
+
+  function mat(cor, o){
+    o = o || {};
+    return new THREE.MeshStandardMaterial({ color: cor, roughness: o.r === undefined ? 0.75 : o.r, metalness: o.m || 0,
+      emissive: o.e || 0x000000, emissiveIntensity: o.ei || 0, transparent: o.op !== undefined, opacity: o.op === undefined ? 1 : o.op });
+  }
+  function basico(cor, op, add){
+    return new THREE.MeshBasicMaterial({ color: cor, transparent: true, opacity: op, toneMapped: false, depthWrite: !add,
+      blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, side: THREE.DoubleSide });
+  }
+  function caixa(w, h, d, m, x, y, z, pai){
+    var b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+    b.position.set(x, y, z); b.castShadow = true; b.receiveShadow = true;
+    (pai || cena).add(b); return b;
+  }
+  function cilindro(rt, rb, h, m, x, y, z, pai, seg){
+    var c = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 12), m);
+    c.position.set(x, y, z); c.castShadow = true; (pai || cena).add(c); return c;
+  }
+  function texHalo(){
+    var c = document.createElement('canvas'); c.width = c.height = 128;
+    var g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.35, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+  var HALO = texHalo();
+  function halo(cor, tam, x, z, op){
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(tam, tam), new THREE.MeshBasicMaterial({ map: HALO, color: cor, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false }));
+    m.rotation.x = -Math.PI / 2; m.position.set(x, 0.03, z); cena.add(m); return m;
+  }
+  function textoTex(linhas, w, h){
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
+    return { canvas: c, ctx: c.getContext('2d'), tex: t };
+  }
+
+  // ── Chão, estrada e grade ──
+  var piso = new THREE.Mesh(new THREE.PlaneGeometry(260, 200), mat(COR.piso, { r: 0.9 }));
+  piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; cena.add(piso);
+  var grade = new THREE.GridHelper(160, 80, 0x2a5862, 0x13313a);
+  grade.material.transparent = true; grade.material.opacity = 0.28; grade.position.y = 0.01; cena.add(grade);
+  var estrada = new THREE.Mesh(new THREE.PlaneGeometry(70, 3.4), mat(0x1a2a30, { r: 0.95 }));
+  estrada.rotation.x = -Math.PI / 2; estrada.position.set(2, 0.02, 7); estrada.receiveShadow = true; cena.add(estrada);
+  for (var f = 0; f < 22; f++){
+    var faixa = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.12), basico(0xF0D2A4, 0.55));
+    faixa.rotation.x = -Math.PI / 2; faixa.position.set(-31 + f * 3.2, 0.03, 7); cena.add(faixa);
+  }
+  halo(0x30747F, 28, POS.fabrica[0], 0, 0.14);
+  var haloClinica = halo(0xD6B17D, 20, POS.clinica[0], -4, 0.0);
+  var haloEstadio = halo(0x6FE3EC, 46, POS.estadio[0], -2, 0.08);
+
+  // ── Fábrica ──
+  var fab = new THREE.Group(); fab.position.set(POS.fabrica[0], 0, POS.fabrica[2]); cena.add(fab);
+  var mGalpao = mat(0x2c4249, { r: 0.6, m: 0.3 }), mTelha = mat(0x3d5a62, { r: 0.4, m: 0.5 });
+  caixa(14, 4.6, 10, mGalpao, 0, 2.3, 0, fab);
+  for (var t = 0; t < 5; t++){
+    var dente = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 10, 3, 1, false), mTelha);
+    dente.rotation.x = Math.PI / 2; dente.rotation.y = Math.PI / 2; dente.position.set(-5.6 + t * 2.8, 5.3, 0);
+    dente.castShadow = true; fab.add(dente);
+    var claraboia = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 9.6), basico(0xffd9a0, 0.5));
+    claraboia.position.set(-4.9 + t * 2.8, 5.6, 0); claraboia.rotation.x = -Math.PI / 2; fab.add(claraboia);
+  }
+  // Fachada aberta mostrando a linha de produção
+  var portaoFab = new THREE.Mesh(new THREE.PlaneGeometry(6, 3.6), basico(0xffcf8a, 0.16, true));
+  portaoFab.position.set(2, 1.8, 5.02); fab.add(portaoFab);
+  var linha = new THREE.Group(); linha.position.set(0, 0, 6.5); fab.add(linha);
+  caixa(9, 0.6, 1.4, mat(0x4b5a5e, { r: 0.5, m: 0.6 }), 0, 0.6, 0, linha);       // esteira
+  cilindro(0.7, 0.7, 2.2, mat(0xD6B17D, { r: 0.35, m: 0.8 }), -3.4, 1.4, 0, linha); // extrusora
+  caixa(1.6, 1.8, 1.6, mat(0x30747F, { r: 0.4, m: 0.4 }), 3.6, 1.1, 0, linha);     // prensa
+  var rolos = [];
+  for (var r = 0; r < 4; r++){
+    var rolo = cilindro(0.45, 0.45, 1.3, mat(r % 2 ? COR.pista : 0x2a8a52, { r: 0.85 }), -1.2 + r * 1.1, 1.35, 0, linha, 20);
+    rolo.rotation.x = Math.PI / 2; rolos.push(rolo);
+  }
+  // Tambores químicos com faixa de risco
+  for (var d = 0; d < 6; d++){
+    cilindro(0.38, 0.38, 1.1, mat(d % 2 ? 0x2e7d9a : 0xc9862d, { r: 0.4, m: 0.5 }), 5.6 + (d % 3) * 0.85, 0.55, 3.4 + Math.floor(d / 3) * 0.9, fab);
+    cilindro(0.39, 0.39, 0.12, basico(0xF2B957, 0.9), 5.6 + (d % 3) * 0.85, 0.75, 3.4 + Math.floor(d / 3) * 0.9, fab);
+  }
+  // Chaminé com vapor
+  cilindro(0.5, 0.6, 7, mGalpao, -5.5, 3.5, -3.5, fab);
+  var vapor = [];
+  for (var v = 0; v < 8; v++){
+    var nv = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: HALO, color: 0xa8d8db, transparent: true, opacity: 0.2, depthWrite: false }));
+    nv.position.set(-5.5, 7 + v, -3.5); nv.userData.f = v / 8; fab.add(nv); vapor.push(nv);
+  }
+  // Letreiro da fábrica
+  var lf = textoTex(null, 512, 96);
+  lf.ctx.fillStyle = '#A8D8DB'; lf.ctx.font = '800 54px Sora, sans-serif'; lf.ctx.textAlign = 'center'; lf.ctx.textBaseline = 'middle';
+  lf.ctx.fillText('FÁBRICA', 256, 50); lf.tex.needsUpdate = true;
+  var letFab = new THREE.Mesh(new THREE.PlaneGeometry(4, 0.75), new THREE.MeshBasicMaterial({ map: lf.tex, transparent: true, toneMapped: false }));
+  letFab.position.set(-3.5, 3.9, 5.05); fab.add(letFab);
+
+  // ── Caminhão: cavalo com cabine arredondada e baú com a marca ──
+  function caixaRedonda(w, h, d, r, m){
+    var sh = new THREE.Shape(), x = -w / 2 + r, y = -h / 2 + r, W = w - 2 * r, H = h - 2 * r;
+    sh.moveTo(x, y - r); sh.lineTo(x + W, y - r); sh.quadraticCurveTo(x + W + r, y - r, x + W + r, y);
+    sh.lineTo(x + W + r, y + H); sh.quadraticCurveTo(x + W + r, y + H + r, x + W, y + H + r);
+    sh.lineTo(x, y + H + r); sh.quadraticCurveTo(x - r, y + H + r, x - r, y + H);
+    sh.lineTo(x - r, y); sh.quadraticCurveTo(x - r, y - r, x, y - r);
+    var geo = new THREE.ExtrudeGeometry(sh, { depth: d - 2 * r, bevelEnabled: true, bevelThickness: r, bevelSize: r * 0.6, bevelSegments: 4, curveSegments: 8 });
+    geo.translate(0, 0, -(d - 2 * r) / 2);
+    var mesh = new THREE.Mesh(geo, m); mesh.castShadow = true; mesh.receiveShadow = true; return mesh;
+  }
+  var caminhao = new THREE.Group(); cena.add(caminhao);
+  var mCabine = mat(0xf2f4f5, { r: 0.25, m: 0.35 }), mOuro = mat(0xD6B17D, { r: 0.25, m: 0.85 }), mCromo = mat(0xdfe6e8, { r: 0.12, m: 1 });
+  var mVidroCam = new THREE.MeshPhysicalMaterial({ color: 0x0e2a33, metalness: 0.6, roughness: 0.05, clearcoat: 1 });
+  var chassi = caixa(6.6, 0.25, 1.5, mat(0x1b2226, { r: 0.6, m: 0.5 }), -0.4, 0.62, 0, caminhao);
+  var bau = caixaRedonda(4.3, 2.2, 2.05, 0.12, mCabine); bau.position.set(-1.45, 1.9, 0); caminhao.add(bau);
+  var faixaBau = caixaRedonda(4.32, 0.22, 2.08, 0.04, mOuro); faixaBau.position.set(-1.45, 1.15, 0); caminhao.add(faixaBau);
+  var lt = textoTex(null, 1024, 256);
+  lt.ctx.fillStyle = '#17444C'; lt.ctx.font = '800 120px Sora, sans-serif'; lt.ctx.textAlign = 'center'; lt.ctx.textBaseline = 'middle';
+  lt.ctx.fillText('RECOMA', 512, 112); lt.ctx.fillStyle = '#30747F'; lt.ctx.font = '600 44px Sora, sans-serif'; lt.ctx.fillText('equipe de montagem', 512, 200); lt.tex.needsUpdate = true;
+  [1.04, -1.04].forEach(function(z){
+    var lado = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.9), new THREE.MeshBasicMaterial({ map: lt.tex, transparent: true }));
+    lado.position.set(-1.45, 2.05, z); if (z < 0) lado.rotation.y = Math.PI; caminhao.add(lado);
+  });
+  var cabine = caixaRedonda(1.55, 1.75, 2, 0.28, mCabine); cabine.position.set(1.75, 1.72, 0); caminhao.add(cabine);
+  var defletor = caixaRedonda(1.1, 0.5, 1.9, 0.2, mCabine); defletor.position.set(1.55, 2.75, 0); defletor.rotation.z = 0.25; caminhao.add(defletor);
+  var parabrisa = new THREE.Mesh(new THREE.PlaneGeometry(1.75, 0.75), mVidroCam);
+  parabrisa.position.set(2.54, 2.05, 0); parabrisa.rotation.y = Math.PI / 2; parabrisa.rotation.x = -0.12; caminhao.add(parabrisa);
+  [1.005, -1.005].forEach(function(z){
+    var janela = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.6), mVidroCam); janela.position.set(1.95, 2.05, z); if (z < 0) janela.rotation.y = Math.PI; caminhao.add(janela);
+    var espelho = caixaRedonda(0.12, 0.38, 0.1, 0.03, mat(0x1b2226, { r: 0.4 })); espelho.position.set(2.45, 2.1, z * 1.2); caminhao.add(espelho);
+  });
+  var grade = caixaRedonda(0.08, 0.55, 1.3, 0.03, mCromo); grade.position.set(2.56, 1.25, 0); caminhao.add(grade);
+  for (var gl = 0; gl < 4; gl++) caixa(0.02, 0.03, 1.2, mat(0x2a3338, { r: 0.5 }), 2.61, 1.08 + gl * 0.12, 0, caminhao);
+  var parachoque = caixaRedonda(0.22, 0.28, 2.05, 0.08, mat(0x2a3338, { r: 0.4, m: 0.6 })); parachoque.position.set(2.6, 0.78, 0); caminhao.add(parachoque);
+  var faroisM = basico(0xfff1c9, 1);
+  [0.72, -0.72].forEach(function(z){
+    var farol = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 12), faroisM); farol.scale.set(0.4, 0.7, 1.4); farol.position.set(2.6, 1.05, z); caminhao.add(farol);
+    var lanterna = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.18, 0.12), basico(0xff4a3a, 1)); lanterna.position.set(-3.62, 1.1, z * 1.2); caminhao.add(lanterna);
+  });
+  function roda(x, z){
+    var r = new THREE.Group(); r.position.set(x, 0.46, z); caminhao.add(r);
+    var pneu = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.14, 12, 28), mat(0x121416, { r: 0.95 })); r.add(pneu);
+    var aro = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.12, 24), mCromo); aro.rotation.x = Math.PI / 2; r.add(aro);
+    var cubo = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.16, 12), mOuro); cubo.rotation.x = Math.PI / 2; r.add(cubo);
+    r.traverse(function(o){ if (o.isMesh) o.castShadow = true; });
+    return r;
+  }
+  var rodas = [];
+  [-2.9, -2.1, 1.75].forEach(function(x){ [-0.92, 0.92].forEach(function(z){ rodas.push(roda(x, z)); }); });
+  caminhao.position.set(-22, 0, 7.8);
+
+  // ── Estádio ──
+  var est = new THREE.Group(); est.position.set(POS.estadio[0], 0, POS.estadio[2]); cena.add(est);
+  var EX = 1.45;
+  var pista = new THREE.Mesh(new THREE.RingGeometry(7, 9.3, 96), mat(COR.pista, { r: 0.85 }));
+  pista.rotation.x = -Math.PI / 2; pista.scale.set(EX, 1, 1); pista.position.y = 0.05; pista.receiveShadow = true; est.add(pista);
+  for (var l = 1; l < 5; l++){
+    var raia = new THREE.Mesh(new THREE.RingGeometry(7 + l * 0.46, 7 + l * 0.46 + 0.04, 96), basico(0xffffff, 0.55));
+    raia.rotation.x = -Math.PI / 2; raia.scale.set(EX, 1, 1); raia.position.y = 0.06; est.add(raia);
+  }
+  var mGrama = mat(COR.grama, { r: 0.9, e: 0x0e3a20, ei: 0 });
+  var campo = new THREE.Mesh(new THREE.CircleGeometry(7, 96), mGrama);
+  campo.rotation.x = -Math.PI / 2; campo.scale.set(EX, 1, 1); campo.position.y = 0.05; campo.receiveShadow = true; est.add(campo);
+  var linhasCampo = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.48, 48), basico(0xffffff, 0.6));
+  linhasCampo.rotation.x = -Math.PI / 2; linhasCampo.position.y = 0.07; est.add(linhasCampo);
+  var meio = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 13), basico(0xffffff, 0.6));
+  meio.rotation.x = -Math.PI / 2; meio.position.y = 0.07; est.add(meio);
+
+  // Arquibancada em segmentos que aparecem conforme a obra avança
+  var segmentos = [], NSEG = 22, mDegrau = mat(0xb9c4c7, { r: 0.7 }), mCadeira = mat(0x30747F, { r: 0.5 });
+  for (var s = 0; s < NSEG; s++){
+    var ang = s / NSEG * Math.PI * 2;
+    var g = new THREE.Group();
+    for (var degrau = 0; degrau < 4; degrau++){
+      var raio = 10 + degrau * 0.9;
+      var b = caixa(2.7, 0.55 + degrau * 0.6, 0.85, degrau === 3 ? mCadeira : mDegrau, 0, (0.55 + degrau * 0.6) / 2, raio - 10, g);
+      b.scale.x = 1 + degrau * 0.08;
+    }
+    g.position.set(Math.cos(ang) * 10 * EX, 0, Math.sin(ang) * 10);
+    g.rotation.y = Math.PI / 2 - ang;   // local +z aponta para fora do campo
+    g.scale.y = 0.001; g.userData.alvo = 1; est.add(g); segmentos.push(g);
+  }
+  // Torres de iluminação
+  var torres = [];
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function(q){
+    var tg = new THREE.Group(); tg.position.set(q[0] * 19, 0, q[1] * 14.5);
+    cilindro(0.18, 0.3, 16, mat(0x9aa7ab, { r: 0.4, m: 0.7 }), 0, 8, 0, tg);
+    var cab = caixa(2.2, 1.2, 0.4, mat(0x1d2c31, { e: 0xfff4d6, ei: 0 }), 0, 16.4, 0, tg);
+    cab.rotation.y = Math.atan2(-q[0], -q[1]);
+    var cone = new THREE.Mesh(new THREE.ConeGeometry(5, 17, 32, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff1d0, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+    cone.position.set(-q[0] * 3, 8, -q[1] * 3);
+    cone.rotation.set(q[1] * -0.35, 0, q[0] * 0.35);
+    tg.add(cone);
+    tg.userData = { cab: cab, cone: cone }; est.add(tg); torres.push(tg);
+  });
+  // Placar com contagem regressiva
+  var placarTx = textoTex(null, 1024, 400);
+  var placar = new THREE.Group(); placar.position.set(0, 0, -13.5); est.add(placar);
+  cilindro(0.2, 0.2, 7, mat(0x9aa7ab, { r: 0.4, m: 0.7 }), -3, 3.5, 0, placar);
+  cilindro(0.2, 0.2, 7, mat(0x9aa7ab, { r: 0.4, m: 0.7 }), 3, 3.5, 0, placar);
+  caixa(8.6, 3.6, 0.3, mat(0x0a1216, { r: 0.4 }), 0, 8.2, -0.05, placar);
+  var tela = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 3.2), new THREE.MeshBasicMaterial({ map: placarTx.tex, toneMapped: false }));
+  tela.position.set(0, 8.2, 0.12); placar.add(tela);
+  function desenharPlacar(titulo, valor, cor, rodape){
+    var c = placarTx.ctx;
+    c.fillStyle = '#05090b'; c.fillRect(0, 0, 1024, 400);
+    c.strokeStyle = cor; c.lineWidth = 6; c.strokeRect(14, 14, 996, 372);
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillStyle = 'rgba(255,255,255,.6)'; c.font = '700 44px Sora, sans-serif'; c.fillText(titulo, 512, 82);
+    c.fillStyle = cor; c.font = '800 150px Sora, sans-serif'; c.fillText(valor, 512, 210);
+    c.fillStyle = 'rgba(255,255,255,.55)'; c.font = '600 36px Sora, sans-serif'; c.fillText(rodape, 512, 330);
+    placarTx.tex.needsUpdate = true;
+  }
+  var placarEstado = { perdidos: 1 };
+  function atualizarPlacar(){
+    if (modo === 'verde') desenharPlacar('INAUGURAÇÃO', 'ENTREGUE', '#5EE0A6', 'no dia marcado');
+    else if (modo === 'acidente') desenharPlacar('FRENTE DE MONTAGEM', 'PARADA', '#FF6B5E', 'investigação em andamento');
+    else if (modo === 'prazo' && placarEstado.perdidos > 0) desenharPlacar('ENTREGA DA OBRA', '+' + placarEstado.perdidos + ' DIAS', '#FF6B5E', 'depois da inauguração');
+    else desenharPlacar('INAUGURAÇÃO EM', 'D-30', '#F0D2A4', 'montagem em andamento');
+  }
+
+  // Grua do estádio
+  var grua = new THREE.Group(); grua.position.set(POS.estadio[0] + 15, 0, POS.estadio[2] - 10); cena.add(grua);
+  var mAco = mat(COR.aco, { r: 0.35, m: 0.8 });
+  for (var gy = 0; gy < 11; gy++) caixa(0.9, 0.06, 0.9, mAco, 0, gy * 2, 0, grua);
+  [[-0.42, -0.42], [0.42, -0.42], [-0.42, 0.42], [0.42, 0.42]].forEach(function(p){ caixa(0.08, 22, 0.08, mAco, p[0], 11, p[1], grua); });
+  var braco = new THREE.Group(); braco.position.y = 22; grua.add(braco);
+  caixa(18, 0.5, 0.5, mAco, -6, 0, 0, braco);
+  caixa(2, 1.2, 1.2, mat(COR.concreto), 3.6, -0.4, 0, braco);
+  var cabo = cilindro(0.02, 0.02, 7, mat(0x222222), -12, -3.5, 0, braco, 4);
+  var carga = caixa(2.6, 0.4, 0.9, mAco, -12, -7.2, 0, braco);
+
+  // Andaime na arquibancada do fundo
+  var andaime = new THREE.Group(); andaime.position.set(POS.estadio[0] - 9, 0, POS.estadio[2] - 11); andaime.rotation.y = 0.5; cena.add(andaime);
+  var mTubo = mat(COR.aco, { r: 0.3, m: 0.9 });
+  for (var h = 0; h < 5; h++){
+    var tb = cilindro(0.05, 0.05, 8, mTubo, 0, 0.8 + h * 1.6, 1.2, andaime, 8); tb.rotation.z = Math.PI / 2;
+    if (h % 2 === 0) caixa(7.8, 0.08, 0.8, mat(0x5a4a33, { r: 0.9 }), 0, 0.75 + h * 1.6, 1.5, andaime);
+  }
+  [-3.9, -1.3, 1.3, 3.9].forEach(function(x){ cilindro(0.05, 0.05, 8, mTubo, x, 4, 1.2, andaime, 8); });
+
+  // ── Clínica DMG: torre que sobe andar a andar ──
+  var torre = new THREE.Group(); torre.position.set(POS.clinica[0], 0, POS.clinica[2]); torre.scale.setScalar(ESC_TORRE); cena.add(torre);
+  var fundacao = caixa(7.8, 0.15, 6.8, mat(0x2a3e44, { r: 0.6 }), 0, 0.08, 0, torre);
+  var contornoBase = new THREE.Mesh(new THREE.RingGeometry(4.6, 4.75, 4, 1), basico(0xD6B17D, 0.6));
+  contornoBase.rotation.x = -Math.PI / 2; contornoBase.rotation.z = Math.PI / 4; contornoBase.scale.set(1.15, 1, 1); contornoBase.position.y = 0.2; torre.add(contornoBase);
+  var andares = [];
+  var mVidro = new THREE.MeshPhysicalMaterial({ color: COR.vidro, metalness: 0.1, roughness: 0.05, transparent: true, opacity: 0.2, clearcoat: 1 });
+  for (var a = 0; a < NAND; a++){
+    var ag = new THREE.Group(); ag.position.y = a * 2.6;
+    caixa(7.4, 0.25, 6.4, mat(0xe6ecee, { r: 0.4 }), 0, 0.12, 0, ag);
+    var vid = new THREE.Mesh(new THREE.BoxGeometry(7, 2.35, 6), mVidro); vid.position.y = 1.42; ag.add(vid);
+    var teto = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.08, 5.6), basico(0xffd9a0, 0.15)); teto.position.y = 2.45; ag.add(teto);
+    var miolo = new THREE.Mesh(new THREE.BoxGeometry(6.4, 2.2, 5.4), basico(0xffcf8a, 0.03, true)); miolo.position.y = 1.4; ag.add(miolo);
+    // Mobiliário interno simples: balcão e duas salas
+    caixa(2.4, 0.9, 0.6, mat(0xD6B17D, { r: 0.4, m: 0.5 }), -1.6, 0.7, -1.6, ag);
+    caixa(0.08, 2.1, 3, mat(0xffffff, { op: 0.35 }), 1.2, 1.3, -1, ag);
+    var rt = textoTex(null, 1280, 420);
+    var rot = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 2.1), new THREE.MeshBasicMaterial({ map: rt.tex, transparent: true, opacity: 0, toneMapped: false, depthWrite: false }));
+    rot.position.set(0, 1.35, 3.12); rot.userData.tx = rt; ag.add(rot);
+    ag.scale.y = 0.001; ag.visible = false;
+    torre.add(ag);
+    andares.push({ g: ag, teto: teto, miolo: miolo, rot: rot, vis: 0, alvoVis: 0, luz: 0.12 });
+  }
+  // Painel de vidro com os benefícios de cada andar; a cobertura mostra a parceria DMG × Recoma
+  var imgLogo = new Image();
+  function cantos(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function desenharPaineis(){
+    andares.forEach(function(a, i){
+      var tx = a.rot.userData.tx, c = tx.ctx, b = BENEFICIOS[i];
+      c.clearRect(0, 0, 1280, 420);
+      var gr = c.createLinearGradient(0, 0, 1280, 420);
+      gr.addColorStop(0, 'rgba(12,27,34,.88)'); gr.addColorStop(1, 'rgba(23,68,76,.78)');
+      cantos(c, 8, 8, 1264, 404, 34); c.fillStyle = gr; c.fill();
+      c.lineWidth = 4; c.strokeStyle = 'rgba(214,177,125,.85)'; c.stroke();
+      c.textBaseline = 'middle'; c.textAlign = 'left';
+      c.fillStyle = '#D6B17D'; c.font = '800 34px Sora, sans-serif'; c.fillText(b.andar, 60, 64);
+      if (b.parceria){
+        c.textAlign = 'center';
+        if (imgLogo.complete && imgLogo.naturalWidth) c.drawImage(imgLogo, 120, 120, 460, 198);
+        c.fillStyle = 'rgba(255,255,255,.5)'; c.font = '300 90px Sora, sans-serif'; c.fillText('×', 660, 222);
+        c.fillStyle = '#FFFFFF'; c.font = '800 96px Sora, sans-serif'; c.fillText('RECOMA', 960, 212);
+        c.fillStyle = '#A8D8DB'; c.font = '600 30px Sora, sans-serif'; c.fillText('parceiros na saúde de quem constrói · benefício DIM+ para a equipe', 640, 362);
+      } else {
+        b.itens.forEach(function(t, k){
+          var y = 150 + k * 92;
+          c.beginPath(); c.arc(84, y, 26, 0, Math.PI * 2); c.fillStyle = '#5EE0A6'; c.fill();
+          c.strokeStyle = '#0C1B22'; c.lineWidth = 7; c.beginPath(); c.moveTo(72, y + 1); c.lineTo(81, y + 10); c.lineTo(97, y - 9); c.stroke();
+          c.fillStyle = '#FFFFFF'; c.font = '700 50px Sora, sans-serif'; c.fillText(t, 136, y + 2);
+        });
+      }
+      tx.tex.needsUpdate = true;
+    });
+  }
+  imgLogo.onload = desenharPaineis; imgLogo.src = LOGO_DMG;
+  desenharPaineis();
+  var cobertura = caixa(7.6, 0.4, 6.6, mat(0xD6B17D, { r: 0.3, m: 0.7 }), 0, NAND * 2.6 + 0.2, 0, torre);
+  cobertura.visible = false;
+  var lc = textoTex(null, 1024, 160);
+  lc.ctx.fillStyle = '#F0D2A4'; lc.ctx.font = '800 96px Sora, sans-serif'; lc.ctx.textAlign = 'center'; lc.ctx.textBaseline = 'middle';
+  lc.ctx.fillText('DMG OCUPACIONAL', 512, 82); lc.tex.needsUpdate = true;
+  var letClinica = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 1), new THREE.MeshBasicMaterial({ map: lc.tex, transparent: true, opacity: 0, toneMapped: false }));
+  letClinica.position.set(0, NAND * 2.6 + 1.2, 3.2); torre.add(letClinica);
+  // Guindaste de montagem da torre (só enquanto sobe)
+  var grua2 = new THREE.Group(); grua2.position.set(-4.8, 0, -3.8); torre.add(grua2);
+  caixa(0.25, 21, 0.25, mAco, 0, 10.5, 0, grua2); caixa(7, 0.25, 0.25, mAco, 2.6, 21, 0, grua2);
+  var scanner = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.04, 8, 48), basico(COR.ciano, 1));
+  scanner.rotation.x = Math.PI / 2; scanner.visible = false; cena.add(scanner);
+
+  // ── Pessoas ──
+  function pessoa(x, z, corColete){
+    // Figura humana com silhueta torneada (lathe), articulações e EPI completo
+    var g = new THREE.Group();
+    var mPele = mat(0xc99a78, { r: 0.65 }), mCalca = mat(0x1d3640, { r: 0.8 }), mBota = mat(0x2a1d16, { r: 0.6 });
+    var mColete = mat(corColete, { r: 0.45, e: corColete, ei: 0.1 }), mFaixa = mat(0xe8f1f2, { r: 0.2, m: 0.6, e: 0xffffff, ei: 0.25 });
+    var mCapacete = mat(COR.capacete, { r: 0.25, m: 0.1 });
+    var pernas = [];
+    [-0.095, 0.095].forEach(function(px){
+      var piv = new THREE.Group(); piv.position.set(px, 0.86, 0); g.add(piv);
+      var coxa = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.07, 0.8, 14), mCalca); coxa.position.y = -0.4; piv.add(coxa);
+      var bota = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), mBota); bota.scale.set(1, 0.6, 1.6); bota.position.set(0, -0.82, 0.04); piv.add(bota);
+      pernas.push(piv);
+    });
+    var perfil = [[0.001, 0], [0.16, 0.02], [0.19, 0.12], [0.205, 0.3], [0.215, 0.44], [0.19, 0.52], [0.09, 0.58], [0.001, 0.6]]
+      .map(function(p){ return new THREE.Vector2(p[0], p[1]); });
+    var tronco = new THREE.Mesh(new THREE.LatheGeometry(perfil, 24), mColete);
+    tronco.scale.z = 0.72; tronco.position.y = 0.84; g.add(tronco);
+    [0.98, 1.1].forEach(function(fy){
+      var faixa = new THREE.Mesh(new THREE.CylinderGeometry(0.212, 0.212, 0.035, 24, 1, true), mFaixa);
+      faixa.scale.z = 0.73; faixa.position.y = fy; g.add(faixa);
+    });
+    var bracos = [];
+    [-1, 1].forEach(function(ld){
+      var piv = new THREE.Group(); piv.position.set(ld * 0.235, 1.34, 0); piv.rotation.z = ld * 0.12; g.add(piv);
+      var ombro = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 10), mColete); piv.add(ombro);
+      var braco = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.048, 0.62, 12), mCalca); braco.position.y = -0.32; piv.add(braco);
+      var luva = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), mat(0xd6a23c, { r: 0.7 })); luva.position.y = -0.66; piv.add(luva);
+      bracos.push(piv);
+    });
+    var pescoco = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 12), mPele); pescoco.position.y = 1.47; g.add(pescoco);
+    var cab = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 16), mPele); cab.scale.set(1, 1.12, 1.05); cab.position.y = 1.6; g.add(cab);
+    var casco = new THREE.Mesh(new THREE.SphereGeometry(0.135, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), mCapacete); casco.scale.set(1, 0.85, 1.12); casco.position.y = 1.65; g.add(casco);
+    var aba = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.018, 24), mCapacete); aba.scale.set(1, 1, 1.15); aba.position.set(0, 1.65, 0.02); g.add(aba);
+    var crista = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.012, 6, 24, Math.PI), mCapacete); crista.rotation.y = Math.PI / 2; crista.position.y = 1.66; g.add(crista);
+    var anel = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.55, 40), basico(COR.ciano, 0.9));
+    anel.rotation.x = -Math.PI / 2; anel.position.y = 0.04; g.add(anel);
+    g.traverse(function(o){ if (o.isMesh && o !== anel) o.castShadow = true; });
+    g.scale.setScalar(0.92);
+    g.position.set(x, 0, z);
+    g.userData = { anel: anel, fase: Math.random() * 6, base: new THREE.Vector3(x, 0, z), pernas: pernas, bracos: bracos, ult: new THREE.Vector3(x, 0, z) };
+    g.rotation.y = (Math.random() - 0.5) * 0.8;
+    cena.add(g); return g;
+  }
+  var operarios = [pessoa(-30.5, 6.6, COR.colete), pessoa(-27.6, 6.6, COR.colete), pessoa(-25.8, 8, COR.colete)];
+  var equipeViagem = [];
+  for (var e = 0; e < 6; e++) equipeViagem.push(pessoa(-24 + (e % 3) * 0.9, 9.6 + Math.floor(e / 3) * 0.9, COR.colete));
+  var noAndaime = pessoa(POS.estadio[0] - 8.2, POS.estadio[2] - 10, COR.colete); noAndaime.position.y = 6.45; noAndaime.userData.base.y = 6.45;
+  var noPortao = [];
+  for (var p2 = 0; p2 < 6; p2++) noPortao.push(pessoa(POS.portao[0] - 2 + (p2 % 3) * 1, POS.portao[2] + Math.floor(p2 / 3) * 1, p2 < 3 ? COR.colete : COR.terc));
+  var viajante = pessoa(-22, 9, COR.colete);
+  var todos = operarios.concat(equipeViagem, [noAndaime], noPortao, [viajante]);
+  // Portão de obra
+  caixa(0.3, 3, 0.3, mAco, POS.portao[0] - 3, 1.5, POS.portao[2] - 1, null);
+  caixa(0.3, 3, 0.3, mAco, POS.portao[0] + 2, 1.5, POS.portao[2] - 1, null);
+  caixa(5.3, 0.3, 0.3, mat(0xF2B957, { r: 0.4 }), POS.portao[0] - 0.5, 3, POS.portao[2] - 1, null);
+
+  // ── Alerta de risco ──
+  var alerta = new THREE.Group();
+  var nucleo = new THREE.Mesh(new THREE.OctahedronGeometry(0.5), new THREE.MeshBasicMaterial({ color: COR.risco, toneMapped: false }));
+  alerta.add(nucleo);
+  var feixe = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.8, 9, 24, 1, true), new THREE.MeshBasicMaterial({ color: COR.risco, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+  feixe.position.y = -4.7; alerta.add(feixe);
+  var ondaAlerta = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 48), basico(COR.risco, 0.6, true));
+  ondaAlerta.rotation.x = -Math.PI / 2; cena.add(ondaAlerta);
+  cena.add(alerta);
+
+  // ── Partículas: fluxo e poeira ──
+  var NFL = 120, fluxoGeo = new THREE.BufferGeometry(), fluxoPos = new Float32Array(NFL * 3), fluxoT = [];
+  for (var fp = 0; fp < NFL; fp++) fluxoT.push(Math.random());
+  fluxoGeo.setAttribute('position', new THREE.BufferAttribute(fluxoPos, 3));
+  var fluxo = new THREE.Points(fluxoGeo, new THREE.PointsMaterial({ color: COR.ouro, size: 0.24, map: HALO, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  cena.add(fluxo);
+  var curvaIda = new THREE.CatmullRomCurve3([new THREE.Vector3(-24, 0.3, 9), new THREE.Vector3(-16, 0.3, 6), new THREE.Vector3(-9, 0.3, 1.6)]);
+  var curvaVolta = new THREE.CatmullRomCurve3([new THREE.Vector3(-9, 0.3, 1.6), new THREE.Vector3(2, 0.3, 7), new THREE.Vector3(14, 0.3, 10.5)]);
+  var NP = 600, poGeo = new THREE.BufferGeometry(), poPos = new Float32Array(NP * 3);
+  for (var q = 0; q < NP; q++){ poPos[q * 3] = (Math.random() - 0.5) * 100; poPos[q * 3 + 1] = Math.random() * 28; poPos[q * 3 + 2] = (Math.random() - 0.5) * 60; }
+  poGeo.setAttribute('position', new THREE.BufferAttribute(poPos, 3));
+  var poeira = new THREE.Points(poGeo, new THREE.PointsMaterial({ color: 0xa8d8db, size: 0.08, map: HALO, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+  cena.add(poeira);
+  // Fogos na entrega
+  var NFG = 260, fgGeo = new THREE.BufferGeometry(), fgPos = new Float32Array(NFG * 3), fgVel = [];
+  fgGeo.setAttribute('position', new THREE.BufferAttribute(fgPos, 3));
+  var fogos = new THREE.Points(fgGeo, new THREE.PointsMaterial({ color: 0xF0D2A4, size: 0.35, map: HALO, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  cena.add(fogos);
+  function dispararFogos(){
+    for (var i = 0; i < NFG; i++){
+      var burst = i % 4, bx = POS.estadio[0] + [-8, 8, -4, 5][burst], by = 16 + burst, bz = POS.estadio[2] + [-4, -6, 6, 4][burst];
+      fgPos[i * 3] = bx; fgPos[i * 3 + 1] = by; fgPos[i * 3 + 2] = bz;
+      var th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1), sp = 4 + Math.random() * 3;
+      fgVel[i] = [Math.sin(ph) * Math.cos(th) * sp, Math.cos(ph) * sp, Math.sin(ph) * Math.sin(th) * sp];
+    }
+    fgGeo.attributes.position.needsUpdate = true; fogos.material.opacity = 1; fogosVida = 2.4;
+  }
+  var fogosVida = 0;
+
+  // ── Pós-processamento ──
+  var composer = null;
+  if (THREE.EffectComposer && THREE.UnrealBloomPass){
+    composer = new THREE.EffectComposer(rend);
+    composer.addPass(new THREE.RenderPass(cena, cam));
+    composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.5, 0.9));
+  }
+
+  // ── Estado de animação ──
+  var alvoPos = new THREE.Vector3(44, 20, 40), alvoLook = new THREE.Vector3(16, 3, -2), look = alvoLook.clone();
+  cam.position.set(70, 50, 80);
+  var modo = 'neutro', obraAlvo = 0.55, obra = 0, torreAlvo = 0, andarAtivo = -1, relogio = 0, rodando = true;
+  var corAnel = new THREE.Color(COR.ciano), corAlvo = new THREE.Color(COR.ciano), luzesEstadio = 0, luzesAlvo = 0;
+  var caminhaoT = 0;
+
+  function aplicarModo(){
+    var risco = ['fabrica', 'viagem', 'altura', 'terceiros', 'acidente', 'prazo'].indexOf(modo) >= 0;
+    corAlvo.setHex(modo === 'verde' ? COR.ok : risco ? COR.risco : COR.ciano);
+    alerta.visible = ondaAlerta.visible = risco && modo !== 'prazo';
+    var ap = { fabrica: [POS.fabrica[0] + 2, 4.2, 6.5], viagem: [-21, 4.2, 9.6], altura: [POS.estadio[0] - 8.2, 11, POS.estadio[2] - 10],
+               terceiros: [POS.portao[0], 4.2, POS.portao[2] + 1], acidente: [POS.estadio[0] - 8.2, 9, POS.estadio[2] - 8.4] }[modo];
+    if (ap){ alerta.position.set(ap[0], ap[1], ap[2]); ondaAlerta.position.set(ap[0], (modo === 'altura' || modo === 'acidente') ? 6.5 : 0.08, ap[2]); }
+    luzRisco.position.copy(alerta.position);
+    luzesAlvo = modo === 'verde' ? 1 : 0;
+    document.body.classList.toggle('alarme', modo === 'acidente');
+    fluxo.visible = ['virada', 'clinica', 'verde'].indexOf(modo) >= 0;
+    scanner.visible = modo === 'clinica';
+    noAndaime.rotation.z = modo === 'acidente' ? 1.35 : 0;
+    noAndaime.position.y = modo === 'acidente' ? 0.3 : 6.45;
+    noAndaime.position.z = modo === 'acidente' ? POS.estadio[2] - 8.4 : POS.estadio[2] - 10;
+    noAndaime.visible = modo !== 'verde';
+    grua2.visible = modo === 'clinica';
+    if (modo === 'verde') dispararFogos();
+    atualizarPlacar();
+  }
+
+  function ir(nome){
+    var c = CENAS[nome] || CENAS.capa;
+    var largo = innerWidth > 980 && nome !== 'fundo';
+    var desvio = largo ? (c.modo === 'clinica' ? 4.2 : 6) : 0;
+    alvoPos.set(c.pos[0] - desvio * 0.5, c.pos[1], c.pos[2] + (largo ? 0 : 10));
+    alvoLook.set(c.alvo[0] - desvio, c.alvo[1], c.alvo[2]);
+    modo = c.modo; obraAlvo = c.obra; torreAlvo = c.torre;
+    andarAtivo = c.andar === undefined ? (c.torre === NAND ? NAND : -1) : c.andar;
+    aplicarModo();
+  }
+
+  function placarDias(n){ placarEstado.perdidos = n; atualizarPlacar(); }
+
+  var ult = performance.now(), tmp = new THREE.Vector3();
+  function quadro(agora){
+    if (!rodando) return;
+    requestAnimationFrame(quadro);
+    agora = agora || performance.now();
+    var dt = Math.min(0.05, (agora - ult) / 1000); ult = agora; relogio += dt;
+    var k = 1 - Math.pow(0.12, dt);   // suavização independente do fps
+
+    tmp.set(Math.sin(relogio * 0.25) * 0.6, Math.sin(relogio * 0.33) * 0.3, 0).add(alvoPos);
+    cam.position.lerp(tmp, k * 0.9);
+    look.lerp(alvoLook, k);
+    cam.lookAt(look);
+
+    corAnel.lerp(corAlvo, k);
+    todos.forEach(function(pp){
+      var u = pp.userData, s = Math.sin(relogio * 3 + u.fase);
+      u.anel.material.color.copy(corAnel); u.anel.material.opacity = 0.7 + s * 0.25;
+      u.anel.scale.setScalar(0.95 + s * 0.08);
+    });
+
+    // Obra do estádio avança
+    obra += (obraAlvo - obra) * k * 0.6;
+    var visiveis = Math.round(obra * NSEG);
+    segmentos.forEach(function(sg, i){ sg.scale.y += ((i < visiveis ? 1 : 0.001) - sg.scale.y) * k; });
+    andaime.visible = grua.visible = obraAlvo < 1;
+    braco.rotation.y = Math.sin(relogio * 0.2) * 0.5;
+    carga.position.y = -7.2 + Math.sin(relogio * 0.6) * 1.2; cabo.scale.y = 1 - Math.sin(relogio * 0.6) * 0.17; cabo.position.y = -3.5 + Math.sin(relogio * 0.6) * 0.6;
+
+    // Luzes do estádio e campo
+    luzesEstadio += (luzesAlvo - luzesEstadio) * k * 0.6;
+    torres.forEach(function(tg){ tg.userData.cab.material.emissiveIntensity = luzesEstadio * 2.2; tg.userData.cone.material.opacity = luzesEstadio * 0.07; });
+    luzEstadio.intensity = luzesEstadio * 2.4;
+    mGrama.emissiveIntensity = luzesEstadio * 0.6;
+    haloEstadio.material.opacity = 0.08 + luzesEstadio * 0.25;
+
+    // Torre da clínica
+    andares.forEach(function(a, i){
+      var mostra = i < torreAlvo;
+      a.g.visible = a.g.scale.y > 0.01 || mostra;
+      a.g.scale.y += ((mostra ? 1 : 0.001) - a.g.scale.y) * k * 0.8;
+      var lig = andarAtivo === NAND ? 0.85 : i === andarAtivo ? 1 : mostra ? 0.22 : 0;
+      a.teto.material.opacity += (lig * 0.9 - a.teto.material.opacity) * k;
+      a.miolo.material.opacity += (lig * 0.2 - a.miolo.material.opacity) * k;
+      a.rot.material.opacity += ((i === andarAtivo || andarAtivo === NAND ? 1 : mostra ? 0.45 : 0) - a.rot.material.opacity) * k;
+    });
+    var completa = torreAlvo >= NAND;
+    cobertura.visible = andares[NAND - 1].g.scale.y > 0.9;
+    letClinica.material.opacity += ((completa ? 1 : torreAlvo > 0 ? 0.25 : 0) - letClinica.material.opacity) * k;
+    luzClinica.intensity = torreAlvo > 0 ? 1.4 : 0;
+    luzClinica.position.y = (Math.max(0, andarAtivo === NAND ? 3 : andarAtivo) * 2.6 + 1.6) * ESC_TORRE;
+    haloClinica.material.opacity += ((torreAlvo > 0 ? 0.35 : 0.05) - haloClinica.material.opacity) * k;
+    contornoBase.material.opacity = torreAlvo === 0 ? 0.35 + Math.sin(relogio * 2) * 0.25 : 0.15;
+
+    // Caminhão na estrada
+    if (modo === 'viagem'){ caminhaoT = 0.3 + ((relogio * 0.08) % 1) * 0.45; }
+    else if (modo === 'verde'){ caminhaoT += (0.8 - caminhaoT) * k * 0.3; }
+    else { caminhaoT = (relogio * 0.03) % 1; }   // circula pela estrada em todas as outras cenas
+    var xAnt = caminhao.position.x;
+    caminhao.position.x = -42 + caminhaoT * 66;
+    var dx = caminhao.position.x - xAnt, giro = Math.abs(dx) < 1 ? dx / 0.47 : 0;   // ignora o salto ao recomeçar o trajeto   // rotação das rodas proporcional ao deslocamento
+    rodas.forEach(function(r){ r.rotation.z -= giro; });
+
+    // Trabalhador protagonista
+    var dest = modo === 'virada' || modo === 'clinica' ? [-9, 1.6] : modo === 'verde' ? [14, 10.5] : [-22, 9];
+    viajante.position.x += (dest[0] - viajante.position.x) * k * 0.35;
+    viajante.position.z += (dest[1] - viajante.position.z) * k * 0.35;
+    // Passada: braços e pernas balançam conforme a velocidade de cada pessoa
+    todos.forEach(function(pp){
+      var u = pp.userData, vel = pp.position.distanceTo(u.ult) / Math.max(dt, 0.001);
+      if (vel > 0.15) pp.rotation.y = Math.atan2(pp.position.x - u.ult.x, pp.position.z - u.ult.z);
+      u.ult.copy(pp.position);
+      var amp = Math.min(0.6, vel * 0.35), fase = relogio * 7 + u.fase;
+      u.pernas[0].rotation.x = Math.sin(fase) * amp; u.pernas[1].rotation.x = -Math.sin(fase) * amp;
+      u.bracos[0].rotation.x = -Math.sin(fase) * amp * 0.8; u.bracos[1].rotation.x = Math.sin(fase) * amp * 0.8;
+      if (amp < 0.02) u.bracos[0].rotation.x = Math.sin(relogio * 1.2 + u.fase) * 0.05;
+    });
+    scanner.position.set(viajante.position.x, 0.2 + (Math.sin(relogio * 2) + 1) * 0.75, viajante.position.z);
+
+    // Alerta
+    nucleo.rotation.y += dt * 2;
+    feixe.material.opacity = 0.12 + Math.sin(relogio * 6) * 0.08;
+    var onda = (relogio * 0.8) % 1;
+    ondaAlerta.scale.setScalar(1 + onda * 4); ondaAlerta.material.opacity = (1 - onda) * 0.6;
+    luzRisco.intensity = alerta.visible ? 3 + Math.sin(relogio * 6) * 2 : 0;
+
+    // Fábrica viva
+    rolos.forEach(function(rl){ rl.rotation.y += dt * 1.5; });
+    vapor.forEach(function(nv){
+      nv.userData.f = (nv.userData.f + dt * 0.08) % 1;
+      nv.position.y = 7 + nv.userData.f * 7; nv.material.opacity = 0.22 * (1 - nv.userData.f);
+      nv.scale.setScalar(1 + nv.userData.f * 2.5); nv.lookAt(cam.position);
+    });
+
+    // Fluxo dourado: fábrica → clínica → estádio
+    if (fluxo.visible){
+      var curva = modo === 'verde' ? curvaVolta : curvaIda;
+      for (var i = 0; i < NFL; i++){
+        fluxoT[i] = (fluxoT[i] + dt * 0.1) % 1;
+        var pt = curva.getPoint(fluxoT[i]);
+        fluxoPos[i * 3] = pt.x + Math.sin(i) * 0.3;
+        fluxoPos[i * 3 + 1] = pt.y + Math.sin(relogio * 2 + i) * 0.15 + 0.1;
+        fluxoPos[i * 3 + 2] = pt.z + Math.cos(i) * 0.3;
+      }
+      fluxoGeo.attributes.position.needsUpdate = true;
+    }
+    // Fogos
+    if (fogosVida > 0){
+      fogosVida -= dt;
+      for (var j = 0; j < NFG; j++){
+        fgVel[j][1] -= 4 * dt;
+        fgPos[j * 3] += fgVel[j][0] * dt; fgPos[j * 3 + 1] += fgVel[j][1] * dt; fgPos[j * 3 + 2] += fgVel[j][2] * dt;
+      }
+      fgGeo.attributes.position.needsUpdate = true;
+      fogos.material.opacity = Math.max(0, fogosVida / 2.4);
+      if (fogosVida <= 0 && modo === 'verde') setTimeout(function(){ if (modo === 'verde') dispararFogos(); }, 1800);
+    }
+    poeira.rotation.y += dt * 0.01;
+
+    if (composer) composer.render(); else rend.render(cena, cam);
+  }
+  requestAnimationFrame(quadro);
+
+  addEventListener('resize', function(){
+    cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix();
+    rend.setSize(innerWidth, innerHeight);
+    if (composer) composer.setSize(innerWidth, innerHeight);
+  });
+  document.addEventListener('visibilitychange', function(){
+    rodando = !document.hidden;
+    if (rodando){ ult = performance.now(); requestAnimationFrame(quadro); }
+  });
+  // Textos do canvas dependem da fonte Sora carregada
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ atualizarPlacar(); desenharPaineis(); });
+
+  return { ir: ir, placar: placarDias };
+})();
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: EVENTOS_CALC ═══ */
+(function(){
+  var rat = 3;
+  function atualizar(){
+    var fap = parseFloat($('cf-fap').value);
+    renderCalc(calcularFap(numero($('cf-func').value), numero($('cf-sal').value), rat, fap), fap);
+  }
+  $('cf-fap').addEventListener('input', atualizar);
+  $('cf-func').addEventListener('input', atualizar);
+  $('cf-sal').addEventListener('input', atualizar);
+  $('cf-sal').addEventListener('blur', function(){ $('cf-sal').value = numero($('cf-sal').value).toLocaleString('pt-BR'); });
+  document.querySelectorAll('#cf-rats .chip').forEach(function(b){
+    b.addEventListener('click', function(){
+      rat = Number(b.dataset.rat);
+      document.querySelectorAll('#cf-rats .chip').forEach(function(o){ o.classList.toggle('on', o === b); });
+      atualizar();
+    });
+  });
+  renderTicks();
+  atualizar();
+})();
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: EVENTOS_PRAZO ═══ */
+$('eventos').addEventListener('click', function(e){
+  var b = e.target.closest('.evento'); if (!b) return;
+  estado.eventos[b.dataset.ev] = !estado.eventos[b.dataset.ev];
+  renderPrazo(calcularAtraso(estado.eventos));
+});
+renderPrazo(calcularAtraso(estado.eventos));
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: EVENTOS_KANBAN ═══ */
+(function(){
+  var CHAVE = 'dmg-recoma-kanban';
+  try { estado.kanban = JSON.parse(localStorage.getItem(CHAVE)) || {}; } catch (e) { estado.kanban = {}; }
+  try { var cli = localStorage.getItem(CHAVE + '-cliente'); if (cli) $('rd-cliente').value = cli; } catch (e) {}
+
+  function salvar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado.kanban)); } catch (e) {} }
+  function mover(i, st){
+    if (st === 'pend') delete estado.kanban[i]; else estado.kanban[i] = st;
+    estado.selecionado = null; salvar(); renderKanban();
+  }
+
+  var kb = $('kb');
+  kb.addEventListener('dragstart', function(e){
+    var c = e.target.closest('.card'); if (!c) return;
+    e.dataTransfer.setData('text/plain', c.dataset.i); c.classList.add('arrastando');
+  });
+  kb.addEventListener('dragend', function(e){
+    var c = e.target.closest('.card'); if (c) c.classList.remove('arrastando');
+    kb.querySelectorAll('.kb-col').forEach(function(col){ col.classList.remove('alvo'); });
+  });
+  kb.addEventListener('dragover', function(e){
+    var col = e.target.closest('.kb-col'); if (!col) return;
+    e.preventDefault();
+    kb.querySelectorAll('.kb-col').forEach(function(o){ o.classList.toggle('alvo', o === col); });
+  });
+  kb.addEventListener('drop', function(e){
+    var col = e.target.closest('.kb-col'); if (!col) return;
+    e.preventDefault();
+    mover(Number(e.dataTransfer.getData('text/plain')), col.dataset.st);
+  });
+  kb.addEventListener('click', function(e){
+    var c = e.target.closest('.card');
+    if (c){
+      var i = Number(c.dataset.i);
+      estado.selecionado = estado.selecionado === i ? null : i;
+      renderKanban(); e.stopPropagation(); return;
+    }
+    var col = e.target.closest('.kb-col');
+    if (col && estado.selecionado !== null) mover(estado.selecionado, col.dataset.st);
+  });
+
+  $('kb-reset').addEventListener('click', function(){ estado.kanban = {}; salvar(); renderKanban(); });
+  $('kb-gerar').addEventListener('click', function(){ Deck.ir(Deck.indice('s-radar')); });
+  $('rd-voltar').addEventListener('click', function(){ Deck.ir(Deck.indice('s-kanban')); });
+  $('rd-pdf').addEventListener('click', function(){ window.print(); });
+  $('rd-cliente').addEventListener('input', function(){
+    try { localStorage.setItem(CHAVE + '-cliente', $('rd-cliente').value); } catch (e) {}
+  });
+  renderKanban();
+})();
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: EVENTOS_PAINEL ═══ */
+var Painel = (function(){
+  var aberto = false, t = null;
+  function abrir(){
+    aberto = true;
+    $('pnl').classList.add('on'); $('pnl').setAttribute('aria-hidden', 'false');
+    $('pnl-load').classList.remove('fora');
+    renderPainel('geral');
+    clearTimeout(t); t = setTimeout(function(){ $('pnl-load').classList.add('fora'); }, 900);
+  }
+  function fechar(){ aberto = false; $('pnl').classList.remove('on'); $('pnl').setAttribute('aria-hidden', 'true'); }
+  $('abrir-painel').addEventListener('click', abrir);
+  $('fechar-painel').addEventListener('click', fechar);
+  $('pnl').addEventListener('click', function(e){ if (e.target === $('pnl')) fechar(); });
+  $('pnl-nav').addEventListener('click', function(e){ var b = e.target.closest('.pnl-item'); if (b) renderPainel(b.dataset.aba); });
+  return { aberto: function(){ return aberto; }, fechar: fechar };
+})();
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: INICIALIZACAO ═══ */
+renderMapa();
+document.querySelectorAll('.logo-dmg').forEach(function(img){ img.src = LOGO_DMG; });
+renderParceiros();
+renderTorreInd();
+/* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: CONTROLLER ═══ */
+var Deck = (function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, trava = false;
+  var dots = $('dots');
+  slides.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.className = 'dot'; b.setAttribute('aria-label', 'Ir para o slide ' + (i + 1));
+    b.addEventListener('click', function(){ ir(i); });
+    dots.appendChild(b);
+  });
+
+  function indice(id){ return slides.indexOf($(id)); }
+
+  function ir(i){
+    if (i < 0 || i >= total) return;
+    slides[estado.slide].classList.remove('on');
+    estado.slide = i;
+    var s = slides[i];
+    s.classList.add('on'); s.scrollTop = 0;
+    Array.prototype.forEach.call(dots.children, function(d, k){ d.classList.toggle('on', k === i); });
+    $('count').textContent = pad(i + 1) + ' / ' + pad(total);
+    $('prog').style.width = ((i + 1) / total * 100) + '%';
+    var nome = s.dataset.cena;
+    $('hud-ato').textContent = ATO[nome] || 'Diagnóstico';
+    document.body.classList.toggle('cena-fundo', nome === 'fundo');
+    if (s.id === 's-radar') renderRadar(calcularRadar(estado.kanban));
+    animarNumeros(s);
+    Cena.ir(nome);
+    if (history.replaceState) history.replaceState(null, '', '#slide-' + pad(i + 1));
+  }
+
+  function interativo(el){ return Painel.aberto() || (el && el.closest && el.closest('input,button,.kb,a,.pnl')); }
+
+  document.addEventListener('keydown', function(e){
+    if (Painel.aberto()){ if (e.key === 'Escape') Painel.fechar(); return; }   // → BLOCO: EVENTOS_PAINEL
+    if (e.target.tagName === 'INPUT' && e.target.type === 'text') return;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].indexOf(e.key) >= 0){ e.preventDefault(); ir(estado.slide + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp'].indexOf(e.key) >= 0){ e.preventDefault(); ir(estado.slide - 1); }
+  });
+  addEventListener('wheel', function(e){
+    if (trava || Math.abs(e.deltaY) < 20 || interativo(e.target)) return;
+    var s = slides[estado.slide];
+    if (s.scrollHeight > s.clientHeight + 4){
+      var fim = s.scrollTop + s.clientHeight >= s.scrollHeight - 4;
+      if ((e.deltaY > 0 && !fim) || (e.deltaY < 0 && s.scrollTop > 4)) return;
+    }
+    trava = true; ir(estado.slide + (e.deltaY > 0 ? 1 : -1));
+    setTimeout(function(){ trava = false; }, 900);
+  }, { passive: true });
+  var tx = 0, ty = 0;
+  addEventListener('touchstart', function(e){ tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, { passive: true });
+  addEventListener('touchend', function(e){
+    if (interativo(e.target)) return;
+    var dx = tx - e.changedTouches[0].clientX, dy = ty - e.changedTouches[0].clientY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 55) ir(estado.slide + (dx > 0 ? 1 : -1));
+  }, { passive: true });
+
+  var m = /^#slide-(\d+)$/.exec(location.hash || '');
+  var ini = m ? Math.min(Math.max(parseInt(m[1], 10) - 1, 0), total - 1) : 0;
+  slides[0].classList.add('on');
+  ir(ini);
+  return { ir: ir, indice: indice };
+})();
+/* ── FIM BLOCO ── */
+</script>
+</body>
+</html>
