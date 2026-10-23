@@ -34,6 +34,7 @@
     'roteiros/' + id + '.js',
     function(){ return 'js/cenarios/' + window.ROTEIRO.cenario + '.js'; },
     'js/slides.js',
+    'js/cinema.js',
     'js/kit3d.js',
     'js/motor.js'
   ]);

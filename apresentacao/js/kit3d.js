@@ -30,8 +30,7 @@ var Cena = (function(){
 
   var palco = $('palco');
   var cena = new THREE.Scene();
-  cena.fog = new THREE.FogExp2(0x0C1B22, 0.014);
-  var cam = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 400);
+  var cam = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 1600);
   var rend = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   rend.setPixelRatio(Math.min(devicePixelRatio, 2));
   rend.setSize(innerWidth, innerHeight);
@@ -40,15 +39,22 @@ var Cena = (function(){
   rend.toneMappingExposure = 0.95;
   rend.shadowMap.enabled = true;
   rend.shadowMap.type = THREE.PCFSoftShadowMap;
+  rend.physicallyCorrectLights = false;
   palco.appendChild(rend.domElement);
+  var CINE = !!window.Cinema && !!THREE.Sky;
 
   // ── Luz ──
-  cena.add(new THREE.HemisphereLight(0x9fd6dc, 0x0a1418, 0.5));
-  var sol = new THREE.DirectionalLight(0xffe6c4, 1.05);
-  sol.position.set(-20, 34, 22); sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048);
-  var sc = sol.shadow.camera; sc.left = -50; sc.right = 50; sc.top = 40; sc.bottom = -40; sc.far = 120;
-  sol.shadow.bias = -0.0005; sol.shadow.normalBias = 0.04; cena.add(sol);
-  var contra = new THREE.DirectionalLight(0x6fe3ec, 0.45); contra.position.set(30, 12, -30); cena.add(contra);
+  // Cinema: céu físico, sol de entardecer, mapa de ambiente e névoa do horizonte (fallback: luz de estúdio antiga)
+  var atm = null;
+  if (CINE) atm = Cinema.atmosfera(THREE, cena, rend);
+  else {
+    cena.fog = new THREE.FogExp2(0x0C1B22, 0.014);
+    cena.add(new THREE.HemisphereLight(0x9fd6dc, 0x0a1418, 0.5));
+    var sol = new THREE.DirectionalLight(0xffe6c4, 1.05);
+    sol.position.set(-20, 34, 22); sol.castShadow = true; sol.shadow.mapSize.set(2048, 2048);
+    var sc = sol.shadow.camera; sc.left = -50; sc.right = 50; sc.top = 40; sc.bottom = -40; sc.far = 120;
+    sol.shadow.bias = -0.0005; sol.shadow.normalBias = 0.04; cena.add(sol);
+  }
   var luzRisco = new THREE.PointLight(COR.risco, 0, 24, 2); cena.add(luzRisco);
   var luzClinica = new THREE.PointLight(0xffd9a0, 0, 24, 2); luzClinica.position.set(POS_CLINICA[0], 5, POS_CLINICA[2] + 6); cena.add(luzClinica);
 
@@ -90,7 +96,8 @@ var Cena = (function(){
   }
   var HALO = texHalo();
   function halo(cor, tam, x, z, op){
-    var m = new THREE.Mesh(new THREE.PlaneGeometry(tam, tam), new THREE.MeshBasicMaterial({ map: HALO, color: cor, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false }));
+    // Com luz de cinema o halo vira só um realce sutil no chão (não um "círculo mágico")
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(tam, tam), new THREE.MeshBasicMaterial({ map: HALO, color: cor, transparent: true, opacity: op * (CINE ? 0.3 : 1), blending: THREE.AdditiveBlending, depthWrite: false }));
     m.rotation.x = -Math.PI / 2; m.position.set(x, 0.03, z); cena.add(m); return m;
   }
   function textoTex(w, h){
@@ -105,10 +112,12 @@ var Cena = (function(){
   function aoCarregarFonte(fn){ redesenhos.push(fn); fn(); }
 
   /* ── Chão e grade ── */
-  var piso = new THREE.Mesh(new THREE.PlaneGeometry(260, 200), mat(COR.piso, { r: 0.9 }));
-  piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; cena.add(piso);
-  var grade = new THREE.GridHelper(160, 80, 0x2a5862, 0x13313a);
-  grade.material.transparent = true; grade.material.opacity = 0.18; grade.position.y = 0.01; cena.add(grade);
+  var entorno = null;
+  if (CINE) entorno = Cinema.mundo(THREE, cena, { x0: -62, x1: 128, z0: -46, z1: 50 });
+  else {
+    var piso = new THREE.Mesh(new THREE.PlaneGeometry(260, 200), mat(COR.piso, { r: 0.9 }));
+    piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; cena.add(piso);
+  }
   var haloClinica = halo(0xD6B17D, 20, POS_CLINICA[0], POS_CLINICA[2] + 2, 0.0);
 
   /* ── Pessoas ── */
@@ -343,6 +352,13 @@ var Cena = (function(){
       var s = 1 + Math.random() * 3; g.fillRect(Math.random() * tam, Math.random() * tam, s, s);
     }
   }
+  // Asfalto com agregado visível (textura procedural compartilhada), para ruas e pistas de todos os cenários
+  var TX_ASF = null;
+  function asfalto(rep){
+    if (!TX_ASF) TX_ASF = texturaProc(256, function(g, t){ granulado(g, t, '#2c2f31', 0.22, 9000); });
+    var t = TX_ASF.clone(); t.needsUpdate = true; t.repeat.set(rep ? rep[0] : 30, rep ? rep[1] : 1);
+    return new THREE.MeshStandardMaterial({ color: 0xffffff, map: t, roughness: 0.9 });
+  }
   // Carro de passeio com silhueta real (capô, para-brisa, teto e porta-malas), rodas com aro e faróis acesos
   var GEO_CARRO = null;
   function carro(cor){
@@ -487,7 +503,7 @@ var Cena = (function(){
     THREE: THREE, cena: cena, cam: cam, COR: COR, HALO: HALO,
     mat: mat, basico: basico, caixa: caixa, cilindro: cilindro, caixaRedonda: caixaRedonda,
     halo: halo, textoTex: textoTex, cantos: cantos, pessoa: pessoa, aoCarregarFonte: aoCarregarFonte, R: R,
-    barra: barra, trelica: trelica, fundir: fundir, fita: fita, texturaProc: texturaProc, granulado: granulado, carro: carro, arvores: arvores, roda: roda, epi: epi, andaime: andaime, desvanecivel: desvanecivel
+    barra: barra, trelica: trelica, fundir: fundir, fita: fita, texturaProc: texturaProc, granulado: granulado, carro: carro, asfalto: asfalto, arvores: arvores, roda: roda, epi: epi, andaime: andaime, desvanecivel: desvanecivel
   };
   // Grua de montagem da clínica: torre treliçada, lança, contralança com contrapeso e cabo com gancho
   (function montarGrua2(){
@@ -521,12 +537,14 @@ var Cena = (function(){
   }
 
   /* ── Pós-processamento ── */
-  var composer = null;
-  if (THREE.EffectComposer && THREE.UnrealBloomPass){
+  var composer = null, lente = null;
+  if (CINE && THREE.EffectComposer) lente = Cinema.lente(THREE, rend, cena, cam);
+  else if (THREE.EffectComposer && THREE.UnrealBloomPass){
     composer = new THREE.EffectComposer(rend);
     composer.addPass(new THREE.RenderPass(cena, cam));
     composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.5, 0.9));
   }
+  var trav = CINE ? Cinema.travelling(THREE) : null, fovAlvo = 38, planoMaquete = false;
 
   /* ── Estado de animação ── */
   var alvoPos = new THREE.Vector3(44, 20, 40), alvoLook = new THREE.Vector3(16, 3, -2), look = alvoLook.clone();
@@ -557,6 +575,17 @@ var Cena = (function(){
     alvoLook.set(c.alvo[0] - desvio, c.alvo[1], c.alvo[2]);
     modo = c.modo; torreAlvo = c.torre; cenaAtual = c;
     andarAtivo = c.andar === undefined ? (c.torre === NAND ? NAND : -1) : c.andar;
+    // Plano de cinema: maquete (tilt-shift) nas visões gerais, foco seletivo nas cenas de assunto
+    planoMaquete = nome === 'capa' || nome === 'fundo' || nome === 'final';
+    fovAlvo = c.fov || (planoMaquete ? 30 : c.modo === 'clinica' ? 34 : 36);
+    if (trav) trav.iniciar(cam.position, look, alvoPos, alvoLook);
+    if (lente){
+      var risco = mundo.modosRisco.indexOf(c.modo) >= 0;
+      var clima = c.modo === 'acidente' ? 'acidente' : risco ? 'risco' : c.modo === 'verde' ? 'verde' : (c.modo === 'clinica' || c.modo === 'virada') ? 'clinica' : 'neutro';
+      lente.plano(planoMaquete ? 'maquete' : 'foco', clima, alvoPos.distanceTo(alvoLook));
+      lente.bloom(c.modo === 'verde' ? 0.62 : 0.28);
+    }
+    if (atm) atm.noite(c.modo === 'verde');
     aplicarModo();
   }
 
@@ -570,16 +599,28 @@ var Cena = (function(){
     // QA: a auditoria automática pode avançar a simulação em vários passos por quadro (renderizador por software)
     var passos = window.__qaPassos || 1;
     for (var ps = 0; ps < passos; ps++) atualizar(passos > 1 ? 0.05 : dt0);
-    if (composer) composer.render(); else rend.render(cena, cam);
+    if (lente) lente.render(); else if (composer) composer.render(); else rend.render(cena, cam);
   }
   function atualizar(dt){
     relogio += dt;
     var k = 1 - Math.pow(0.12, dt);   // suavização independente do fps
 
-    tmp.set(Math.sin(relogio * 0.25) * 0.6, Math.sin(relogio * 0.33) * 0.3, 0).add(alvoPos);
-    cam.position.lerp(tmp, k * 0.9);
-    look.lerp(alvoLook, k);
+    if (trav && trav.passo(dt, cam.position, look)){ /* travelling em curso */ }
+    else {
+      // Câmera na mão: respiro sutil; na entrega, órbita lenta em volta do assunto
+      tmp.copy(alvoPos);
+      if (modo === 'verde' && trav){
+        var ang = Math.sin(relogio * 0.07) * 0.22, ox = tmp.x - alvoLook.x, oz = tmp.z - alvoLook.z;
+        tmp.x = alvoLook.x + ox * Math.cos(ang) - oz * Math.sin(ang); tmp.z = alvoLook.z + ox * Math.sin(ang) + oz * Math.cos(ang);
+      }
+      tmp.x += Math.sin(relogio * 0.25) * 0.5; tmp.y += Math.sin(relogio * 0.33) * 0.25;
+      cam.position.lerp(tmp, k * 0.9);
+      look.lerp(alvoLook, k);
+    }
     cam.lookAt(look);
+    if (Math.abs(cam.fov - fovAlvo) > 0.01){ cam.fov += (fovAlvo - cam.fov) * k; cam.updateProjectionMatrix(); }
+    if (atm){ atm.atualizar(dt); if (entorno) entorno.janelasCidade(atm.hora()); }
+    if (lente) lente.atualizar(dt);
 
     corAnel.lerp(corAlvo, k);
     todos.forEach(function(pp){
@@ -646,7 +687,7 @@ var Cena = (function(){
     feixe.material.opacity = 0.12 + Math.sin(relogio * 6) * 0.08;
     var onda = (relogio * 0.8) % 1;
     ondaAlerta.scale.setScalar(1 + onda * 4); ondaAlerta.material.opacity = (1 - onda) * 0.6;
-    luzRisco.intensity = alerta.visible ? 3 + Math.sin(relogio * 6) * 2 : 0;
+    luzRisco.intensity = alerta.visible ? (CINE ? 1.1 + Math.sin(relogio * 6) * 0.6 : 3 + Math.sin(relogio * 6) * 2) : 0;
 
     // Fluxo dourado: cliente → clínica → cliente
     if (fluxo.visible){
@@ -679,6 +720,7 @@ var Cena = (function(){
     cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix();
     rend.setSize(innerWidth, innerHeight);
     if (composer) composer.setSize(innerWidth, innerHeight);
+    if (lente) lente.setSize(innerWidth, innerHeight);
   });
   document.addEventListener('visibilitychange', function(){
     rodando = !document.hidden;
