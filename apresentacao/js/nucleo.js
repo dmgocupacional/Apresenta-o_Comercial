@@ -35,10 +35,19 @@ function nomeCurto(razao){
   var palavras = s.split(' ');
   if (palavras.length > 3) palavras = palavras.slice(0, 2);   // nome longo vira as duas primeiras palavras
   var minusc = ['de', 'da', 'do', 'das', 'dos', 'e'];
+  // A Receita grava sem acento: devolve o acento das palavras mais comuns em nomes de empresa
+  var ACENTOS = { consorcio: 'consórcio', construcoes: 'construções', construcao: 'construção', comercio: 'comércio', servicos: 'serviços',
+                  servico: 'serviço', industria: 'indústria', logistica: 'logística', saude: 'saúde', tecnica: 'técnica', eletrica: 'elétrica',
+                  hidraulica: 'hidráulica', mecanica: 'mecânica', distribuicao: 'distribuição', alimentacao: 'alimentação', sao: 'são',
+                  informatica: 'informática', jose: 'josé', joao: 'joão', sebastiao: 'sebastião', antonio: 'antônio', paraiso: 'paraíso', telecomunicacoes: 'telecomunicações', manutencao: 'manutenção', pavimentacao: 'pavimentação',
+                  terraplenagem: 'terraplenagem', incorporacao: 'incorporação', solucoes: 'soluções', medicos: 'médicos', clinica: 'clínica' };
   return palavras.map(function(p, i){
     var l = p.toLowerCase();
+    if (ACENTOS[l]) l = ACENTOS[l];
     if (i > 0 && minusc.indexOf(l) >= 0) return l;
-    return p.length <= 3 && p === p.toUpperCase() ? p : l.charAt(0).toUpperCase() + l.slice(1);
+    // Sigla (DMG, GSO, JX) fica em maiúsculas; palavra curta comum (Via, São, Sul) não
+    var curtaComum = ['via', 'são', 'sul', 'sol', 'mar', 'rio', 'paz', 'luz', 'boa', 'bom', 'eco', 'max', 'top', 'ouro', 'lar', 'casa'].indexOf(l) >= 0;
+    return p.length <= 3 && p === p.toUpperCase() && !curtaComum ? p : l.charAt(0).toUpperCase() + l.slice(1);
   }).join(' ');
 }
 
@@ -56,9 +65,19 @@ var EMPRESA = (function(){
   };
 })();
 
-// Substitui {empresa}, {EMPRESA}, {func} (colaboradores) e {anos} (anos de empresa) em textos do roteiro
+// Nomes que pedem artigo masculino ("o Consórcio", "do Grupo"); o padrão é feminino ("a construtora", "da empresa")
+var MASCULINOS = ['consorcio', 'consórcio', 'grupo', 'instituto', 'escritorio', 'escritório', 'hospital', 'laboratorio', 'laboratório',
+                  'supermercado', 'mercado', 'atacadao', 'atacadão', 'atacado', 'posto', 'banco', 'centro', 'colegio', 'colégio', 'condominio', 'condomínio'];
+function nomeMasculino(){
+  var p = String(EMPRESA.nome || '').split(' ')[0].toLowerCase();
+  return MASCULINOS.indexOf(p) >= 0;
+}
+var ARTIGO_M = { a: 'o', da: 'do', na: 'no', pela: 'pelo', 'à': 'ao', A: 'O', Da: 'Do', Na: 'No', Pela: 'Pelo', 'À': 'Ao' };
+
+// Substitui {empresa}, {EMPRESA}, {func} (colaboradores), {anos} (anos de empresa) e {cidade}; ajusta o artigo antes do nome
 function pers(txt){
   if (txt == null) return '';
+  if (nomeMasculino()) txt = String(txt).replace(/\b(a|da|na|pela|A|Da|Na|Pela)\s+\{empresa\}/g, function(m, art){ return ARTIGO_M[art] + ' {empresa}'; }).replace(/(^|\s)(à|À)\s+\{empresa\}/g, function(m, esp, art){ return esp + ARTIGO_M[art] + ' {empresa}'; });
   return String(txt).replace(/\{empresa\}/g, EMPRESA.nome).replace(/\{EMPRESA\}/g, EMPRESA.nome.toUpperCase())
     .replace(/\{func\}/g, EMPRESA.func).replace(/\{anos\}/g, EMPRESA.anos).replace(/\{cidade\}/g, EMPRESA.cidade || '');
 }

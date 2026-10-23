@@ -162,7 +162,7 @@ var Slides = (function(){
         '<ol class="passos-a">' + s.passos.map(function(p, i){
           return '<li class="glass rv' + d(3 + i) + '"><div><b>' + pers(p.b) + '</b><span>' + pers(p.s) + '</span></div></li>';
         }).join('') + '</ol>' +
-        (s.entrega ? '<div class="entrega rv d6"><small>O que a ' + escaparHtml(EMPRESA.nome) + ' ganha</small><span class="k">' + s.entrega.k + '</span><span>' + pers(s.entrega.s) + '</span></div>' : '') +
+        (s.entrega ? '<div class="entrega rv d6"><small>' + escaparHtml(pers('O que a {empresa} ganha')) + '</small><span class="k">' + s.entrega.k + '</span><span>' + pers(s.entrega.s) + '</span></div>' : '') +
         extra + (s.fonte ? '<p class="fonte rv d6">' + pers(s.fonte) + '</p>' : '') +
         '</div>', ' data-andar="' + s.andar + '"');
     },

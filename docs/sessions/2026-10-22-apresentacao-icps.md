@@ -26,7 +26,8 @@
 2. Hub (concluída): `apresentacao/` sem `?r=` abre o preparo. CNPJ via BrasilAPI (CORS liberado, validação de dígitos) → razão, fantasia, CNAE, cidade, anos desde a abertura; CNAE sugere ICP/subtipo (prefixo mais longo) e RAT estimado; site → ícone via Google favicons; vendedor ajusta nome, colaboradores, anos e RAT; gera e copia o link (`r, empresa, func, anos, rat, site, cidade`). Último preparo fica salvo no navegador.
 3. Construção completa (3 subtipos) — em andamento:
    - Edificações e incorporação (concluído, 23/10): cenário `edificacoes` (torre de 12 pavimentos que sobe com a obra, guarda-corpo NR-18 e bandeja, grua torre, cremalheira, tapume e placa de obra com o nome do cliente, contêineres de vivência, área de corte com poeira de sílica, betoneira na rua, stand de vendas; na entrega a torre fecha, acende parte das janelas e mostra o nome na coroa) + roteiro `construcao-edificacoes` (dores: empreiteiros por etapa, altura e equipamentos, rotatividade, poeira e ruído; prazo = entrega das chaves) + slide novo `etapas` (fundação → acabamento).
-   - Infraestrutura e terraplenagem (próximo).
+   - Infraestrutura e terraplenagem (concluído, 23/10): cenário `infraestrutura` (estrada com trecho entregue e subleito, pavimento que avança com a obra, escavadeira em ciclo carregando basculante, caminhão de ré sobre trabalhador no ponto cego, vala com e sem escoramento, motoniveladora e rolo, desvio com sinaleiro PARE/SIGA e carros, ponte com cimbramento, base com placa de obra do cliente; na entrega as máquinas saem, a pista ganha faixas, postes acesos e o trânsito volta) + roteiro `construcao-infraestrutura` (frentes espalhadas, máquina pesada, escavação, céu aberto e trânsito; prazo = medição do contrato).
+   - Construção concluída: 3 de 3 subtipos no ar e liberados no hub.
 4. Demais ICPs.
 5. Radar → pré-proposta no padrão dmg-erp.
 
@@ -41,6 +42,11 @@
 - Catálogo dos 18 subtipos em `js/hub.js` (bloco CATALOGO), com prefixos de CNAE e RAT estimado por ICP; só `construcao-esportiva` tem roteiro, os demais aparecem "Em produção".
 - Teste: CNPJ da Estrela (09.413.300/0001-77) → Construção · Edificações (CNAE 4120-4/00), Cotia/SP, 18 anos. Link gerado abriu o deck com nome, anos, RAT e logo.
 - Logo pelo site usa o ícone do domínio (pequeno); logo grande continua por arquivo.
+
+## Fase 3 — registro técnico
+- Personalização ganhou concordância de artigo: nomes masculinos (Consórcio, Grupo, Instituto, Supermercado…) trocam "a/da/na/pela {empresa}" por "o/do/no/pelo".
+- `nomeCurto` devolve acentos que a Receita remove (Consórcio, Construções, São, José…) e só mantém em maiúsculas o que é sigla (GSO, JX), não palavra curta comum (Via, São).
+- Lição: comentário inserido no meio de linha engoliu um `cena.add` (pavimento sumido); conferir com grep após patches que adicionam `//` ao fim de instrução.
 
 ## Pendências
 - Logo oficial da Recoma (placeholder em texto).
