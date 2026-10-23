@@ -5,13 +5,16 @@
 /* ═══ BLOCO: CENARIO_EDIFICACOES ═══ */
 CENARIOS.edificacoes = function(kit){
   var THREE = kit.THREE, cena = kit.cena, COR = kit.COR, mat = kit.mat, basico = kit.basico, caixa = kit.caixa,
-      cilindro = kit.cilindro, caixaRedonda = kit.caixaRedonda, textoTex = kit.textoTex, pessoa = kit.pessoa, HALO = kit.HALO;
+      cilindro = kit.cilindro, caixaRedonda = kit.caixaRedonda, textoTex = kit.textoTex, pessoa = kit.pessoa, HALO = kit.HALO,
+      barra = kit.barra, trelica = kit.trelica, roda = kit.roda;
+  var V = function(x, y, z){ return new THREE.Vector3(x, y, z); };
   var MARCA = EMPRESA.nome.toUpperCase();
   var TORRE = [15, 0, -4];                 // centro da torre em obra
   var NPAV = 12, HPAV = 1.6;               // pavimentos e pé-direito
   var LAJE = 6 * HPAV + 0.22;              // última laje concretada com a obra em 55%
   var LARG = 10, PROF = 8;
   var PORTAO = [10.5, 0, 9];
+  var FILA_TERC = [14.2, 0, 10.45];        // fila de terceiros na calçada, ao lado da passagem do portão
   var VIVENCIA = [1, 0, -11];
   var CORTE = [4, 0, 0.5];
   var STAND = [-27, 0, 1];
@@ -33,6 +36,15 @@ CENARIOS.edificacoes = function(kit){
   }
   var calcada = new THREE.Mesh(new THREE.PlaneGeometry(110, 1.6), mat(0x34464c, { r: 0.9 }));
   calcada.rotation.x = -Math.PI / 2; calcada.position.set(0, 0.03, 10.6); calcada.receiveShadow = true; cena.add(calcada);
+  // Meio-fio e postes de iluminação pública
+  caixa(110, 0.16, 0.16, mat(0x8d979a, { r: 0.85 }), 0, 0.08, 11.42);
+  [-36, -24, -12, 18, 30, 42].forEach(function(x){
+    var pg = new THREE.Group(); pg.position.set(x, 0, 10.0); cena.add(pg);
+    cilindro(0.08, 0.12, 6.4, mat(0x6f7c80, { r: 0.4, m: 0.7 }), 0, 3.2, 0, pg, 12);
+    var braco = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.04, 6, 16, Math.PI / 2), mat(0x6f7c80, { r: 0.4, m: 0.7 })); braco.rotation.y = -Math.PI / 2; braco.position.set(0, 5.6, 0.8); pg.add(braco);
+    var lum = caixaRedonda(0.32, 0.12, 0.7, 0.04, mat(0x3a4245, { r: 0.4, m: 0.6 })); lum.position.set(0, 6.42, 1.3); pg.add(lum);
+    var lamp = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.5), new THREE.MeshBasicMaterial({ color: 0xfff1d0, toneMapped: false, side: THREE.DoubleSide })); lamp.rotation.x = Math.PI / 2; lamp.position.set(0, 6.35, 1.3); pg.add(lamp);
+  });
   // Terreno do canteiro, levemente mais claro
   var terreno = new THREE.Mesh(new THREE.PlaneGeometry(30, 25), mat(0x1b2a2c, { r: 1 }));
   terreno.rotation.x = -Math.PI / 2; terreno.position.set(15, 0.015, -3.5); terreno.receiveShadow = true; cena.add(terreno);
@@ -113,30 +125,53 @@ CENARIOS.edificacoes = function(kit){
   placaCoroa.position.set(0, 1.4, PROF / 2 - 0.95); coroa.add(placaCoroa);
   coroa.visible = false;
 
-  /* ── Elevador cremalheira na lateral da torre ── */
+  /* ── Elevador cremalheira: mastro em seções treliçadas ancoradas na estrutura ── */
   var mMastro = mat(0xF2B957, { r: 0.4, m: 0.6 });
   var mastro = new THREE.Group(); mastro.position.set(TORRE[0] + LARG / 2 + 1.2, 0, TORRE[2] + 1.5); cena.add(mastro);
-  var mastroAlt = caixa(0.6, 1, 0.6, mMastro, 0, 0.5, 0, mastro);
-  var cabineElev = caixa(1.5, 2, 1.4, mat(0x3d5a62, { r: 0.5, m: 0.4 }), 1.05, 1, 0, mastro);
-  caixa(0.06, 1.6, 1.2, basico(0xffd9a0, 0.25), 1.82, 1, 0, cabineElev);
-
-  /* ── Grua torre ── */
-  var mAco = mat(COR.aco, { r: 0.35, m: 0.8 });
-  var grua = new THREE.Group(); grua.position.set(TORRE[0] + 9, 0, TORRE[2] - 8); cena.add(grua);
-  for (var gy = 0; gy < 15; gy++){
-    caixa(1, 0.07, 1, mAco, 0, gy * 2, 0, grua);
-    var diag = caixa(0.05, 2.8, 0.05, mAco, 0.47, gy * 2 + 1, 0, grua); diag.rotation.x = 0.62;
+  caixa(2.4, 0.3, 2.2, mat(0x8d979a, { r: 0.85 }), 0.6, 0.15, 0, mastro);   // base de concreto
+  var secoes = [];
+  for (var sc = 0; sc < 15; sc++){
+    var sec = trelica(1.5, 0.55, mMastro, { passo: 0.75 }); sec.position.y = 0.3 + sc * 1.5; mastro.add(sec);
+    if (sc % 2 === 1){   // ancoragem na laje a cada 3 m
+      var anc = new THREE.Group(); anc.position.y = 0.3 + sc * 1.5 + 0.8; sec.parent.add(anc);
+      barra(V(-0.3, 0, 0.25), V(-1.15, 0, 0.6), 0.03, mMastro, anc); barra(V(-0.3, 0, -0.25), V(-1.15, 0, -0.6), 0.03, mMastro, anc);
+      secoes.push({ g: sec, anc: anc });
+    } else secoes.push({ g: sec });
   }
-  [[-0.47, -0.47], [0.47, -0.47], [-0.47, 0.47], [0.47, 0.47]].forEach(function(q){ caixa(0.09, 30, 0.09, mAco, q[0], 15, q[1], grua); });
-  var giro = new THREE.Group(); giro.position.y = 30; grua.add(giro);
-  caixa(24, 0.6, 0.6, mAco, -7, 0, 0, giro);
-  caixa(2.4, 1.4, 1.4, mat(COR.concreto), 4.4, -0.5, 0, giro);
-  caixa(1.4, 1.2, 1.3, mat(0x1e3a42, { e: 0xffd9a0, ei: 0.3 }), 0.9, -0.9, 0, giro);
-  var pico = caixa(0.25, 4, 0.25, mAco, 0, 2, 0, giro);
-  var caboG = cilindro(0.025, 0.025, 10, mat(0x222222), -14, -5, 0, giro, 4);
-  var cargaG = new THREE.Group(); cargaG.position.set(-14, -10.2, 0); giro.add(cargaG);
-  caixa(1.6, 0.18, 1.2, mat(0x5a4a33, { r: 0.9 }), 0, 0, 0, cargaG);
-  for (var bl = 0; bl < 6; bl++) caixa(0.7, 0.35, 0.45, mat(0xb9c4c7, { r: 0.8 }), -0.4 + (bl % 2) * 0.8, 0.27 + Math.floor(bl / 2) * 0.36, 0, cargaG);
+  var cabineElev = new THREE.Group(); mastro.add(cabineElev);
+  caixa(1.5, 2.1, 1.4, mat(0x3d5a62, { r: 0.5, m: 0.4 }), 1.1, 1.05, 0, cabineElev);
+  var porta = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.8), new THREE.MeshStandardMaterial({ color: 0xbfc8cb, metalness: 0.7, roughness: 0.4, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
+  porta.rotation.y = Math.PI / 2; porta.position.set(1.86, 1.0, 0); cabineElev.add(porta);
+  caixa(0.06, 1.5, 1.0, basico(0xffd9a0, 0.22), 1.82, 1, 0, cabineElev);
+  [[0.4, -0.65], [1.8, -0.65], [0.4, 0.65], [1.8, 0.65]].forEach(function(p){ caixa(0.04, 0.9, 0.04, mMastro, p[0], 2.55, p[1], cabineElev); });
+  caixa(1.5, 0.04, 0.04, mMastro, 1.1, 3.0, 0.65, cabineElev); caixa(1.5, 0.04, 0.04, mMastro, 1.1, 3.0, -0.65, cabineElev);
+
+  /* ── Grua torre: mastro treliçado, lança e contralança, tirantes, carrinho e carga içada ── */
+  var mAco = mat(0xE8B41F, { r: 0.4, m: 0.55 }), mCaboG = mat(0x1d2124, { r: 0.6, m: 0.6 });
+  var grua = new THREE.Group(); grua.position.set(TORRE[0] + 9, 0, TORRE[2] - 8); cena.add(grua);
+  caixa(3.2, 0.7, 3.2, mat(0x8d979a, { r: 0.85 }), 0, 0.35, 0, grua);   // fundação
+  var mastroG = trelica(29.6, 1.3, mAco, { passo: 1.3 }); mastroG.position.y = 0.7; grua.add(mastroG);
+  var giro = new THREE.Group(); giro.position.y = 30.3; grua.add(giro);
+  cilindro(0.95, 0.95, 0.45, mat(0x3a4245, { r: 0.5, m: 0.7 }), 0, 0.1, 0, giro, 24);
+  var picoG = trelica(5.2, 1.0, mAco, { afina: 0.25, passo: 1.0 }); picoG.position.y = 0.4; giro.add(picoG);
+  var lancaGr = trelica(26, 1.0, mAco, { passo: 1.3, afina: 0.7 }); lancaGr.rotation.z = Math.PI / 2; lancaGr.position.y = 0.95; giro.add(lancaGr);
+  var contraGr = trelica(8.5, 1.0, mAco, { passo: 1.4 }); contraGr.rotation.z = -Math.PI / 2; contraGr.position.y = 0.95; giro.add(contraGr);
+  for (var lst = 0; lst < 4; lst++) caixa(0.55, 1.5, 1.6, mat(0x8d979a, { r: 0.85 }), 5.6 + lst * 0.62, 0.5, 0, giro);   // lastro
+  caixa(1.6, 1.0, 1.2, mat(0x3a4245, { r: 0.6, m: 0.4 }), 3.6, 1.6, 0, giro);   // guincho
+  var cabGr = caixaRedonda(1.3, 1.4, 1.2, 0.12, mat(0xf2f4f5, { r: 0.3 })); cabGr.position.set(-0.6, 0.3, 1.25); giro.add(cabGr);
+  var vGr = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.0), new THREE.MeshPhysicalMaterial({ color: 0x0e2a33, metalness: 0.5, roughness: 0.05, clearcoat: 1 }));
+  vGr.position.set(-1.26, 0.35, 1.25); vGr.rotation.y = -Math.PI / 2; giro.add(vGr);
+  [-0.3, 0.3].forEach(function(z){
+    barra(V(0, 5.5, z), V(-16, 1.45, z * 0.5), 0.035, mCaboG, giro);
+    barra(V(0, 5.5, z), V(8.4, 1.45, z * 0.5), 0.035, mCaboG, giro);
+  });
+  var R_CARRO = -14;
+  var carrinho = caixa(0.9, 0.35, 1.1, mat(0x3a4245, { r: 0.5, m: 0.7 }), R_CARRO, 0.3, 0, giro);
+  var caboG = cilindro(0.025, 0.025, 1, mCaboG, R_CARRO, 0, 0, giro, 6); caboG.userData.oco = true;
+  var cargaG = new THREE.Group(); cargaG.position.set(R_CARRO, -10.2, 0); giro.add(cargaG);
+  var moitaoG = caixaRedonda(0.4, 0.55, 0.3, 0.08, mat(0xffb020, { r: 0.4, m: 0.5 })); moitaoG.position.y = 1.75; cargaG.add(moitaoG);
+  var gancho = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.03, 6, 16, Math.PI * 1.4), mat(0xdfe6e8, { r: 0.3, m: 0.9 })); gancho.position.y = 1.36; cargaG.add(gancho);
+  [[-0.6, -0.5], [0.6, -0.5], [-0.6, 0.5], [0.6, 0.5]].forEach(function(p){ barra(V(0, 1.3, 0), V(p[0], 0.15, p[1]), 0.012, mCaboG, cargaG); });
 
   /* ── Tapume com a marca do cliente ── */
   var tapTx = textoTex(1024, 192);
@@ -194,35 +229,104 @@ CENARIOS.edificacoes = function(kit){
   }
   kit.aoCarregarFonte(atualizarPlaca);
 
-  /* ── Contêineres de vivência ── */
+  /* ── Contêineres de vivência: chapa corrugada, porta, janela, ar-condicionado e degrau ── */
   ['VESTIÁRIO', 'REFEITÓRIO', 'ALMOXARIFADO'].forEach(function(nome, i){
     var ct = new THREE.Group(); ct.position.set(VIVENCIA[0] + 1 + i * 3.4, 0, VIVENCIA[2]); cena.add(ct);
-    var corpo = caixaRedonda(3.1, 2.5, 2.4, 0.06, mat(i === 1 ? 0xf2f4f5 : 0x30747F, { r: 0.5, m: 0.3 })); corpo.position.y = 1.3; ct.add(corpo);
-    for (var r = 0; r < 6; r++) caixa(0.04, 2.3, 0.04, mat(0x1b2226, { r: 0.6 }), -1.4 + r * 0.56, 1.3, 1.22, ct);
+    var corC = i === 1 ? 0xf2f4f5 : 0x30747F;
+    var corpo = caixaRedonda(3.1, 2.5, 2.4, 0.06, mat(corC, { r: 0.5, m: 0.3 })); corpo.position.y = 1.3; ct.add(corpo);
+    for (var nv = -1.2; nv <= 1.21; nv += 0.3) caixa(0.04, 2.3, 0.02, mat(corC, { r: 0.6, m: 0.3 }), nv, 1.3, 1.215, ct);
+    caixa(0.85, 1.95, 0.04, mat(0x1b2226, { r: 0.5, m: 0.5 }), 0.85, 1.03, 1.235, ct);
+    caixa(0.05, 0.05, 0.08, mat(0xdfe6e8, { r: 0.2, m: 1 }), 0.55, 1.05, 1.27, ct);
+    var jan = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.6), new THREE.MeshPhysicalMaterial({ color: 0x0e2a33, metalness: 0.5, roughness: 0.05, clearcoat: 1 })); jan.position.set(-0.7, 1.55, 1.26); ct.add(jan);
+    caixa(0.6, 0.42, 0.32, mat(0xe8ecee, { r: 0.4 }), -0.7, 2.12, 1.38, ct);
+    caixa(1.2, 0.18, 0.9, mat(0x5a6266, { r: 0.8, m: 0.4 }), 0.85, 0.09, 1.7, ct);
     var lt = textoTex(512, 96);
     kit.aoCarregarFonte(function(){ var c = lt.ctx; c.clearRect(0, 0, 512, 96); c.textAlign = 'center'; c.textBaseline = 'middle'; escrever(c, nome, 256, 50, 480, '800', 54, i === 1 ? '#17444C' : '#F0D2A4'); lt.tex.needsUpdate = true; });
-    var rot = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.5), new THREE.MeshBasicMaterial({ map: lt.tex, transparent: true, toneMapped: false }));
-    rot.position.set(0, 2.2, 1.27); ct.add(rot);
-    var porta = caixa(0.8, 1.7, 0.05, mat(0x1b2226, { r: 0.5 }), 0.9, 0.95, 1.24, ct);
+    var rot = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.45), new THREE.MeshBasicMaterial({ map: lt.tex, transparent: true, toneMapped: false }));
+    rot.position.set(0, 2.38, 1.27); ct.add(rot);
   });
 
-  /* ── Área de corte: bancada, serra e poeira de sílica ── */
+  /* ── Área de corte de blocos: cortadora de bancada com coifa, paletes de bloco de concreto, quadro elétrico ── */
   var corte = new THREE.Group(); corte.position.set(CORTE[0], 0, CORTE[2]); cena.add(corte);
-  caixa(2.2, 0.9, 1, mat(0x5a4a33, { r: 0.9 }), 0, 0.45, 0, corte);
-  var serra = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.03, 32), mat(0xdfe6e8, { r: 0.2, m: 1 }));
-  serra.rotation.x = Math.PI / 2; serra.position.set(0.3, 1.1, 0); corte.add(serra);
-  for (var pb = 0; pb < 8; pb++) caixa(0.6, 0.3, 0.4, mat(0xb9c4c7, { r: 0.8 }), -1.8 + (pb % 2) * 0.65, 0.15 + Math.floor(pb / 2) * 0.31, 1.2, corte);
-  var NPO = 140, poGeo = new THREE.BufferGeometry(), poPos = new Float32Array(NPO * 3), poVida = [];
+  var mAcoC = mat(0x3a4a50, { r: 0.45, m: 0.75 }), mBloco = mat(0xa7aeaf, { r: 0.95 });
+  // Bloco de concreto estrutural 14 × 19 × 39 cm com dois furos verticais
+  var sB = new THREE.Shape(); sB.moveTo(-0.195, -0.07); sB.lineTo(0.195, -0.07); sB.lineTo(0.195, 0.07); sB.lineTo(-0.195, 0.07); sB.lineTo(-0.195, -0.07);
+  [-0.095, 0.095].forEach(function(cx){ var h = new THREE.Path(); h.moveTo(cx - 0.07, -0.04); h.lineTo(cx - 0.07, 0.04); h.lineTo(cx + 0.07, 0.04); h.lineTo(cx + 0.07, -0.04); h.lineTo(cx - 0.07, -0.04); sB.holes.push(h); });
+  var GEO_BLOCO = new THREE.ExtrudeGeometry(sB, { depth: 0.19, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 1 });
+  GEO_BLOCO.rotateX(-Math.PI / 2);   // furos na vertical; base em y = 0
+  kit.GEO_BLOCO = GEO_BLOCO;
+  // Palete de madeira: tábuas de cima, longarinas e tábuas de base
+  var mMadeira = mat(0x9a7448, { r: 0.85 });
+  function palete(pai, x, z){
+    var g = new THREE.Group(); g.position.set(x, 0, z); pai.add(g);
+    for (var t = 0; t < 7; t++) caixa(1.2, 0.025, 0.1, mMadeira, 0, 0.135, -0.45 + t * 0.15, g);
+    [-0.45, 0, 0.45].forEach(function(lz){ caixa(1.2, 0.09, 0.1, mMadeira, 0, 0.075, lz, g); });
+    [-0.5, 0, 0.5].forEach(function(lx){ caixa(0.1, 0.025, 1.0, mMadeira, lx, 0.012, 0, g); });
+    return g;
+  }
+  // Pilhas em amarração (camadas alternadas), instanciadas: muitos blocos, um draw call
+  var posBlocos = [];
+  [[-1.9, 1.15, 4], [-0.5, 1.4, 3]].forEach(function(pl){
+    palete(corte, pl[0], pl[1]);
+    for (var cam = 0; cam < pl[2]; cam++) for (var fil = 0; fil < 6; fil++) for (var col = 0; col < 3; col++){
+      if (cam === pl[2] - 1 && fil > 3 && col > 0) continue;   // última camada incompleta: já estão usando
+      var gira = cam % 2 === 1;
+      posBlocos.push(gira ? [pl[0] - 0.45 + fil * 0.16 + 0.05, 0.15 + cam * 0.19, pl[1] - 0.39 + col * 0.39, Math.PI / 2] : [pl[0] - 0.39 + col * 0.39, 0.15 + cam * 0.19, pl[1] - 0.4 + fil * 0.16, 0]);
+    }
+  });
+  var blocosI = new THREE.InstancedMesh(GEO_BLOCO, mBloco, posBlocos.length), dB = new THREE.Object3D();
+  posBlocos.forEach(function(b, i){ dB.position.set(b[0], b[1], b[2]); dB.rotation.set(0, b[3], 0); dB.updateMatrix(); blocosI.setMatrixAt(i, dB.matrix); });
+  blocosI.castShadow = true; blocosI.receiveShadow = true; corte.add(blocosI);
+  // Cortadora de bancada: estrutura tubular, bandeja d'água, carro deslizante, disco, coifa e motor
+  var bancada = new THREE.Group(); bancada.position.set(0.6, 0, -0.2); corte.add(bancada);
+  [[-0.7, -0.35], [0.7, -0.35], [-0.7, 0.35], [0.7, 0.35]].forEach(function(p){ caixa(0.05, 0.8, 0.05, mAcoC, p[0], 0.4, p[1], bancada); });
+  [-0.35, 0.35].forEach(function(z){ caixa(1.45, 0.05, 0.05, mAcoC, 0, 0.3, z, bancada); });
+  caixa(1.5, 0.14, 0.78, mat(0x2b3438, { r: 0.6, m: 0.6 }), 0, 0.85, 0, bancada);     // bandeja
+  [-0.18, 0.18].forEach(function(z){ caixa(1.5, 0.03, 0.03, mat(0xc7d0d3, { r: 0.25, m: 0.9 }), 0, 0.935, z, bancada); });   // trilhos
+  var carro = new THREE.Group(); carro.position.y = 0.95; bancada.add(carro);
+  caixa(0.62, 0.04, 0.5, mat(0x4f5a5e, { r: 0.5, m: 0.7 }), 0, 0.02, 0, carro);
+  var blocoCorte = new THREE.Mesh(GEO_BLOCO, mBloco); blocoCorte.position.set(0, 0.04, 0); blocoCorte.castShadow = true; carro.add(blocoCorte);
+  // Braço da serra: coluna traseira, cabeçote com disco diamantado e coifa sobre o disco
+  caixa(0.08, 0.75, 0.08, mAcoC, 0.0, 1.28, -0.36, bancada);
+  caixa(0.08, 0.08, 0.45, mAcoC, 0.0, 1.62, -0.17, bancada);
+  var disco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.012, 36), mat(0xc4ccce, { r: 0.4, m: 0.55 }));
+  disco.rotation.x = Math.PI / 2; disco.position.set(0.0, 1.32, 0.0); bancada.add(disco);
+  var coifa = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.235, 0.08, 24, 1, true, Math.PI * 0.5, Math.PI), new THREE.MeshStandardMaterial({ color: 0xd9342b, roughness: 0.5, metalness: 0.3, side: THREE.DoubleSide }));
+  coifa.rotation.x = Math.PI / 2; coifa.position.set(0.0, 1.32, 0.0); coifa.castShadow = true; bancada.add(coifa);
+  [-1, 1].forEach(function(s){ var tampa = new THREE.Mesh(new THREE.CircleGeometry(0.235, 24, 0, Math.PI), coifa.material); tampa.position.set(0, 1.32, s * 0.04); bancada.add(tampa); });
+  var motor = cilindro(0.13, 0.13, 0.3, mat(0x2e6fa8, { r: 0.4, m: 0.6 }), 0.0, 1.38, -0.26, bancada, 18); motor.rotation.x = Math.PI / 2;
+  caixa(0.2, 0.08, 0.2, mat(0x1c1c1c), 0.0, 1.55, -0.26, bancada);
+  // Quadro elétrico com DR, em poste, e extensão pelo chão até o motor
+  var quadro = new THREE.Group(); quadro.position.set(-2.6, 0, -1.4); corte.add(quadro);
+  caixa(0.1, 1.9, 0.1, mat(0x5a4a33, { r: 0.9 }), 0, 0.95, 0, quadro);
+  caixa(0.5, 0.65, 0.2, mat(0xdfe6e8, { r: 0.4, m: 0.3 }), 0, 1.4, 0.15, quadro);
+  var raio = new THREE.Mesh(new THREE.CircleGeometry(0.09, 3), new THREE.MeshBasicMaterial({ color: 0xffc400 })); raio.position.set(0, 1.5, 0.26); quadro.add(raio);
+  var caminhoCabo = new THREE.CatmullRomCurve3([V(-2.6, 1.15, -1.25), V(-2.55, 0.02, -1.1), V(-1.4, 0.02, -0.9), V(0.0, 0.02, -0.75), V(0.55, 0.02, -0.6), V(0.6, 0.3, -0.55), V(0.6, 1.38, -0.46)]);
+  var cabo = new THREE.Mesh(new THREE.TubeGeometry(caminhoCabo, 60, 0.018, 6), mat(0xe8a21a, { r: 0.6 })); cabo.castShadow = true; cabo.userData.oco = true; corte.add(cabo);
+  // Pó assentado no chão em volta da bancada
+  var poChao = new THREE.Mesh(new THREE.CircleGeometry(1.8, 32), new THREE.MeshStandardMaterial({ color: 0x9a948a, roughness: 1, transparent: true, opacity: 0.35, depthWrite: false }));
+  poChao.rotation.x = -Math.PI / 2; poChao.position.set(0.9, 0.022, 0); corte.add(poChao);
+  var NPO = 320, poGeo = new THREE.BufferGeometry(), poPos = new Float32Array(NPO * 3), poVida = [];
   for (var q = 0; q < NPO; q++){ poVida.push(Math.random()); }
   poGeo.setAttribute('position', new THREE.BufferAttribute(poPos, 3));
-  var poMat = new THREE.PointsMaterial({ color: 0x9c9384, size: 0.17, map: HALO, transparent: true, opacity: 0.4, depthWrite: false });
-  var poeiraCorte = new THREE.Points(poGeo, poMat); corte.add(poeiraCorte);
+  var poMat = new THREE.PointsMaterial({ color: 0x9c9384, size: 0.34, map: HALO, transparent: true, opacity: 0.4, depthWrite: false });
+  var poeiraCorte = new THREE.Points(poGeo, poMat); poeiraCorte.position.copy(bancada.position); corte.add(poeiraCorte);
+  // Carga da grua: palete com blocos amarrado nos quatro estropos
+  palete(cargaG, 0, 0).position.y = 0.0;
+  var cargaBl = new THREE.InstancedMesh(GEO_BLOCO, mBloco, 18), dC = new THREE.Object3D();
+  for (var cb = 0; cb < 18; cb++){ dC.position.set(-0.39 + (cb % 3) * 0.39, 0.15 + Math.floor(cb / 9) * 0.19, -0.4 + Math.floor((cb % 9) / 3) * 0.4); dC.updateMatrix(); cargaBl.setMatrixAt(cb, dC.matrix); }
+  cargaBl.castShadow = true; cargaG.add(cargaBl);
 
   /* ── Caminhão betoneira na rua ── */
   var betoneira = new THREE.Group(); cena.add(betoneira);
   var mCab = mat(0xf2f4f5, { r: 0.25, m: 0.35 }), mCromo = mat(0xdfe6e8, { r: 0.12, m: 1 }), mOuro = mat(0xD6B17D, { r: 0.25, m: 0.85 });
   var mVidroCam = new THREE.MeshPhysicalMaterial({ color: 0x0e2a33, metalness: 0.6, roughness: 0.05, clearcoat: 1 });
-  caixa(6.4, 0.3, 1.5, mat(0x1b2226, { r: 0.6, m: 0.5 }), -0.3, 0.65, 0, betoneira);
+  caixa(6.4, 0.3, 1.2, mat(0x1b2226, { r: 0.6, m: 0.5 }), -0.3, 0.88, 0, betoneira);
+  caixa(0.3, 0.32, 2.3, mat(0x1b2226, { r: 0.5, m: 0.6 }), 3.05, 0.72, 0, betoneira);                 // para-choque
+  caixa(0.06, 0.75, 1.6, mat(0x2a3033, { r: 0.4, m: 0.7 }), 2.93, 1.35, 0, betoneira);                // grade
+  cilindro(0.28, 0.28, 0.8, mCromo, 1.1, 0.95, 1.0, betoneira, 18).rotation.z = Math.PI / 2;          // tanque
+  cilindro(0.38, 0.38, 1.0, mat(0x3d6a74, { r: 0.4, m: 0.5 }), 0.85, 2.15, 0, betoneira, 18).rotation.x = Math.PI / 2;   // caixa d'água
+  var bica = caixa(1.1, 0.08, 0.42, mat(0x5a6266, { r: 0.6, m: 0.6 }), -3.7, 1.25, 0, betoneira); bica.rotation.z = 0.5;
   var cabB = caixaRedonda(1.6, 1.8, 2.1, 0.3, mCab); cabB.position.set(2.1, 1.75, 0); betoneira.add(cabB);
   var pb2 = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.8), mVidroCam); pb2.position.set(2.92, 2.1, 0); pb2.rotation.y = Math.PI / 2; betoneira.add(pb2);
   var perfilTambor = [[0.05, -2.1], [0.55, -1.7], [1.05, -0.8], [1.15, 0.1], [0.95, 1.1], [0.45, 1.9], [0.2, 2.1]]
@@ -233,16 +337,12 @@ CENARIOS.edificacoes = function(kit){
   tambor.castShadow = true; tamborG.add(tambor);
   var faixaT = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.06, 8, 32), mat(0x17444C, { r: 0.5 })); faixaT.rotation.y = Math.PI / 2; tambor.add(faixaT);
   var rodasB = [];
-  [-2.6, -1.6, 2.1].forEach(function(x){ [-0.9, 0.9].forEach(function(z){
-    var rg = new THREE.Group(); rg.position.set(x, 0.48, z); betoneira.add(rg);
-    rg.add(new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.15, 12, 28), mat(0x121416, { r: 0.95 })));
-    var aro = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.12, 20), mCromo); aro.rotation.x = Math.PI / 2; rg.add(aro);
-    rodasB.push(rg);
-  }); });
+  [-2.6, -1.55, 2.1].forEach(function(x){ [-0.92, 0.92].forEach(function(z){ rodasB.push(roda(betoneira, x, 0.52, z, 0.52, x < 0 ? 0.6 : 0.38, mCromo)); }); });
+  [-0.92, 0.92].forEach(function(z){ caixa(1.05, 0.06, 0.6, mat(0x1b2226, { r: 0.6 }), 2.1, 1.1, z, betoneira); });
   [0.7, -0.7].forEach(function(z){
     var farol = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 10), basico(0xfff1c9, 1)); farol.scale.set(0.4, 0.7, 1.4); farol.position.set(2.92, 1.1, z); betoneira.add(farol);
   });
-  betoneira.position.set(-40, 0, 14.4);
+  betoneira.position.set(-40, 0, 14.2);
 
   /* ── Stand de vendas e decorado ── */
   var stand = new THREE.Group(); stand.position.set(STAND[0], 0, STAND[2]); cena.add(stand);
@@ -270,13 +370,17 @@ CENARIOS.edificacoes = function(kit){
   /* ── Pessoas ── */
   var portaria = [];
   var etapas = ['fundacao', 'estrutura', 'alvenaria', 'acabamento', 'estrutura', 'alvenaria'];
-  etapas.forEach(function(e, i){ portaria.push(pessoa(PORTAO[0] - 1.6 + (i % 3) * 1.05, PORTAO[2] + 1 + Math.floor(i / 3) * 0.95, i === 4 ? COR.terc : CORES_ETAPA[e])); });
+  etapas.forEach(function(e, i){ portaria.push(pessoa(FILA_TERC[0] - 1.05 + (i % 3) * 1.05, FILA_TERC[2] - 0.48 + Math.floor(i / 3) * 0.95, i === 4 ? COR.terc : CORES_ETAPA[e])); });
   var fila = [];
-  for (var fi = 0; fi < 5; fi++) fila.push(pessoa(VIVENCIA[0] + 0.5 + fi * 1.1, VIVENCIA[2] + 2.4, fi % 2 ? COR.colete : CORES_ETAPA.alvenaria));
-  var cortador = pessoa(CORTE[0] - 0.4, CORTE[2] - 1, COR.colete);
-  var naLaje = pessoa(TORRE[0] - 2.5, TORRE[2] + PROF / 2 - 0.2, CORES_ETAPA.estrutura);
+  for (var fi = 0; fi < 5; fi++) fila.push(pessoa(VIVENCIA[0] + 0.5 + fi * 1.1, VIVENCIA[2] + 3.0, fi % 2 ? COR.colete : CORES_ETAPA.alvenaria));
+  // Operador da cortadora: empurra o carro com o bloco, com abafador, máscara PFF2 e óculos
+  var cortador = pessoa(CORTE[0] + 0.6 - 1.15, CORTE[2] - 0.2 + 0.05, COR.colete);
+  cortador.rotation.y = Math.PI / 2; cortador.userData.pose = [-0.95, -0.95, 0.12];
+  kit.epi(cortador, ['abafador', 'mascara', 'oculos']);
+  var naLaje = pessoa(TORRE[0] - 2.5, TORRE[2] + PROF / 2 - 0.65, CORES_ETAPA.estrutura);
   var noTopo = pessoa(TORRE[0] + 2, TORRE[2] - 1, CORES_ETAPA.estrutura);
-  var viajante = pessoa(PORTAO[0], PORTAO[2] + 2.8, COR.colete);
+  kit.epi(naLaje, ['cinto']); kit.epi(noTopo, ['cinto']);
+  var viajante = pessoa(PORTAO[0], 10.9, COR.colete);
 
   /* ── Estado próprio do cenário ── */
   var obra = 0, obraAlvo = 0.55, luzes = 0, luzesAlvo = 0, betT = 0, tempo = 0, poeiraAlvo = 0.3, poeiraNivel = 0.3;
@@ -288,21 +392,26 @@ CENARIOS.edificacoes = function(kit){
     viajante: viajante,
     destinoViajante: function(modo){
       var c = kit.R.clinica.pos;
-      return modo === 'virada' || modo === 'clinica' ? [c[0], c[2] + 7.6] : modo === 'verde' ? [PORTAO[0], PORTAO[2] - 2.5] : [PORTAO[0], PORTAO[2] + 2.8];
+      // Rotas pela calçada: contornam tapume, placa, postes e a fila de terceiros
+      var calc = 10.9, cli = [c[0], c[2] + 7.6];
+      if (modo === 'virada' || modo === 'clinica') return [[PORTAO[0], calc], [cli[0], calc], cli];
+      if (modo === 'verde') return [cli, [cli[0], calc], [PORTAO[0], calc], [PORTAO[0], PORTAO[2] - 3]];
+      return [cli, [cli[0], calc], [PORTAO[0], calc]];
     },
     modosRisco: ['terceiros', 'altura', 'mobilizacao', 'poeira', 'acidente', 'prazo'],
     alertas: {
-      terceiros:   [PORTAO[0], 4.4, PORTAO[2] + 1.5, 0.08],
+      terceiros:   [FILA_TERC[0], 4.4, FILA_TERC[2], 0.08],
       altura:      [TORRE[0] - 2.5, LAJE + 3.2, TORRE[2] + PROF / 2, LAJE + 0.05],
-      mobilizacao: [VIVENCIA[0] + 2.7, 4.6, VIVENCIA[2] + 2.4, 0.08],
+      mobilizacao: [VIVENCIA[0] + 2.7, 4.6, VIVENCIA[2] + 3.0, 0.08],
       poeira:      [CORTE[0], 3.8, CORTE[2], 0.08],
       acidente:    [TORRE[0] - 2.5, 4, TORRE[2] + PROF / 2 + 1.6, 0.08]
     },
     fluxo: {
-      ida: new THREE.CatmullRomCurve3([new THREE.Vector3(PORTAO[0], 0.3, PORTAO[2] + 2.6), new THREE.Vector3(1, 0.3, 11.5), new THREE.Vector3(-9, 0.3, 1.6)]),
-      volta: new THREE.CatmullRomCurve3([new THREE.Vector3(-9, 0.3, 1.6), new THREE.Vector3(1, 0.3, 11.5), new THREE.Vector3(PORTAO[0], 0.3, PORTAO[2] - 2.5)])
+      ida: new THREE.CatmullRomCurve3([V(PORTAO[0], 0.3, 10.9), V(1, 0.3, 10.9), V(-9, 0.3, 1.6)]),
+      volta: new THREE.CatmullRomCurve3([V(-9, 0.3, 1.6), V(1, 0.3, 10.9), V(PORTAO[0], 0.3, 10.9), V(PORTAO[0], 0.3, PORTAO[2] - 3)])
     },
     fogos: [TORRE[0], TORRE[2]],
+    auditoria: function(){ cabineElev.userData.semApoio = cargaG.userData.semApoio = true; return { moveis: [betoneira, cabineElev, cargaG], pessoas: portaria.concat(fila, [cortador, naLaje, noTopo, viajante]) }; },
 
     aplicarModo: function(modo, c){
       modoAtual = modo;
@@ -312,10 +421,12 @@ CENARIOS.edificacoes = function(kit){
       var caiu = modo === 'acidente';
       naLaje.rotation.z = caiu ? 1.35 : 0;
       naLaje.position.y = caiu ? 0.3 : LAJE;
-      naLaje.position.z = caiu ? TORRE[2] + PROF / 2 + 1.6 : TORRE[2] + PROF / 2 - 0.2;
+      naLaje.position.z = caiu ? TORRE[2] + PROF / 2 + 1.6 : TORRE[2] + PROF / 2 - 0.65;
       naLaje.visible = modo !== 'verde';
       noTopo.visible = modo !== 'verde';
       fila.forEach(function(pp){ pp.visible = modo !== 'verde'; });
+      // Obra entregue: elevador de obra desmontado e área de corte desmobilizada
+      mastro.visible = corte.visible = cortador.visible = modo !== 'verde';
       atualizarPlaca();
     },
 
@@ -338,14 +449,17 @@ CENARIOS.edificacoes = function(kit){
       bandeja.visible = obraAlvo < 1;
       coroa.visible = obraAlvo >= 1 && pavs[NPAV - 1].g.scale.y > 0.9;
       noTopo.position.y = Math.max(0, topo - 1) * HPAV + 0.22;
-      mastroAlt.scale.y = Math.max(2, topo * HPAV + 2); mastroAlt.position.y = mastroAlt.scale.y / 2;
-      cabineElev.position.y = 1 + (Math.sin(tempo * 0.35) * 0.5 + 0.5) * Math.max(0, topo * HPAV - 1.5);
+      // Mastro do elevador acompanha a estrutura (seções montadas até 2 m acima da última laje)
+      var hMastro = topo * HPAV + 2;
+      secoes.forEach(function(sc, i){ var vis = 0.3 + i * 1.5 < hMastro; sc.g.visible = vis; if (sc.anc) sc.anc.visible = vis && 0.3 + i * 1.5 < topo * HPAV; });
+      cabineElev.position.y = 0.3 + (Math.sin(tempo * 0.35) * 0.5 + 0.5) * Math.max(0, topo * HPAV - 2.2);
 
       // Grua gira devagar e a carga sobe e desce
       grua.visible = obraAlvo < 1;
       giro.rotation.y = Math.sin(relogio * 0.15) * 0.9;
       cargaG.position.y = -10.2 + Math.sin(relogio * 0.5) * 2.4;
-      caboG.scale.y = 1 - Math.sin(relogio * 0.5) * 0.24; caboG.position.y = -5 + Math.sin(relogio * 0.5) * 1.2;
+      var topoCabo = 0.12, fimCabo = cargaG.position.y + 2.0;
+      caboG.scale.y = topoCabo - fimCabo; caboG.position.y = (topoCabo + fimCabo) / 2;
 
       // Luzes da entrega
       luzes += (luzesAlvo - luzes) * k * 0.6;
@@ -355,16 +469,23 @@ CENARIOS.edificacoes = function(kit){
 
       // Serra e poeira de sílica
       poeiraNivel += (poeiraAlvo - poeiraNivel) * k;
-      serra.rotation.y += dt * 20;
+      disco.rotation.y += dt * 40;
+      // Carro vai e volta: o bloco passa sob o disco (corte) e retorna
+      var curso = Math.sin(tempo * 0.9);
+      carro.position.x = -0.3 + curso * 0.32;
+      // Pluma de pó: sai do ponto de corte para trás e para cima, abrindo em leque com o vento
       for (var i = 0; i < NPO; i++){
-        poVida[i] = (poVida[i] + dt * (0.25 + (i % 7) * 0.03)) % 1;
+        poVida[i] = (poVida[i] + dt * (0.22 + (i % 7) * 0.035)) % 1;
         var v = poVida[i], a = i * 2.399;
-        poPos[i * 3] = 0.3 + Math.cos(a) * v * 2.4;
-        poPos[i * 3 + 1] = 1.1 + v * 2.6 + Math.sin(tempo * 2 + i) * 0.08;
-        poPos[i * 3 + 2] = Math.sin(a) * v * 2.4;
+        // nuvem densa junto ao disco que se abre e sobe com a distância
+        var abre = Math.pow(v, 0.7);
+        poPos[i * 3] = 0.12 + v * 2.4 + Math.cos(a) * abre * 0.7;
+        poPos[i * 3 + 1] = 1.2 + v * 1.6 + Math.sin(a * 1.3) * abre * 0.45 + Math.sin(tempo * 2 + i) * 0.05;
+        poPos[i * 3 + 2] = Math.sin(a) * abre * 0.8 - v * 0.5;
       }
       poGeo.attributes.position.needsUpdate = true;
-      poMat.opacity = 0.45 * poeiraNivel;   // tom escuro para não estourar no bloom
+      poMat.opacity = 0.55 * poeiraNivel;   // tom escuro para não estourar no bloom
+      poMat.size = 0.22 + 0.18 * poeiraNivel;
       poMat.color.setHex(modo === 'poeira' ? 0xb08a80 : 0x9c9384);
 
       // Betoneira circulando pela rua com o tambor girando
