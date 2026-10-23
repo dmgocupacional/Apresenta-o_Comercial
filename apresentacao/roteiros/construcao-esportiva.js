@@ -328,17 +328,17 @@ window.ROTEIRO = {
   // As cenas andar-N da clínica são geradas pelo kit 3D a partir de clinica.pos.
   clinica: { pos: [-9, 0, -6], escala: 1.35 },
   cenas: {
-    capa:      { pos: [44, 20, 40],   alvo: [16, 3, -2],  obra: 0.55, torre: 0, modo: 'neutro' },
-    fabrica:   { pos: [-12, 9, 18],   alvo: [-29, 3, 0],  obra: 0.55, torre: 0, modo: 'fabrica' },
+    capa:      { pos: [44, 22, 40],   alvo: [18, 3, -10],  obra: 0.55, torre: 0, modo: 'neutro' },
+    fabrica:   { pos: [-12, 9, 18],   alvo: [-29, 3, 0],   obra: 0.55, torre: 0, modo: 'fabrica' },
     viagem:    { pos: [-13, 4.5, 19], alvo: [-15, 1.5, 7], obra: 0.55, torre: 0, modo: 'viagem' },
-    altura:    { pos: [-2, 12, 12],   alvo: [8, 6, -11],  obra: 0.55, torre: 0, modo: 'altura' },
-    terceiros: { pos: [28, 5, 24],    alvo: [18, 1, 11],  obra: 0.55, torre: 0, modo: 'terceiros' },
-    acidente:  { pos: [-1, 10, 14],   alvo: [9, 4, -9],   obra: 0.55, torre: 0, modo: 'acidente' },
-    prazo:     { pos: [16, 9, 14],    alvo: [16, 8, -14], obra: 0.55, torre: 0, modo: 'prazo' },
-    virada:    { pos: [2, 9, 20],     alvo: [-9, 3, -3],  obra: 0.55, torre: 0, modo: 'virada' },
-    entregue:  { pos: [46, 24, 40],   alvo: [16, 2, -2],  obra: 1,    torre: 7, modo: 'verde' },
-    fundo:     { pos: [6, 34, 52],    alvo: [0, 2, 0],    obra: 0.55, torre: 0, modo: 'neutro' },
-    final:     { pos: [40, 30, 52],   alvo: [4, 3, -2],   obra: 1,    torre: 7, modo: 'verde' }
+    altura:    { pos: [-4, 10, 7.5],  alvo: [2.5, 5, -3],  obra: 0.55, torre: 0, modo: 'altura' },
+    terceiros: { pos: [29, 7.5, 21],  alvo: [21, 1.2, 4],  obra: 0.55, torre: 0, modo: 'terceiros' },
+    acidente:  { pos: [6, 9, 12],     alvo: [1.5, 2, -2],  obra: 0.55, torre: 0, modo: 'acidente' },
+    prazo:     { pos: [19, 11, 12],   alvo: [19.5, 10, -30], obra: 0.55, torre: 0, modo: 'prazo' },
+    virada:    { pos: [2, 9, 20],     alvo: [-9, 3, -3],   obra: 0.55, torre: 0, modo: 'virada' },
+    entregue:  { pos: [46, 24, 42],   alvo: [18, 2, -12],  obra: 1,    torre: 7, modo: 'verde' },
+    fundo:     { pos: [6, 34, 52],    alvo: [0, 2, 0],     obra: 0.55, torre: 0, modo: 'neutro' },
+    final:     { pos: [40, 30, 52],   alvo: [4, 3, -2],    obra: 1,    torre: 7, modo: 'verde' }
   }
   /* ── FIM BLOCO ── */
 };
