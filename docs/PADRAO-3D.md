@@ -47,3 +47,21 @@ Rode com o servidor local `python3 -m http.server 8765 --bind 127.0.0.1` na raiz
 - **`node qa.js <roteiro> <slides> <pasta>`:** captura dos slides com a simulação acelerada.
 - **`node cam.js <roteiro> <saida.png> "x,y,z" "x,y,z" [modo] [obra]`:** câmera livre para inspecionar qualquer ponto.
 - Depois do QA: regressão (todos os roteiros e o hub, 0 erros de console). Cada captura é olhada uma a uma antes do commit.
+
+## 6. Linguagem de cinema (módulo `js/cinema.js`, obrigatório em toda cena)
+- **Luz:** céu físico, sol baixo de entardecer (sombras longas), mapa de ambiente para reflexos e névoa da cor do horizonte. Na entrega a cena passa para a **hora azul**: janelas, postes e refletores acendem.
+- **Mundo:**
+  - chão natural com variação (gramado, capim seco, terra batida no canteiro);
+  - mata no entorno;
+  - morros e silhueta de cidade no horizonte.
+- **Pisos:** nada de piso escuro de maquete. Ruas usam `kit.asfalto()`.
+- **Lente:**
+  - foco seletivo (bokeh) nas cenas de assunto;
+  - tilt-shift de maquete na capa, na visão geral e no final;
+  - oclusão ambiente (SSAO) no nível alto;
+  - bloom só nas luzes;
+  - gradação de cor por clima: neutro, risco (frio), acidente (dessaturado e avermelhado), clínica e entrega (dourado);
+  - vinheta, grão e aberração cromática sutis.
+- **Câmera:** travelling em curva entre planos, com aceleração e frenagem, e órbita lenta na entrega. A distância focal é por plano (`fov` opcional na cena do roteiro).
+- **Qualidade adaptativa:** mede o computador nos primeiros quadros e escolhe entre alto, médio e baixo. Para forçar, use `?q=alto|medio|baixo`. O QA visual roda com `Q=alto` ou `Q=medio`.
+- Nenhum brilho estourado (gramado, fachos sobrepostos, alerta). Se estourar, baixe a emissão, não o bloom global.

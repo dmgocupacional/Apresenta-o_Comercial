@@ -4,7 +4,7 @@ const [r,cenaNome,am]=process.argv.slice(2);
 const b=await chromium.launch({args:['--use-gl=swiftshader','--enable-webgl']});const p=await b.newPage({viewport:{width:900,height:560}});
 const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.addInitScript(()=>{window.__qaPassos=30;});
-await p.goto('http://127.0.0.1:8765/apresentacao/?r='+r);await p.waitForTimeout(2500);
+await p.goto('http://127.0.0.1:8765/apresentacao/?r='+r,{timeout:240000,waitUntil:'domcontentloaded'});await p.waitForFunction(()=>window.Deck||document.querySelector('.hub'),null,{timeout:240000});await p.waitForTimeout(2500);
 await p.evaluate(n=>Cena.ir(n),cenaNome);await p.waitForTimeout(4000);
 await p.evaluate(()=>{
   const {cena,mundo,THREE}=__cena3d; const A=mundo.auditoria?mundo.auditoria():{moveis:[],pessoas:[]};

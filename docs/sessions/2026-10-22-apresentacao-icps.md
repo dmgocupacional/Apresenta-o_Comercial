@@ -56,6 +56,19 @@
 - Esportiva reorganizada (havia arquibancada sobre a estrada, linha de produção na pista e gente no trajeto do caminhão): estádio recuado com arquibancada de 8 degraus sem frestas e ~1.500 cadeiras, cobertura no fundo, campo com traves e áreas, torres de iluminação treliçadas com projetores, placar elevado, alambrado com pórtico "Entrada de obra · cliente", faixa curva "Arena · cliente", andaime real com escada, grua treliçada içando terça; galpão com fachada aberta e a linha dentro; área de químicos com bacia de contenção; caminhão por toda a estrada com entrada/saída suave.
 - Resultado: auditoria com 0 colisões em obra, risco, acidente e entrega nas 3 cenas; regressão 0 erros.
 
+## Linguagem de cinema (23/10, noite)
+- Pedido: "cinematográfico, imagens profissionais", para o dono da empresa sair impressionado. Direção aprovada: realista nas cenas e maquete (tilt-shift) na capa e nas visões gerais.
+- Novo `js/cinema.js`, com uso documentado em `PADRAO-3D.md §6`:
+  - atmosfera: céu físico, sol de entardecer, envmap, névoa, estrelas e hora azul na entrega;
+  - mundo: chão natural, mata, morros e cidade com janelas que acendem;
+  - lente: SSAO, bokeh, tilt-shift, bloom, gradação por clima, vinheta e grão;
+  - travelling em curva, órbita na entrega e qualidade adaptativa.
+- Pisos antigos de maquete trocados: asfalto com agregado (`kit.asfalto`), calçada, terra do canteiro. Brilhos estourados corrigidos (gramado do estádio, fachos, luz de alerta).
+- Próximos lotes:
+  - materiais com desgaste: sujeira, ferrugem, marcas de pneu, poças;
+  - pessoas mais anatômicas e com ações (martelar, sinalizar, operar);
+  - abertura com sobrevoo do canteiro.
+
 ## Pendências
 - Logo oficial da Recoma (placeholder em texto).
 - Projeto Vercel `dmg-recoma` (Henrique cria no painel).
