@@ -6,7 +6,7 @@
 // cnae: prefixos de CNAE que levam a esse subtipo; rat: alíquota estimada para a calculadora.
 var CATALOGO = [
   { id: 'construcao', nome: 'Construção', ic: '▲', rat: 3, subtipos: [
-    { id: 'edificacoes', nome: 'Edificações e incorporação', cena: 'Torre subindo e grua', roteiro: null, cnae: ['41'] },
+    { id: 'edificacoes', nome: 'Edificações e incorporação', cena: 'Torre subindo, grua e entrega das chaves', roteiro: 'construcao-edificacoes', cnae: ['41'] },
     { id: 'infraestrutura', nome: 'Infraestrutura e terraplenagem', cena: 'Estrada, escavadeira e ponte', roteiro: null, cnae: ['42', '4313'] },
     { id: 'especializadas', nome: 'Especializadas e esportiva', cena: 'Fábrica, caminhão e estádio', roteiro: 'construcao-esportiva', cnae: ['43'] }
   ] },

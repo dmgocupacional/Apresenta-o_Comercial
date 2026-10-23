@@ -512,3 +512,22 @@ body.modo-hub .deck{height:auto;min-height:100dvh}
   .hub .hub-link{flex-basis:100%;order:3}
 }
 /* ── FIM BLOCO ── */
+
+/* ═══ BLOCO: ETAPAS ═══ */
+.etapas{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:30px;padding-top:28px}
+.et-trilho{position:absolute;top:8px;left:0;right:0;height:2px;background:var(--line)}
+.et-trilho i{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--petrol),var(--gold) 50%,var(--danger));box-shadow:0 0 16px rgba(214,177,125,.5);transition:width 2s cubic-bezier(.65,0,.35,1) .3s}
+.slide.on .et-trilho i{width:100%}
+.etapa{position:relative;display:flex;flex-direction:column;gap:6px;padding:16px;opacity:0;transform:translateY(16px);transition:all .7s var(--ease)}
+.etapa::before{content:"";position:absolute;top:-27px;left:16px;width:12px;height:12px;border-radius:50%;background:var(--ink);border:2px solid var(--gold);box-shadow:0 0 14px rgba(214,177,125,.6)}
+.slide.on .etapa{opacity:1;transform:none}
+.slide.on .etapa:nth-child(2){transition-delay:.35s}.slide.on .etapa:nth-child(3){transition-delay:.7s}.slide.on .etapa:nth-child(4){transition-delay:1.05s}.slide.on .etapa:nth-child(5){transition-delay:1.4s}.slide.on .etapa:nth-child(6){transition-delay:1.75s}
+.et-n{font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--gold)}
+.etapa b{font-size:16px;letter-spacing:-.01em}
+.et-p{font-size:11px;color:var(--t50)}
+.et-quem{font-size:12px;color:var(--t70);line-height:1.45;font-weight:300}
+.et-riscos{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.et-riscos i{font-style:normal;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(255,107,94,.12);color:#ffb3ab;border:1px solid rgba(255,107,94,.25)}
+.et-troca{margin-top:auto;padding-top:8px;font-size:11px;font-weight:700;color:var(--warn)}
+@media (max-width:980px){.etapas{grid-template-columns:1fr 1fr}}
+/* ── FIM BLOCO ── */

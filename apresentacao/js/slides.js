@@ -52,6 +52,23 @@ var Slides = (function(){
         '<div class="mapa glass rv d3" id="mapa"></div></div></div>');
     },
 
+    // Etapas da obra: quem entra em cada fase, o risco que traz e a troca de equipe
+    etapas: function(s){
+      return secao(s, 'topo', '<div class="wide">' + cap(s.cap) +
+        '<div class="eyebrow rv">' + pers(s.eyebrow) + '</div>' +
+        '<h2 class="rv d1">' + pers(s.titulo) + '</h2>' +
+        '<p class="lede rv d2">' + pers(s.lede) + '</p>' +
+        '<div class="etapas"><div class="et-trilho"><i></i></div>' + s.etapas.map(function(e, i){
+          return '<div class="etapa glass">' +
+            '<span class="et-n">' + pad(i + 1) + '</span><b>' + pers(e.n) + '</b><small class="et-p">' + e.p + '</small>' +
+            '<span class="et-quem">' + pers(e.quem) + '</span>' +
+            '<div class="et-riscos">' + e.riscos.map(function(r){ return '<i>' + r + '</i>'; }).join('') + '</div>' +
+            (e.troca ? '<span class="et-troca">↻ ' + pers(e.troca) + '</span>' : '') + '</div>';
+        }).join('') + '</div>' +
+        (s.rodape ? '<div class="custo rv d6"><div><small>O que isso significa</small><span>' + pers(s.rodape) + '</span></div></div>' : '') +
+        '</div>');
+    },
+
     dor: function(s){
       return secao(s, '', '<div class="col">' + cap(s.cap) +
         '<div class="dor-tag rv"><i></i>' + pers(s.tag) + '</div>' +

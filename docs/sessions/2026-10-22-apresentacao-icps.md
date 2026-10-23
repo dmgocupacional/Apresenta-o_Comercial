@@ -24,7 +24,9 @@
 ## Fases
 1. Motor (concluída): `apresentacao/` com carregador, núcleo, slides (templates), kit 3D, cenário `esportiva`, motor e roteiro `construcao-esportiva`. Paridade validada: 22 slides com texto idêntico ao `/recoma/`, 0 erros no navegador.
 2. Hub (concluída): `apresentacao/` sem `?r=` abre o preparo. CNPJ via BrasilAPI (CORS liberado, validação de dígitos) → razão, fantasia, CNAE, cidade, anos desde a abertura; CNAE sugere ICP/subtipo (prefixo mais longo) e RAT estimado; site → ícone via Google favicons; vendedor ajusta nome, colaboradores, anos e RAT; gera e copia o link (`r, empresa, func, anos, rat, site, cidade`). Último preparo fica salvo no navegador.
-3. Construção completa (3 subtipos).
+3. Construção completa (3 subtipos) — em andamento:
+   - Edificações e incorporação (concluído, 23/10): cenário `edificacoes` (torre de 12 pavimentos que sobe com a obra, guarda-corpo NR-18 e bandeja, grua torre, cremalheira, tapume e placa de obra com o nome do cliente, contêineres de vivência, área de corte com poeira de sílica, betoneira na rua, stand de vendas; na entrega a torre fecha, acende parte das janelas e mostra o nome na coroa) + roteiro `construcao-edificacoes` (dores: empreiteiros por etapa, altura e equipamentos, rotatividade, poeira e ruído; prazo = entrega das chaves) + slide novo `etapas` (fundação → acabamento).
+   - Infraestrutura e terraplenagem (próximo).
 4. Demais ICPs.
 5. Radar → pré-proposta no padrão dmg-erp.
 
