@@ -33,3 +33,6 @@ Apresentação comercial SPIN com mundo 3D, personalizada por empresa. Estática
 
 ## Tipos de slide
 `capa`, `mapa`, `dor`, `linha` (linha do tempo), `calc` (FAP), `prazo` (calendário de atraso), `virada`, `andar` (com `extra: 'painel'` ou `'parceria'`), `entregue`, `prova`, `kanban`, `radar`, `cta`.
+
+## Padrão de qualidade 3D
+Toda cena segue `docs/PADRAO-3D.md` (nada atravessa nada, formas reais, etapas visíveis) e passa pela auditoria de `tools/qa/colisao.js` com 0 achados antes de entrar no hub.
