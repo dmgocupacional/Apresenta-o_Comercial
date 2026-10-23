@@ -13,7 +13,7 @@ window.ROTEIRO = {
     { tipo: 'capa', cena: 'capa',
       eyebrow: 'Proposta de saúde e segurança do trabalho',
       titulo: 'Doze quilômetros de obra.<br><span class="grad">Cada metro tem alguém nele.</span>',
-      sub: 'A {empresa} abre estrada, drena, pavimenta e levanta ponte. A obra é longa, espalhada e medida todo mês. Esta é a história de um trecho.',
+      sub: 'A {empresa} abre estrada, drena, pavimenta, levanta ponte e fura túnel. A obra é longa, espalhada e medida todo mês. Esta é a história de um trecho.',
       stats: [{ n: '{anos}', l: 'Anos de {empresa}' }, { n: '{func}', l: 'Pessoas nas frentes' }, { n: 12, l: 'Quilômetros de trecho' }] },
 
     { tipo: 'etapas', cena: 'fundo', cap: '01', eyebrow: 'Situação',
@@ -23,14 +23,14 @@ window.ROTEIRO = {
         { n: 'Terraplenagem', p: 'KM 0 ao KM 12', quem: 'Escavadeira, motoniveladora, rolo e basculante o dia inteiro.', riscos: ['Máquina pesada', 'Atropelamento', 'Ruído'], troca: 'operadores e motoristas' },
         { n: 'Drenagem', p: 'valas e bueiros', quem: 'Escavação de vala e assentamento de tubos de concreto.', riscos: ['Soterramento', 'Içamento', 'Espaço confinado'], troca: 'equipe de drenagem' },
         { n: 'Pavimentação', p: 'base e asfalto', quem: 'Usina, vibroacabadora e rolo, com massa quente.', riscos: ['Calor', 'Fumos de asfalto', 'Trânsito'], troca: 'equipe de pavimento' },
-        { n: 'Obras de arte', p: 'pontes e viadutos', quem: 'Forma, armação e concretagem sobre o rio.', riscos: ['Altura', 'Cimbramento', 'Água'], troca: 'empreiteira de estrutura' },
+        { n: 'Obras de arte', p: 'pontes e túneis', quem: 'Içamento de vigas sobre o rio e escavação do túnel na encosta.', riscos: ['Altura', 'Içamento', 'Espaço confinado'], troca: 'empreiteira de estrutura' },
         { n: 'Sinalização', p: 'pista em operação', quem: 'Pintura, defensas e placas com o trânsito passando ao lado.', riscos: ['Atropelamento', 'Química', 'Noturno'], troca: 'turma noturna' }
       ],
       rodape: 'O encarregado está a quilômetros do RH. Exame vencido, treinamento faltando ou operador sem habilitação só aparecem quando a fiscalização ou o acidente chegam primeiro.' },
 
     { tipo: 'dor', cena: 'frentes', cap: '02', tag: 'Dor 1 de 4 · Frentes espalhadas',
       titulo: 'A frente está no KM 11. <span class="grad-red">A documentação ficou no KM 0.</span>',
-      lede: 'Quem trabalha na ponte raramente passa pela base. Admissão no meio da semana, troca de turma, reforço de empreiteiro: tudo acontece longe de quem controla os documentos da {empresa}.',
+      lede: 'Quem trabalha na ponte ou na frente do túnel raramente passa pela base. Admissão no meio da semana, troca de turma, reforço de empreiteiro: tudo acontece longe de quem controla os documentos da {empresa}.',
       lista: [
         'Ninguém sabe, naquela manhã, quem está apto em cada frente.',
         'O exame vence durante a etapa e a pessoa continua trabalhando irregular.',
@@ -322,14 +322,14 @@ window.ROTEIRO = {
   clinica: { pos: [-9, 0, -6], escala: 1.35 },
   cenas: {
     capa:     { pos: [40, 22, 40],  alvo: [12, 2, 0],    obra: 0.55, torre: 0, modo: 'neutro' },
-    frentes:  { pos: [22, 14, 22],  alvo: [34, 3, 4],    obra: 0.55, torre: 0, modo: 'frentes' },
-    maquina:  { pos: [-7, 4.5, 15],  alvo: [1.5, 1.3, 5.2], obra: 0.55, torre: 0, modo: 'maquina' },
+    frentes:  { pos: [14, 19, 40],  alvo: [46, 3.5, 3],  obra: 0.55, torre: 0, modo: 'frentes' },
+    maquina:  { pos: [8, 7.6, 21],  alvo: [4.2, 1.3, 4.8], obra: 0.55, torre: 0, modo: 'maquina' },
     vala:     { pos: [-2, 8, -1],   alvo: [4, 0.4, -9],  obra: 0.55, torre: 0, modo: 'vala' },
-    transito: { pos: [7, 4.5, 22],   alvo: [-1, 1.3, 10.4], obra: 0.55, torre: 0, modo: 'transito' },
+    transito: { pos: [3, 7.5, 22],   alvo: [-0.5, 1.2, 10.6], obra: 0.55, torre: 0, modo: 'transito' },
     acidente: { pos: [-1, 8.5, -0.5], alvo: [4.5, 0.3, -9],  obra: 0.55, torre: 0, modo: 'acidente' },
-    prazo:    { pos: [-12, 7, 26],  alvo: [-15, 5.5, 1.6], obra: 0.55, torre: 0, modo: 'prazo' },
+    prazo:    { pos: [-12, 7, 25],  alvo: [-15, 5.5, 0.2], obra: 0.55, torre: 0, modo: 'prazo' },
     virada:   { pos: [2, 9, 22],    alvo: [-9, 3, -3],   obra: 0.55, torre: 0, modo: 'virada' },
-    entregue: { pos: [4, 13, 28],   alvo: [19, 1, 4],    obra: 1,    torre: 7, modo: 'verde' },
+    entregue: { pos: [16, 14, 34],  alvo: [42, 3, 4],    obra: 1,    torre: 7, modo: 'verde' },
     fundo:    { pos: [6, 34, 52],   alvo: [0, 2, 0],     obra: 0.55, torre: 0, modo: 'neutro' },
     final:    { pos: [40, 30, 52],  alvo: [4, 3, -2],    obra: 1,    torre: 7, modo: 'verde' }
   }
