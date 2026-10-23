@@ -69,7 +69,7 @@ CENARIOS.infraestrutura = function(kit){
   function terrenoH(x, z){ var m = morroH(x, z); return x < PORTAL_X ? Math.min(m, corteH(z)) : m; }
 
   /* ── Materiais e texturas ── */
-  var mTerra = mat(0x5a4632, { r: 1 }), mTerraClara = mat(0x7a5f42, { r: 1 }), mAsfalto = mat(0x1c2529, { r: 0.92 });
+  var mTerra = mat(0x5a4632, { r: 1 }), mTerraClara = mat(0x7a5f42, { r: 1 }), mAsfalto = kit.asfalto([20, 2.4]);
   var mAmarelo = mat(0xe3a21a, { r: 0.42, m: 0.2 }), mCromo = mat(0xdfe6e8, { r: 0.12, m: 1 }), mPreto = mat(0x1f2427, { r: 0.7, m: 0.4 });
   var mVidro = new THREE.MeshPhysicalMaterial({ color: 0x0e2a33, metalness: 0.6, roughness: 0.05, clearcoat: 1 });
   var mAco = mat(0x7d8a8f, { r: 0.4, m: 0.85 }), mCabo = mat(0x1a1d1f, { r: 0.6, m: 0.6 });

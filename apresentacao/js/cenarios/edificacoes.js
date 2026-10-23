@@ -28,13 +28,13 @@ CENARIOS.edificacoes = function(kit){
   }
 
   /* ── Rua e calçada ── */
-  var rua = new THREE.Mesh(new THREE.PlaneGeometry(110, 4.2), mat(0x1a2a30, { r: 0.95 }));
+  var rua = new THREE.Mesh(new THREE.PlaneGeometry(110, 4.2), kit.asfalto([40, 1.5]));
   rua.rotation.x = -Math.PI / 2; rua.position.set(0, 0.02, 13.4); rua.receiveShadow = true; cena.add(rua);
   for (var f = 0; f < 30; f++){
     var fx = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.12), basico(0xF0D2A4, 0.5));
     fx.rotation.x = -Math.PI / 2; fx.position.set(-48 + f * 3.4, 0.03, 13.4); cena.add(fx);
   }
-  var calcada = new THREE.Mesh(new THREE.PlaneGeometry(110, 1.6), mat(0x34464c, { r: 0.9 }));
+  var calcada = new THREE.Mesh(new THREE.PlaneGeometry(110, 1.6), mat(0x9a978e, { r: 0.85 }));
   calcada.rotation.x = -Math.PI / 2; calcada.position.set(0, 0.03, 10.6); calcada.receiveShadow = true; cena.add(calcada);
   // Meio-fio e postes de iluminação pública
   caixa(110, 0.16, 0.16, mat(0x8d979a, { r: 0.85 }), 0, 0.08, 11.42);
@@ -46,7 +46,7 @@ CENARIOS.edificacoes = function(kit){
     var lamp = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.5), new THREE.MeshBasicMaterial({ color: 0xfff1d0, toneMapped: false, side: THREE.DoubleSide })); lamp.rotation.x = Math.PI / 2; lamp.position.set(0, 6.35, 1.3); pg.add(lamp);
   });
   // Terreno do canteiro, levemente mais claro
-  var terreno = new THREE.Mesh(new THREE.PlaneGeometry(30, 25), mat(0x1b2a2c, { r: 1 }));
+  var terreno = new THREE.Mesh(new THREE.PlaneGeometry(30, 25), mat(0x7a5c42, { r: 1 }));   // terra batida do canteiro
   terreno.rotation.x = -Math.PI / 2; terreno.position.set(15, 0.015, -3.5); terreno.receiveShadow = true; cena.add(terreno);
   var haloObra = kit.halo(0x6FE3EC, 40, TORRE[0], TORRE[2], 0.08);
 

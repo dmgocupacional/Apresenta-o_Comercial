@@ -34,7 +34,7 @@ CENARIOS.esportiva = function(kit){
   var luzEstadio = new THREE.PointLight(0xfff2d8, 0, 70, 1.5); luzEstadio.position.set(EST[0], 18, EST[2]); cena.add(luzEstadio);
 
   /* ═══ Estrada e acostamentos ═══ */
-  var estrada = new THREE.Mesh(new THREE.PlaneGeometry(116, MEIA_RUA * 2), mat(0x1a2a30, { r: 0.95 }));
+  var estrada = new THREE.Mesh(new THREE.PlaneGeometry(116, MEIA_RUA * 2), kit.asfalto([45, 1.3]));
   estrada.rotation.x = -Math.PI / 2; estrada.position.set(0, 0.02, Z_RUA); estrada.receiveShadow = true; cena.add(estrada);
   for (var f = 0; f < 34; f++){
     var faixa = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.12), basico(0xF0D2A4, 0.55));
@@ -379,9 +379,9 @@ CENARIOS.esportiva = function(kit){
       cabo.scale.y = topoCabo - fimCabo; cabo.position.y = (topoCabo + fimCabo) / 2;
 
       luzes += (luzesAlvo - luzes) * k * 0.6;
-      torres.forEach(function(tg){ tg.userData.mProj.emissiveIntensity = luzes * 2.2; tg.userData.cone.material.opacity = luzes * 0.05; });
-      luzEstadio.intensity = luzes * 2.4;
-      mGrama.emissiveIntensity = luzes * 0.6;
+      torres.forEach(function(tg){ tg.userData.mProj.emissiveIntensity = luzes * 2.2; tg.userData.cone.material.opacity = luzes * 0.016; });
+      luzEstadio.intensity = luzes * 1.1;
+      mGrama.emissiveIntensity = luzes * 0.12;
       haloEstadio.material.opacity = 0.08 + luzes * 0.25;
 
       // Caminhão: percorre a estrada inteira e some/aparece suavemente nas pontas (sem teleporte à vista)
