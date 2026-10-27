@@ -72,3 +72,11 @@
 ## Pendências
 - Logo oficial da Recoma (placeholder em texto).
 - Projeto Vercel `dmg-recoma` (Henrique cria no painel).
+
+## Exclusiva G4 Construtora (27/10)
+- Pesquisa: CNPJ 35.238.257/0001-60 (São Gonçalo/RJ, CNAE 4110-7), fundada em 2013, 128 profissionais, mais de 400 unidades, ISO 9001/PBQP-H, Residencial Topázio (Mutuá) em obra, cadastro de empreiteiros no site. Não está no SGG.
+- Decisões: atendimento no RJ pela rede credenciada (sem prometer unidades de SP); 128 colaboradores; o condomínio Topázio é a cena principal e as casas aparecem como já entregues.
+- Novo cenário `mcmv` (alvenaria estrutural, 4 blocos em etapas, andaime e guincho, estação de corte, vivência, stand, casas entregues; na entrega, muro, paisagismo e hora azul), na cor da marca (`R.marca`).
+- Novo roteiro `exclusivo-g4`.
+- Kit ganhou `geoBloco`, `palete`, `uvMundo` e `estacaoCorte`.
+- QA: 0 colisões; regressão 0 erros.
