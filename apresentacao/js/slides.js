@@ -24,6 +24,15 @@ var Slides = (function(){
       return '<li class="glass rv' + d(Math.min(ini + i, 5)) + '">' + pers(t) + '</li>';
     }).join('') + '</ul>';
   }
+  // Riscos da dor e NRs que mantêm o trabalhador apto (opcional no roteiro: s.riscos, s.nrs)
+  function exigencias(s){
+    if (!s.nrs) return '';
+    return '<div class="exig glass rv d5">' +
+      '<div class="exig-l"><small>Riscos envolvidos</small><div class="exig-riscos">' + (s.riscos || []).map(function(r){ return '<i>' + pers(r) + '</i>'; }).join('') + '</div></div>' +
+      '<div class="exig-l"><small>O que mantém o trabalhador apto</small><div class="exig-nrs">' + s.nrs.map(function(n){
+        return '<span><b>' + n.n + '</b>' + pers(n.t) + '</span>';
+      }).join('') + '</div></div></div>';
+  }
   function secao(s, classes, corpo, extra){
     return '<section class="slide' + (classes ? ' ' + classes : '') + '" data-cena="' + s.cena + '"' + (extra || '') + '>' + corpo + '</section>';
   }
@@ -74,7 +83,7 @@ var Slides = (function(){
         '<div class="dor-tag rv"><i></i>' + pers(s.tag) + '</div>' +
         '<h2 class="rv d1">' + pers(s.titulo) + '</h2>' +
         '<p class="lede rv d2">' + pers(s.lede) + '</p>' +
-        lista(s.lista, 3) +
+        lista(s.lista, 3) + exigencias(s) +
         (s.custo ? '<div class="custo rv d5"><div><small>O que isso custa</small><span>' + pers(s.custo) + '</span></div></div>' : '') +
         '</div>');
     },
@@ -189,7 +198,7 @@ var Slides = (function(){
 
     kanban: function(s){
       return secao(s, 'topo', '<div class="wide"><div class="kb-topo"><div>' +
-        '<div class="eyebrow rv">Diagnóstico ao vivo</div>' +
+        (s.cap ? cap(s.cap) : '') + '<div class="eyebrow rv">' + pers(s.eyebrow || 'Diagnóstico ao vivo') + '</div>' +
         '<h2 class="rv d1">' + pers(s.titulo) + '</h2>' +
         '<p class="kb-dica rv d2">Arraste cada cartão para a coluna que descreve a realidade de vocês. No tablet: toque no cartão e depois na coluna. "Não sei" também é resposta, e conta.</p></div>' +
         '<div class="kb-prog rv d2"><div class="t"><span>Classificados</span><b id="kb-n">0 / ' + R.cartoes.length + '</b></div><div class="trilha"><i id="kb-barra"></i></div></div></div>' +
