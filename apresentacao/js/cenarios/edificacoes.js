@@ -48,6 +48,16 @@ CENARIOS.edificacoes = function(kit){
   // Terreno do canteiro, levemente mais claro
   var terreno = new THREE.Mesh(new THREE.PlaneGeometry(30, 25), mat(0x7a5c42, { r: 1 }));   // terra batida do canteiro
   terreno.rotation.x = -Math.PI / 2; terreno.position.set(15, 0.015, -3.5); terreno.receiveShadow = true; cena.add(terreno);
+  // Desgaste do canteiro (PADRAO-3D §6): barro, cimento, óleo, poças e trilha de pneu
+  function desgasteCanteiro(x0, x1, z0, z1, n, trilha){
+    var L = [], gD = new THREE.Group(); cena.add(gD);
+    for (var k = 0; k < n; k++) L.push({ x: x0 + Math.random() * (x1 - x0), z: z0 + Math.random() * (z1 - z0), r: 0.7 + Math.random() * 2, tipo: Math.random() < 0.7 ? 'terra' : (Math.random() < 0.8 ? 'cimento' : 'oleo') });
+    for (k = 0; k < 3; k++) L.push({ x: x0 + Math.random() * (x1 - x0), z: z0 + Math.random() * (z1 - z0), r: 0.8 + Math.random() * 0.8, tipo: 'poca' });
+    var m = kit.manchas(L); if (m) gD.add(m);
+    if (trilha) gD.add(kit.marcasPneu(trilha, 1.9));
+    return gD;
+  }
+  var desgaste = desgasteCanteiro(1, 29, -15, 8, 32, [[PORTAO[0], 9.4], [PORTAO[0], 5], [14, 1], [20, -2]]);
   var haloObra = kit.halo(0x6FE3EC, 40, TORRE[0], TORRE[2], 0.08);
 
   /* ── Torre em obra ── */
@@ -375,7 +385,7 @@ CENARIOS.edificacoes = function(kit){
   for (var fi = 0; fi < 5; fi++) fila.push(pessoa(VIVENCIA[0] + 0.5 + fi * 1.1, VIVENCIA[2] + 3.0, fi % 2 ? COR.colete : CORES_ETAPA.alvenaria));
   // Operador da cortadora: empurra o carro com o bloco, com abafador, máscara PFF2 e óculos
   var cortador = pessoa(CORTE[0] + 0.6 - 1.15, CORTE[2] - 0.2 + 0.05, COR.colete);
-  cortador.rotation.y = Math.PI / 2; cortador.userData.pose = [-0.95, -0.95, 0.12];
+  cortador.rotation.y = Math.PI / 2; cortador.userData.acao = 'cortar';
   kit.epi(cortador, ['abafador', 'mascara', 'oculos']);
   var naLaje = pessoa(TORRE[0] - 2.5, TORRE[2] + PROF / 2 - 0.65, CORES_ETAPA.estrutura);
   var noTopo = pessoa(TORRE[0] + 2, TORRE[2] - 1, CORES_ETAPA.estrutura);
@@ -426,7 +436,7 @@ CENARIOS.edificacoes = function(kit){
       noTopo.visible = modo !== 'verde';
       fila.forEach(function(pp){ pp.visible = modo !== 'verde'; });
       // Obra entregue: elevador de obra desmontado e área de corte desmobilizada
-      mastro.visible = corte.visible = cortador.visible = modo !== 'verde';
+      mastro.visible = corte.visible = cortador.visible = desgaste.visible = modo !== 'verde';
       atualizarPlaca();
     },
 

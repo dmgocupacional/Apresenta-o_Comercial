@@ -219,6 +219,16 @@ CENARIOS.esportiva = function(kit){
     var geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.setIndex(idx);
     var m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: faixaTx.tex, toneMapped: false, side: THREE.DoubleSide })); cena.add(m);
   })();
+  // Desgaste do canteiro (PADRAO-3D §6): barro, cimento, óleo, poças e trilha de pneu
+  function desgasteCanteiro(x0, x1, z0, z1, n, trilha){
+    var L = [], gD = new THREE.Group(); cena.add(gD);
+    for (var k = 0; k < n; k++) L.push({ x: x0 + Math.random() * (x1 - x0), z: z0 + Math.random() * (z1 - z0), r: 0.7 + Math.random() * 2, tipo: Math.random() < 0.7 ? 'terra' : (Math.random() < 0.8 ? 'cimento' : 'oleo') });
+    for (k = 0; k < 3; k++) L.push({ x: x0 + Math.random() * (x1 - x0), z: z0 + Math.random() * (z1 - z0), r: 0.8 + Math.random() * 0.8, tipo: 'poca' });
+    var m = kit.manchas(L); if (m) gD.add(m);
+    if (trilha) gD.add(kit.marcasPneu(trilha, 1.9));
+    return gD;
+  }
+  var desgaste = desgasteCanteiro(PORTAO[0] - 9, PORTAO[0] + 9, Z_ALAMB - 9, Z_ALAMB - 0.8, 18, [[PORTAO[0], Z_ALAMB + 0.5], [PORTAO[0], Z_ALAMB - 4], [PORTAO[0] + 4, Z_ALAMB - 8]]);
   // Alambrado do canteiro com portão na frente
   var mAlamb = new THREE.MeshStandardMaterial({ color: 0x9fb3b8, roughness: 0.5, metalness: 0.6, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
   [[-3, PORTAO[0] - VAO_PORTAO / 2], [PORTAO[0] + VAO_PORTAO / 2, 38]].forEach(function(tr){
@@ -359,7 +369,7 @@ CENARIOS.esportiva = function(kit){
       var caiu = modo === 'acidente';
       noAndaime.rotation.z = caiu ? 1.35 : 0;
       noAndaime.position.set(caiu ? pQueda.x : pAnd.x, caiu ? 0.25 : Y_AND, caiu ? pQueda.z : pAnd.z);
-      noAndaime.visible = modo !== 'verde';
+      noAndaime.visible = desgaste.visible = modo !== 'verde';
       fila.forEach(function(p){ p.visible = modo !== 'verde'; });
       atualizarPlacar();
     },

@@ -122,49 +122,158 @@ var Cena = (function(){
 
   /* ── Pessoas ── */
   var todos = [];
+  // Figura humana articulada: quadril, joelhos, cotovelos, tronco que inclina e cabeça; tons de pele e uniforme variados.
+  // userData.acao ('assentar' | 'cortar' | 'martelar' | 'sinalizar') anima o trabalho no laço (→ BLOCO: ANIMACAO)
+  var PELES = [0x8d5a3c, 0xb07a55, 0xc99a78, 0x6b4430, 0xd8ab8a], CALCAS = [0x1d3640, 0x2b3a4a, 0x3a3a36, 0x24303a], CAMISAS = [0x2f4a5a, 0x5a6a72, 0x7a2e2e, 0x3d4f3a, 0x9aa4a8];
+  function sortear(l){ return l[Math.floor(Math.random() * l.length)]; }
   function pessoa(x, z, corColete){
-    // Figura humana com silhueta torneada (lathe), articulações e EPI completo
     var g = new THREE.Group();
-    var mPele = mat(0xc99a78, { r: 0.65 }), mCalca = mat(0x1d3640, { r: 0.8 }), mBota = mat(0x2a1d16, { r: 0.6 });
+    var mPele = mat(sortear(PELES), { r: 0.65 }), mCalca = mat(sortear(CALCAS), { r: 0.85 }), mBota = mat(0x2a1d16, { r: 0.6 });
+    var mCamisa = mat(sortear(CAMISAS), { r: 0.8 }), mLuva = mat(0xd6a23c, { r: 0.75 });
     var mColete = mat(corColete, { r: 0.45, e: corColete, ei: 0.1 }), mFaixa = mat(0xe8f1f2, { r: 0.2, m: 0.6, e: 0xffffff, ei: 0.25 });
     var mCapacete = mat(COR.capacete, { r: 0.25, m: 0.1 });
-    var pernas = [];
+    // Pernas: coxa → joelho → canela → bota
+    var pernas = [], joelhos = [];
     [-0.095, 0.095].forEach(function(px){
       var piv = new THREE.Group(); piv.position.set(px, 0.86, 0); g.add(piv);
-      var coxa = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.07, 0.8, 14), mCalca); coxa.position.y = -0.4; piv.add(coxa);
-      var bota = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), mBota); bota.scale.set(1, 0.6, 1.6); bota.position.set(0, -0.82, 0.04); piv.add(bota);
-      pernas.push(piv);
+      var coxa = new THREE.Mesh(new THREE.CylinderGeometry(0.088, 0.072, 0.43, 14), mCalca); coxa.position.y = -0.215; piv.add(coxa);
+      var jo = new THREE.Group(); jo.position.y = -0.43; piv.add(jo);
+      var joe = new THREE.Mesh(new THREE.SphereGeometry(0.072, 12, 10), mCalca); jo.add(joe);
+      var canela = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.058, 0.38, 14), mCalca); canela.position.y = -0.19; jo.add(canela);
+      var bota = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), mBota); bota.scale.set(1, 0.62, 1.7); bota.position.set(0, -0.39, 0.045); jo.add(bota);
+      var cano = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.07, 0.1, 12), mBota); cano.position.y = -0.33; jo.add(cano);
+      pernas.push(piv); joelhos.push(jo);
     });
-    var perfil = [[0.001, 0], [0.16, 0.02], [0.19, 0.12], [0.205, 0.3], [0.215, 0.44], [0.19, 0.52], [0.09, 0.58], [0.001, 0.6]]
+    var quadril = new THREE.Mesh(new THREE.SphereGeometry(0.19, 18, 12), mCalca); quadril.scale.set(1.05, 0.55, 0.72); quadril.position.y = 0.88; g.add(quadril);
+    // Tronco articulado no quadril; "sup" usa as cotas absolutas antigas para os acessórios (EPI) seguirem o corpo
+    var corpo = new THREE.Group(); corpo.position.y = 0.86; g.add(corpo);
+    var sup = new THREE.Group(); sup.position.y = -0.86; corpo.add(sup);
+    var perfilC = [[0.001, 0], [0.15, 0.02], [0.18, 0.12], [0.195, 0.3], [0.205, 0.44], [0.18, 0.52], [0.085, 0.58], [0.001, 0.6]]
+      .map(function(p){ return new THREE.Vector2(p[0], p[1]); });
+    var camisa = new THREE.Mesh(new THREE.LatheGeometry(perfilC, 24), mCamisa); camisa.scale.z = 0.7; camisa.position.y = 0.84; sup.add(camisa);
+    var perfil = [[0.17, 0.06], [0.195, 0.12], [0.212, 0.3], [0.222, 0.44], [0.2, 0.5], [0.15, 0.53]]
       .map(function(p){ return new THREE.Vector2(p[0], p[1]); });
     var tronco = new THREE.Mesh(new THREE.LatheGeometry(perfil, 24), mColete);
-    tronco.scale.z = 0.72; tronco.position.y = 0.84; g.add(tronco);
+    tronco.material.side = THREE.DoubleSide; tronco.scale.z = 0.74; tronco.position.y = 0.84; sup.add(tronco);
     [0.98, 1.1].forEach(function(fy){
-      var faixa = new THREE.Mesh(new THREE.CylinderGeometry(0.212, 0.212, 0.035, 24, 1, true), mFaixa);
-      faixa.scale.z = 0.73; faixa.position.y = fy; g.add(faixa);
+      var faixa = new THREE.Mesh(new THREE.CylinderGeometry(0.217, 0.217, 0.035, 24, 1, true), mFaixa);
+      faixa.scale.z = 0.75; faixa.position.y = fy; sup.add(faixa);
     });
-    var bracos = [];
+    // Braços: ombro → cotovelo → antebraço → luva
+    var bracos = [], cotovelos = [];
     [-1, 1].forEach(function(ld){
-      var piv = new THREE.Group(); piv.position.set(ld * 0.235, 1.34, 0); piv.rotation.z = ld * 0.12; piv.userData.membro = true; g.add(piv);
-      var ombro = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 10), mColete); piv.add(ombro);
-      var braco = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.048, 0.62, 12), mCalca); braco.position.y = -0.32; piv.add(braco);
-      var luva = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), mat(0xd6a23c, { r: 0.7 })); luva.position.y = -0.66; piv.add(luva);
-      bracos.push(piv);
+      var piv = new THREE.Group(); piv.position.set(ld * 0.235, 1.34, 0); piv.rotation.z = ld * 0.12; piv.userData.membro = true; sup.add(piv);
+      var ombro = new THREE.Mesh(new THREE.SphereGeometry(0.072, 12, 10), mColete); piv.add(ombro);
+      var braco = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.052, 0.32, 12), mCamisa); braco.position.y = -0.16; piv.add(braco);
+      var co = new THREE.Group(); co.position.y = -0.32; piv.add(co);
+      var coe = new THREE.Mesh(new THREE.SphereGeometry(0.052, 10, 8), mCamisa); co.add(coe);
+      var ante = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.042, 0.28, 12), mPele); ante.position.y = -0.14; co.add(ante);
+      var luva = new THREE.Mesh(new THREE.SphereGeometry(0.056, 12, 10), mLuva); luva.scale.set(0.9, 1.15, 0.7); luva.position.y = -0.32; co.add(luva);
+      bracos.push(piv); cotovelos.push(co);
     });
-    var pescoco = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 12), mPele); pescoco.position.y = 1.47; g.add(pescoco);
-    var cab = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 16), mPele); cab.scale.set(1, 1.12, 1.05); cab.position.y = 1.6; g.add(cab);
-    var casco = new THREE.Mesh(new THREE.SphereGeometry(0.135, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), mCapacete); casco.scale.set(1, 0.85, 1.12); casco.position.y = 1.65; g.add(casco);
-    var aba = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.018, 24), mCapacete); aba.scale.set(1, 1, 1.15); aba.position.set(0, 1.65, 0.02); g.add(aba);
-    var crista = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.012, 6, 24, Math.PI), mCapacete); crista.rotation.y = Math.PI / 2; crista.position.y = 1.66; g.add(crista);
+    var pescoco = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 12), mPele); pescoco.position.y = 1.47; sup.add(pescoco);
+    var cab = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 16), mPele); cab.scale.set(0.95, 1.12, 1.05); cab.position.y = 1.6; sup.add(cab);
+    var nariz = new THREE.Mesh(new THREE.SphereGeometry(0.022, 8, 6), mPele); nariz.scale.set(0.8, 1, 1.2); nariz.position.set(0, 1.59, 0.118); sup.add(nariz);
+    [-1, 1].forEach(function(ld){ var or = new THREE.Mesh(new THREE.SphereGeometry(0.026, 8, 6), mPele); or.scale.set(0.5, 1, 0.8); or.position.set(ld * 0.11, 1.6, 0); sup.add(or); });
+    var jugular = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.006, 4, 16, Math.PI), mat(0x222222, { r: 0.8 })); jugular.rotation.set(Math.PI / 2, 0, Math.PI); jugular.position.set(0, 1.56, 0.0); sup.add(jugular);
+    var casco = new THREE.Mesh(new THREE.SphereGeometry(0.135, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), mCapacete); casco.scale.set(1, 0.85, 1.12); casco.position.y = 1.65; sup.add(casco);
+    var aba = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.018, 24), mCapacete); aba.scale.set(1, 1, 1.15); aba.position.set(0, 1.65, 0.02); sup.add(aba);
+    var crista = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.012, 6, 24, Math.PI), mCapacete); crista.rotation.y = Math.PI / 2; crista.position.y = 1.66; sup.add(crista);
     var anel = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.55, 40), basico(COR.ciano, 0.9));
     anel.rotation.x = -Math.PI / 2; anel.position.y = 0.04; g.add(anel);
     g.traverse(function(o){ if (o.isMesh && o !== anel) o.castShadow = true; });
     g.scale.setScalar(0.92);
     g.position.set(x, 0, z);
-    g.userData = { anel: anel, fase: Math.random() * 6, base: new THREE.Vector3(x, 0, z), pernas: pernas, bracos: bracos, ult: new THREE.Vector3(x, 0, z) };
+    g.userData = { anel: anel, fase: Math.random() * 6, base: new THREE.Vector3(x, 0, z), pernas: pernas, joelhos: joelhos, bracos: bracos, cotovelos: cotovelos, corpo: corpo, sup: sup, ult: new THREE.Vector3(x, 0, z) };
     g.rotation.y = (Math.random() - 0.5) * 0.8;
     cena.add(g); todos.push(g); return g;
   }
+  // ═══ BLOCO: ANIMACAO ═══
+  // Movimento de trabalho por pessoa: chamado a cada quadro depois da passada
+  function animarAcao(u, t){
+    var B = u.bracos, C = u.cotovelos, f = t + u.fase, s;
+    switch (u.acao){
+      case 'assentar':   // curva, pega o bloco, assenta e bate com a colher
+        s = (Math.sin(f * 1.4) + 1) / 2;
+        u.corpo.rotation.x = 0.25 + s * 0.45;
+        B[0].rotation.x = -0.6 - s * 0.7; B[1].rotation.x = -0.4 - s * 0.9 + Math.sin(f * 9) * 0.06 * (1 - s);
+        C[0].rotation.x = -0.6 + s * 0.3; C[1].rotation.x = -0.5;
+        u.joelhos[0].rotation.x = u.joelhos[1].rotation.x = s * 0.35; u.pernas[0].rotation.x = u.pernas[1].rotation.x = -s * 0.2;
+        break;
+      case 'cortar':     // segura o bloco e empurra contra o disco
+        s = Math.sin(f * 2.2) * 0.07;
+        u.corpo.rotation.x = 0.28 + s;
+        B[0].rotation.x = B[1].rotation.x = -0.9 - s; C[0].rotation.x = C[1].rotation.x = -0.55 + s * 2;
+        break;
+      case 'martelar':   // braço direito bate, esquerdo segura
+        s = Math.max(0, Math.sin(f * 5));
+        u.corpo.rotation.x = 0.18;
+        B[0].rotation.x = -0.7; C[0].rotation.x = -0.7;
+        B[1].rotation.x = -1.1 - s * 0.7; C[1].rotation.x = -0.2 - s * 1.1;
+        break;
+      case 'sinalizar':  // braço erguido acenando
+        B[1].rotation.x = 0; B[1].rotation.z = 2.5 + Math.sin(f * 3) * 0.35; C[1].rotation.x = -0.3;
+        B[0].rotation.z = -0.12;
+        break;
+    }
+  }
+  /* ── FIM BLOCO ── */
+
+  // ═══ BLOCO: DESGASTE ═══
+  // Manchas no chão (terra, argamassa, óleo, poça): planos instanciados com textura radial irregular
+  var TX_MANCHA = null;
+  function manchas(lista){
+    if (!lista.length) return null;
+    if (!TX_MANCHA) TX_MANCHA = texturaProc(256, function(g, t){
+      g.clearRect(0, 0, t, t);
+      for (var i = 0; i < 70; i++){
+        var a = Math.random() * 6.28, r = Math.random() * t * 0.3, cx = t / 2 + Math.cos(a) * r, cy = t / 2 + Math.sin(a) * r, rr = t * (0.05 + Math.random() * 0.16);
+        var gr = g.createRadialGradient(cx, cy, 0, cx, cy, rr); gr.addColorStop(0, 'rgba(255,255,255,.22)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gr; g.fillRect(0, 0, t, t);
+      }
+    });
+    var CORES = { terra: 0x4a3626, argamassa: 0xb9b5aa, oleo: 0x15130f, poca: 0x2a3438, cimento: 0x8f8d86 };
+    var m = new THREE.MeshStandardMaterial({ map: TX_MANCHA, transparent: true, depthWrite: false, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    var mPoca = new THREE.MeshStandardMaterial({ map: TX_MANCHA, transparent: true, depthWrite: false, roughness: 0.05, metalness: 0.4, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+    var grupo = new THREE.Group(), dummy = new THREE.Object3D(), cor = new THREE.Color();
+    [[m, lista.filter(function(l){ return l.tipo !== 'poca'; })], [mPoca, lista.filter(function(l){ return l.tipo === 'poca'; })]].forEach(function(par){
+      var L = par[1]; if (!L.length) return;
+      var im = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), par[0], L.length);
+      L.forEach(function(l, i){
+        dummy.position.set(l.x, (l.y || 0) + 0.035, l.z); dummy.rotation.set(-Math.PI / 2, 0, Math.random() * 6.28);
+        dummy.scale.set(l.r * 2 * (0.8 + Math.random() * 0.4), l.r * 2, 1); dummy.updateMatrix(); im.setMatrixAt(i, dummy.matrix);
+        im.setColorAt(i, cor.setHex(CORES[l.tipo] || CORES.terra));
+      });
+      im.receiveShadow = true; grupo.add(im);
+    });
+    cena.add(grupo); return grupo;
+  }
+  // Marcas de pneu: duas trilhas escuras seguindo pontos [x, z] no chão
+  function marcasPneu(pontos, bitola, y){
+    var tx = texturaProc(64, function(g, t){ g.clearRect(0, 0, t, t); for (var i = 0; i < 260; i++){ g.fillStyle = 'rgba(20,16,12,' + (0.1 + Math.random() * 0.25) + ')'; g.fillRect(Math.random() * t, Math.random() * t, 2 + Math.random() * 5, 1 + Math.random() * 2); } });
+    var m = new THREE.MeshBasicMaterial({ map: tx, transparent: true, depthWrite: false, opacity: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    var pts = pontos.map(function(p){ return new THREE.Vector3(p[0], (y || 0) + 0.03, p[1]); }), g = new THREE.Group();
+    [-1, 1].forEach(function(s){ var f = fita(pts, 0.32, m, s * (bitola || 1.9) / 2); g.add(f); });
+    cena.add(g); return g;
+  }
+  // Sujeira na base das paredes: faixa com degradê escuro de baixo para cima, em volta de uma caixa (larg × prof)
+  var TX_RODAPE = null;
+  function rodapeSujo(pai, larg, prof, alt, y){
+    if (!TX_RODAPE){
+      var c = document.createElement('canvas'); c.width = 64; c.height = 128; var g = c.getContext('2d');
+      var gr = g.createLinearGradient(0, 128, 0, 0); gr.addColorStop(0, 'rgba(60,44,30,.75)'); gr.addColorStop(0.35, 'rgba(70,52,36,.35)'); gr.addColorStop(1, 'rgba(70,52,36,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 64, 128);
+      for (var i = 0; i < 90; i++){ g.fillStyle = 'rgba(60,44,30,' + Math.random() * 0.25 + ')'; g.fillRect(Math.random() * 64, 70 + Math.random() * 58, 1 + Math.random() * 3, 2 + Math.random() * 8); }
+      TX_RODAPE = new THREE.CanvasTexture(c); TX_RODAPE.wrapS = THREE.RepeatWrapping;
+    }
+    var m = new THREE.MeshBasicMaterial({ map: TX_RODAPE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+    var gg = new THREE.Group(); gg.position.y = (y || 0) + alt / 2; pai.add(gg);
+    [[0, prof / 2 + 0.012, 0, larg], [0, -prof / 2 - 0.012, Math.PI, larg], [larg / 2 + 0.012, 0, Math.PI / 2, prof], [-larg / 2 - 0.012, 0, -Math.PI / 2, prof]].forEach(function(f){
+      var pl = new THREE.Mesh(new THREE.PlaneGeometry(f[3], alt), m); pl.position.set(f[0], 0, f[1]); pl.rotation.y = f[2]; gg.add(pl);
+    });
+    return gg;
+  }
+  /* ── FIM BLOCO ── */
 
   /* ── Clínica DMG: torre que sobe andar a andar ── */
   var torre = new THREE.Group(); torre.position.set(POS_CLINICA[0], 0, POS_CLINICA[2]); torre.scale.setScalar(ESC_TORRE); cena.add(torre);
@@ -568,7 +677,7 @@ var Cena = (function(){
   }
   // EPI visível no trabalhador: abafador, máscara PFF2, óculos e cinto paraquedista
   function epi(p, itens){
-    var g = new THREE.Group(); p.add(g);
+    var g = new THREE.Group(); ((p.userData && p.userData.sup) || p).add(g);
     if (itens.indexOf('abafador') >= 0){
       var mAb = mat(0xd9342b, { r: 0.45 });
       [-1, 1].forEach(function(s){ var c = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 16), mAb); c.rotation.z = Math.PI / 2; c.position.set(s * 0.128, 1.6, 0); g.add(c); });
@@ -611,7 +720,7 @@ var Cena = (function(){
     THREE: THREE, cena: cena, cam: cam, COR: COR, HALO: HALO,
     mat: mat, basico: basico, caixa: caixa, cilindro: cilindro, caixaRedonda: caixaRedonda,
     halo: halo, textoTex: textoTex, cantos: cantos, pessoa: pessoa, aoCarregarFonte: aoCarregarFonte, R: R,
-    barra: barra, trelica: trelica, fundir: fundir, fita: fita, texturaProc: texturaProc, granulado: granulado, carro: carro, asfalto: asfalto, arvores: arvores, roda: roda, epi: epi, andaime: andaime, desvanecivel: desvanecivel, geoBloco: geoBloco, palete: palete, uvMundo: uvMundo, estacaoCorte: estacaoCorte
+    barra: barra, trelica: trelica, fundir: fundir, fita: fita, texturaProc: texturaProc, granulado: granulado, carro: carro, asfalto: asfalto, arvores: arvores, roda: roda, epi: epi, andaime: andaime, desvanecivel: desvanecivel, geoBloco: geoBloco, palete: palete, uvMundo: uvMundo, estacaoCorte: estacaoCorte, manchas: manchas, marcasPneu: marcasPneu, rodapeSujo: rodapeSujo
   };
   // Grua de montagem da clínica: torre treliçada, lança, contralança com contrapeso e cabo com gancho
   (function montarGrua2(){
@@ -786,7 +895,10 @@ var Cena = (function(){
       u.bracos[0].rotation.x = -Math.sin(fase) * amp * 0.8; u.bracos[1].rotation.x = Math.sin(fase) * amp * 0.8;
       if (amp < 0.02) u.bracos[0].rotation.x = Math.sin(relogio * 1.2 + u.fase) * 0.05;
       // Pose fixa (segurando ferramenta, bloco, placa): braços no ângulo pedido
+      u.corpo.rotation.x = 0; u.joelhos[0].rotation.x = Math.max(0, -u.pernas[0].rotation.x) * 0.9; u.joelhos[1].rotation.x = Math.max(0, -u.pernas[1].rotation.x) * 0.9;
+      u.cotovelos[0].rotation.x = u.cotovelos[1].rotation.x = -0.15 - amp * 0.5;
       if (u.pose){ u.bracos[0].rotation.x = u.pose[0]; u.bracos[1].rotation.x = u.pose[1]; if (u.pose.length > 2){ u.bracos[0].rotation.z = u.pose[2]; u.bracos[1].rotation.z = -u.pose[2]; } }
+      if (u.acao) animarAcao(u, relogio);   // → BLOCO: ANIMACAO
     });
     scanner.position.set(viajante.position.x, 0.2 + (Math.sin(relogio * 2) + 1) * 0.75, viajante.position.z);
 

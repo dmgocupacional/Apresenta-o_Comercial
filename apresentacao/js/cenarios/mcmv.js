@@ -44,12 +44,15 @@ CENARIOS.mcmv = function(kit){
     var lamp = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.5), new THREE.MeshBasicMaterial({ color: 0xfff1d0, toneMapped: false, side: THREE.DoubleSide })); lamp.rotation.x = Math.PI / 2; lamp.position.set(0, 6.35, 1.3); pg.add(lamp);
   });
   var carros = [];
-  [0xb83a32, 0xdfe6e8, 0x2e6fa8, 0x30363a, 0xc9ced0, 0x8a1f2a].forEach(function(cor, i){
+  [0xdfe6e8, 0x2b2f33, 0x6c7378, 0x1f3a52, 0xb9bec1, 0x4a4f52].forEach(function(cor, i){
     var g = kit.carro(cor); cena.add(g); var s = i % 2 ? -1 : 1;
     g.userData.s = s; g.userData.u = (Math.floor(i / 2) / 3 + (s > 0 ? 0 : 0.15)) % 1; g.position.z = 13.4 + s * 1.05; g.rotation.y = s > 0 ? 0 : Math.PI;
     carros.push(g);
   });
 
+  var zebra = new THREE.Group(); cena.add(zebra);
+  for (var zb = 0; zb < 7; zb++){ var zf = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 3.0), basico(0xf2efe6, 0.85)); zf.rotation.x = -Math.PI / 2; zf.position.set(PORTAO[0] - 6.5 + zb * 0.9, 0.032, 13.4); zebra.add(zf); }
+  [-30, -6, 30, 52].forEach(function(x){ var bu = caixa(0.9, 0.04, 0.45, mat(0x2a2c2d, { r: 0.5, m: 0.7 }), x, 0.025, 11.6); for (var gi = 0; gi < 6; gi++) caixa(0.04, 0.05, 0.4, mat(0x111213, { r: 0.6 }), x - 0.36 + gi * 0.144, 0.03, 11.6); });
   /* ═══ Canteiro: terra batida, tapume na identidade do cliente e portão ═══ */
   var terreno = new THREE.Mesh(new THREE.PlaneGeometry(46, 34), mat(0x7a5c42, { r: 1 })); terreno.rotation.x = -Math.PI / 2; terreno.position.set(22, 0.015, -8); terreno.receiveShadow = true; cena.add(terreno);
   var tapTx = textoTex(1024, 192);
@@ -148,6 +151,7 @@ CENARIOS.mcmv = function(kit){
   function predio(b){
     var g = new THREE.Group(); g.position.set(b.x, 0, b.z); cena.add(g);
     var radier = caixa(LARG + 0.8, 0.3, PROF + 0.8, mLaje, 0, 0.15, 0, g);
+    kit.rodapeSujo(g, LARG + 0.82, PROF + 0.82, 0.9, 0);   // respingo de chuva e barro na base
     var pavs = [];
     for (var i = 0; i < NPAV; i++){
       var pg = new THREE.Group(); pg.position.y = 0.3 + i * H; g.add(pg);
@@ -166,7 +170,7 @@ CENARIOS.mcmv = function(kit){
       });
       if (i === 0){ var porta = caixa(1.0, 2.1, 0.05, mat(0x3b2f26, { r: 0.6 }), 0, 1.05, PROF / 2 + 0.02, pg); esq.add(porta); }
       var faixa = caixa(LARG + 0.08, 0.12, PROF + 0.08, mFaixa, 0, H - LAJE_E - 0.06, 0, pg); faixa.visible = false;
-      pavs.push({ g: pg, parede: parede, laje: laje, esq: esq, faixa: faixa });
+      pavs.push({ g: pg, parede: parede, laje: laje, esq: esq, faixa: faixa, miolo: miolo });
     }
     var topo = new THREE.Group(); topo.position.y = 0.3 + NPAV * H; g.add(topo);
     [[0, PROF / 2], [0, -PROF / 2]].forEach(function(p){ caixa(LARG + 0.06, 0.9, ESP, mPintura, p[0], 0.45, p[1], topo); });
@@ -190,6 +194,7 @@ CENARIOS.mcmv = function(kit){
       pv.g.visible = fr > 0.001;
       pv.parede.scale.y = Math.max(0.001, Math.min(1, fr / 0.96));
       pv.laje.visible = fr >= 0.999;
+      pv.miolo.visible = pv.laje.visible;   // pavimento em execução mostra a laje de baixo, não o escuro do miolo
       var pintado = i < Math.round(pint * NPAV);
       pv.parede.material = pintado ? mPintura : mAlvenaria;
       pv.faixa.visible = pintado && i === 0;
@@ -262,6 +267,18 @@ CENARIOS.mcmv = function(kit){
     var rot = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.45), new THREE.MeshBasicMaterial({ map: lt.tex, transparent: true, toneMapped: false })); rot.position.set(0, 2.1, 1.27); ct.add(rot);
   });
   var corte = kit.estacaoCorte(CORTE[0], CORTE[2], 0);
+  // Desgaste do canteiro: barro, respingo de argamassa, pó de corte, óleo, poças e trilha de pneu do portão aos blocos
+  var desgaste = new THREE.Group(); cena.add(desgaste);
+  (function(){
+    var L = [], k;
+    for (k = 0; k < 40; k++) L.push({ x: 1 + Math.random() * 43, z: -24 + Math.random() * 31, r: 0.8 + Math.random() * 2.2, tipo: Math.random() < 0.75 ? 'terra' : 'cimento' });
+    for (k = 0; k < 14; k++) L.push({ x: BLOCOS[1].x - 7 + Math.random() * 14, z: BLOCOS[1].z + PROF / 2 + 0.8 + Math.random() * 2.2, r: 0.3 + Math.random() * 0.6, tipo: 'argamassa' });
+    for (k = 0; k < 8; k++) L.push({ x: CORTE[0] - 1.5 + Math.random() * 3, z: CORTE[2] - 1.5 + Math.random() * 3, r: 0.5 + Math.random() * 0.9, tipo: 'cimento' });
+    [[VIV[0] + 2, VIV[2] + 2.2], [CORTE[0] - 3, CORTE[2] + 2]].forEach(function(q){ L.push({ x: q[0], z: q[1], r: 0.5, tipo: 'oleo' }); });
+    [[9, 2], [31, 3.5], [20, -9.5], [3, -12]].forEach(function(q){ L.push({ x: q[0], z: q[1], r: 0.9 + Math.random() * 0.8, tipo: 'poca' }); });
+    var m = kit.manchas(L); if (m) desgaste.add(m);
+    var pn = kit.marcasPneu([[PORTAO[0], 9.4], [PORTAO[0], 5], [16.5, 1.5], [22, -0.8], [30, -1], [36, -2]], 1.9); desgaste.add(pn);
+  })();
 
   /* ═══ Placa de obra e stand de vendas na identidade do cliente ═══ */
   var placaTx = textoTex(1024, 512);
@@ -326,10 +343,10 @@ CENARIOS.mcmv = function(kit){
   for (var p2 = 0; p2 < 6; p2++) fila.push(pessoa(FILA[0] - 1.05 + (p2 % 3) * 1.05, FILA[2] - 0.48 + Math.floor(p2 / 3) * 0.95, p2 < 2 ? COR.colete : COR.terc));
   var vivencia = [];
   for (var fi = 0; fi < 5; fi++) vivencia.push(pessoa(VIV[0] - 0.8 + fi * 1.4, VIV[2] + 2.9, fi % 2 ? COR.colete : COR.terc));
-  var cortador = pessoa(corte.operador.x, corte.operador.z, COR.colete); cortador.rotation.y = corte.operador.ry; cortador.userData.pose = [-0.95, -0.95, 0.12];
+  var cortador = pessoa(corte.operador.x, corte.operador.z, COR.colete); cortador.rotation.y = corte.operador.ry; cortador.userData.acao = 'cortar';
   kit.epi(cortador, ['abafador', 'mascara', 'oculos']);
-  var pedreiro1 = emCota(pessoa(BLOCOS[1].x - 3.2, BLOCOS[1].z + PROF / 2 - 0.85, COR.colete), Y_B); pedreiro1.rotation.y = 0; pedreiro1.userData.pose = [-0.7, -0.4, 0.05];
-  var pedreiro2 = emCota(pessoa(BLOCOS[1].x - LARG / 2 + 0.9, BLOCOS[1].z + PROF / 2 - 2.4, COR.terc), Y_B); pedreiro2.rotation.y = -Math.PI / 2; pedreiro2.userData.pose = [-0.6, -0.8, 0.05];
+  var pedreiro1 = emCota(pessoa(BLOCOS[1].x - 3.2, BLOCOS[1].z + PROF / 2 - 0.85, COR.colete), Y_B); pedreiro1.rotation.y = 0; pedreiro1.userData.acao = 'assentar';
+  var pedreiro2 = emCota(pessoa(BLOCOS[1].x - LARG / 2 + 0.9, BLOCOS[1].z + PROF / 2 - 2.4, COR.terc), Y_B); pedreiro2.rotation.y = -Math.PI / 2; pedreiro2.userData.acao = 'assentar';
   kit.epi(pedreiro1, ['cinto']); kit.epi(pedreiro2, ['cinto']);
   var Y_AND = 4 * 2.0 + 0.06, P_AND = [BLOCOS[1].x - LARG / 2 + 5, BLOCOS[1].z + PROF / 2 + 0.25 + 0.6];
   var noAndaime = emCota(pessoa(P_AND[0], P_AND[1], COR.terc), Y_AND); noAndaime.rotation.y = Math.PI;
@@ -372,7 +389,7 @@ CENARIOS.mcmv = function(kit){
       var caiu = modo === 'acidente';
       noAndaime.rotation.z = caiu ? 1.35 : 0;
       noAndaime.position.set(caiu ? P_QUEDA[0] : P_AND[0], caiu ? 0.25 : Y_AND, caiu ? P_QUEDA[1] : P_AND[1]);
-      [frente, guincho, andaime, corte.g, cortador, pedreiro1, pedreiro2, noAndaime, tapumes, guarita, placa, vivG].forEach(function(o){ o.visible = emObra; });
+      [frente, guincho, andaime, corte.g, cortador, pedreiro1, pedreiro2, noAndaime, tapumes, guarita, placa, vivG, desgaste].forEach(function(o){ o.visible = emObra; });
       fila.concat(vivencia).forEach(function(p){ p.visible = emObra; });
       muro.visible = paisagem.visible = !emObra;
       atualizarPlaca();

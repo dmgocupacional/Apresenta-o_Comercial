@@ -146,6 +146,16 @@ CENARIOS.infraestrutura = function(kit){
   plano(60, 7, mAsfalto, INI_OBRA - 30, 0.025, EIXO_Z);
   for (var f = 0; f < 18; f++){ var fx = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.14), mPintura); fx.rotation.x = -Math.PI / 2; fx.position.set(INI_OBRA - 58 + f * 3.2, 0.03, EIXO_Z); cena.add(fx); }
   [EIXO_Z - 3.2, EIXO_Z + 3.2].forEach(function(z){ var b = new THREE.Mesh(new THREE.PlaneGeometry(60, 0.12), mPinturaB); b.rotation.x = -Math.PI / 2; b.position.set(INI_OBRA - 30, 0.03, z); cena.add(b); });
+  // Desgaste do canteiro (PADRAO-3D §6): barro, cimento, óleo, poças e trilha de pneu
+  function desgasteCanteiro(x0, x1, z0, z1, n, trilha){
+    var L = [], gD = new THREE.Group(); cena.add(gD);
+    for (var k = 0; k < n; k++) L.push({ x: x0 + Math.random() * (x1 - x0), z: z0 + Math.random() * (z1 - z0), r: 0.7 + Math.random() * 2, tipo: Math.random() < 0.7 ? 'terra' : (Math.random() < 0.8 ? 'cimento' : 'oleo') });
+    for (k = 0; k < 3; k++) L.push({ x: x0 + Math.random() * (x1 - x0), z: z0 + Math.random() * (z1 - z0), r: 0.8 + Math.random() * 0.8, tipo: 'poca' });
+    var m = kit.manchas(L); if (m) gD.add(m);
+    if (trilha) gD.add(kit.marcasPneu(trilha, 1.9));
+    return gD;
+  }
+  var desgaste = desgasteCanteiro(INI_OBRA, PORTAL_X - 8, EIXO_Z - 4.4, EIXO_Z + 4.4, 36, null);
   // Faixa de domínio em terra no trecho em obra (antes dos aterros e dentro do corte do emboque)
   fita(tracado(INI_OBRA, PORTAL_X - 7, 1, zEixo, function(){ return 0.018; }), 9.6, mTerraClara);
 
@@ -874,7 +884,7 @@ CENARIOS.infraestrutura = function(kit){
       tunelObra.visible = emObra; tunelPronto.visible = !emObra;
       gcProv.visible = emObra; defensas.visible = !emObra;
       faixaAtual = emObra ? 'desvio' : 'pista';
-      provisorio.visible = emObra;
+      provisorio.visible = emObra; desgaste.visible = emObra;
       atualizarPlaca();
     },
 
