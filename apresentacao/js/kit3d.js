@@ -413,6 +413,114 @@ var Cena = (function(){
     [-1, 1].forEach(function(s){ var miolo = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.18, r * 0.2, 0.08, 10), mat(0xdfe6e8, { r: 0.15, m: 1 })); miolo.rotation.x = Math.PI / 2; miolo.position.z = s * (w * 0.45 + 0.04); g.add(miolo); });
     g.traverse(function(o){ if (o.isMesh) o.castShadow = true; }); return g;
   }
+  // Bloco de concreto estrutural 14 × 19 × 39 cm com dois furos verticais (geometria compartilhada)
+  var GEO_BLOCO_K = null;
+  function geoBloco(){
+    if (GEO_BLOCO_K) return GEO_BLOCO_K;
+    var sB = new THREE.Shape(); sB.moveTo(-0.195, -0.07); sB.lineTo(0.195, -0.07); sB.lineTo(0.195, 0.07); sB.lineTo(-0.195, 0.07); sB.lineTo(-0.195, -0.07);
+    [-0.095, 0.095].forEach(function(cx){ var h = new THREE.Path(); h.moveTo(cx - 0.07, -0.04); h.lineTo(cx - 0.07, 0.04); h.lineTo(cx + 0.07, 0.04); h.lineTo(cx + 0.07, -0.04); h.lineTo(cx - 0.07, -0.04); sB.holes.push(h); });
+    GEO_BLOCO_K = new THREE.ExtrudeGeometry(sB, { depth: 0.19, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 1 });
+    GEO_BLOCO_K.rotateX(-Math.PI / 2);   // furos na vertical; base em y = 0
+    return GEO_BLOCO_K;
+  }
+  // Palete de madeira: tábuas de cima, longarinas e tábuas de base
+  var mMadeiraK = null;
+  function palete(pai, x, z){
+    mMadeiraK = mMadeiraK || mat(0x9a7448, { r: 0.85 });
+    var g = new THREE.Group(); g.position.set(x, 0, z); pai.add(g);
+    for (var t = 0; t < 7; t++) caixa(1.2, 0.025, 0.1, mMadeiraK, 0, 0.135, -0.45 + t * 0.15, g);
+    [-0.45, 0, 0.45].forEach(function(lz){ caixa(1.2, 0.09, 0.1, mMadeiraK, 0, 0.075, lz, g); });
+    [-0.5, 0, 0.5].forEach(function(lx){ caixa(0.1, 0.025, 1.0, mMadeiraK, lx, 0.012, 0, g); });
+    return g;
+  }
+  // Estação de corte de blocos completa (cortadora com coifa, paletes em amarração, quadro elétrico, pluma de pó).
+  // Devolve a posição do operador (que o cenário cria com EPI) e atualizar(dt, nivelPoeira, corPo).
+  function estacaoCorte(x, z, ry){
+    var V = function(a, b, c){ return new THREE.Vector3(a, b, c); };
+    var CORTE = [x, 0, z];
+    var corte = new THREE.Group(); corte.position.set(CORTE[0], 0, CORTE[2]); corte.rotation.y = ry || 0; cena.add(corte);
+  var mAcoC = mat(0x3a4a50, { r: 0.45, m: 0.75 }), mBloco = mat(0xa7aeaf, { r: 0.95 });
+  var GEO_BLOCO = geoBloco();
+  // Pilhas em amarração (camadas alternadas), instanciadas: muitos blocos, um draw call
+  var posBlocos = [];
+  [[-1.9, 1.15, 4], [-0.5, 1.4, 3]].forEach(function(pl){
+    palete(corte, pl[0], pl[1]);
+    for (var cam = 0; cam < pl[2]; cam++) for (var fil = 0; fil < 6; fil++) for (var col = 0; col < 3; col++){
+      if (cam === pl[2] - 1 && fil > 3 && col > 0) continue;   // última camada incompleta: já estão usando
+      var gira = cam % 2 === 1;
+      posBlocos.push(gira ? [pl[0] - 0.45 + fil * 0.16 + 0.05, 0.15 + cam * 0.19, pl[1] - 0.39 + col * 0.39, Math.PI / 2] : [pl[0] - 0.39 + col * 0.39, 0.15 + cam * 0.19, pl[1] - 0.4 + fil * 0.16, 0]);
+    }
+  });
+  var blocosI = new THREE.InstancedMesh(GEO_BLOCO, mBloco, posBlocos.length), dB = new THREE.Object3D();
+  posBlocos.forEach(function(b, i){ dB.position.set(b[0], b[1], b[2]); dB.rotation.set(0, b[3], 0); dB.updateMatrix(); blocosI.setMatrixAt(i, dB.matrix); });
+  blocosI.castShadow = true; blocosI.receiveShadow = true; corte.add(blocosI);
+  // Cortadora de bancada: estrutura tubular, bandeja d'água, carro deslizante, disco, coifa e motor
+  var bancada = new THREE.Group(); bancada.position.set(0.6, 0, -0.2); corte.add(bancada);
+  [[-0.7, -0.35], [0.7, -0.35], [-0.7, 0.35], [0.7, 0.35]].forEach(function(p){ caixa(0.05, 0.8, 0.05, mAcoC, p[0], 0.4, p[1], bancada); });
+  [-0.35, 0.35].forEach(function(z){ caixa(1.45, 0.05, 0.05, mAcoC, 0, 0.3, z, bancada); });
+  caixa(1.5, 0.14, 0.78, mat(0x2b3438, { r: 0.6, m: 0.6 }), 0, 0.85, 0, bancada);     // bandeja
+  [-0.18, 0.18].forEach(function(z){ caixa(1.5, 0.03, 0.03, mat(0xc7d0d3, { r: 0.25, m: 0.9 }), 0, 0.935, z, bancada); });   // trilhos
+  var carro = new THREE.Group(); carro.position.y = 0.95; bancada.add(carro);
+  caixa(0.62, 0.04, 0.5, mat(0x4f5a5e, { r: 0.5, m: 0.7 }), 0, 0.02, 0, carro);
+  var blocoCorte = new THREE.Mesh(GEO_BLOCO, mBloco); blocoCorte.position.set(0, 0.04, 0); blocoCorte.castShadow = true; carro.add(blocoCorte);
+  // Braço da serra: coluna traseira, cabeçote com disco diamantado e coifa sobre o disco
+  caixa(0.08, 0.75, 0.08, mAcoC, 0.0, 1.28, -0.36, bancada);
+  caixa(0.08, 0.08, 0.45, mAcoC, 0.0, 1.62, -0.17, bancada);
+  var disco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.012, 36), mat(0xc4ccce, { r: 0.4, m: 0.55 }));
+  disco.rotation.x = Math.PI / 2; disco.position.set(0.0, 1.32, 0.0); bancada.add(disco);
+  var coifa = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.235, 0.08, 24, 1, true, Math.PI * 0.5, Math.PI), new THREE.MeshStandardMaterial({ color: 0xd9342b, roughness: 0.5, metalness: 0.3, side: THREE.DoubleSide }));
+  coifa.rotation.x = Math.PI / 2; coifa.position.set(0.0, 1.32, 0.0); coifa.castShadow = true; bancada.add(coifa);
+  [-1, 1].forEach(function(s){ var tampa = new THREE.Mesh(new THREE.CircleGeometry(0.235, 24, 0, Math.PI), coifa.material); tampa.position.set(0, 1.32, s * 0.04); bancada.add(tampa); });
+  var motor = cilindro(0.13, 0.13, 0.3, mat(0x2e6fa8, { r: 0.4, m: 0.6 }), 0.0, 1.38, -0.26, bancada, 18); motor.rotation.x = Math.PI / 2;
+  caixa(0.2, 0.08, 0.2, mat(0x1c1c1c), 0.0, 1.55, -0.26, bancada);
+  // Quadro elétrico com DR, em poste, e extensão pelo chão até o motor
+  var quadro = new THREE.Group(); quadro.position.set(-2.6, 0, -1.4); corte.add(quadro);
+  caixa(0.1, 1.9, 0.1, mat(0x5a4a33, { r: 0.9 }), 0, 0.95, 0, quadro);
+  caixa(0.5, 0.65, 0.2, mat(0xdfe6e8, { r: 0.4, m: 0.3 }), 0, 1.4, 0.15, quadro);
+  var raio = new THREE.Mesh(new THREE.CircleGeometry(0.09, 3), new THREE.MeshBasicMaterial({ color: 0xffc400 })); raio.position.set(0, 1.5, 0.26); quadro.add(raio);
+  var caminhoCabo = new THREE.CatmullRomCurve3([V(-2.6, 1.15, -1.25), V(-2.55, 0.02, -1.1), V(-1.4, 0.02, -0.9), V(0.0, 0.02, -0.75), V(0.55, 0.02, -0.6), V(0.6, 0.3, -0.55), V(0.6, 1.38, -0.46)]);
+  var cabo = new THREE.Mesh(new THREE.TubeGeometry(caminhoCabo, 60, 0.018, 6), mat(0xe8a21a, { r: 0.6 })); cabo.castShadow = true; cabo.userData.oco = true; corte.add(cabo);
+  // Pó assentado no chão em volta da bancada
+  var poChao = new THREE.Mesh(new THREE.CircleGeometry(1.8, 32), new THREE.MeshStandardMaterial({ color: 0x9a948a, roughness: 1, transparent: true, opacity: 0.35, depthWrite: false }));
+  poChao.rotation.x = -Math.PI / 2; poChao.position.set(0.9, 0.022, 0); corte.add(poChao);
+  var NPO = 320, poGeo = new THREE.BufferGeometry(), poPos = new Float32Array(NPO * 3), poVida = [];
+  for (var q = 0; q < NPO; q++){ poVida.push(Math.random()); }
+  poGeo.setAttribute('position', new THREE.BufferAttribute(poPos, 3));
+  var poMat = new THREE.PointsMaterial({ color: 0x9c9384, size: 0.34, map: HALO, transparent: true, opacity: 0.4, depthWrite: false });
+  var poeiraCorte = new THREE.Points(poGeo, poMat); poeiraCorte.position.copy(bancada.position); corte.add(poeiraCorte);
+    var tempo = 0;
+    corte.updateMatrixWorld(true);
+    var op = V(0.6 - 1.15, 0, -0.2 + 0.05).applyMatrix4(corte.matrixWorld);
+    return {
+      g: corte, mBloco: mBloco, operador: { x: op.x, z: op.z, ry: (ry || 0) + Math.PI / 2 },
+      atualizar: function(dt, nivel, corPo){
+        tempo += dt;
+        disco.rotation.y += dt * 40;
+        carro.position.x = -0.3 + Math.sin(tempo * 0.9) * 0.32;
+        for (var i = 0; i < NPO; i++){
+          poVida[i] = (poVida[i] + dt * (0.22 + (i % 7) * 0.035)) % 1;
+          var v = poVida[i], a = i * 2.399, abre = Math.pow(v, 0.7);
+          poPos[i * 3] = 0.12 + v * 2.4 + Math.cos(a) * abre * 0.7;
+          poPos[i * 3 + 1] = 1.2 + v * 1.6 + Math.sin(a * 1.3) * abre * 0.45 + Math.sin(tempo * 2 + i) * 0.05;
+          poPos[i * 3 + 2] = Math.sin(a) * abre * 0.8 - v * 0.5;
+        }
+        poGeo.attributes.position.needsUpdate = true;
+        poMat.opacity = 0.55 * nivel; poMat.size = 0.22 + 0.18 * nivel;
+        if (corPo !== undefined) poMat.color.setHex(corPo);
+      }
+    };
+  }
+  // UV em escala de mundo (mapeamento por caixa): textura de bloco, tijolo ou concreto sem esticar, qualquer que seja o tamanho
+  function uvMundo(geo, escala){
+    var p = geo.attributes.position, n = geo.attributes.normal, uv = new Float32Array(p.count * 2);
+    for (var i = 0; i < p.count; i++){
+      var nx = Math.abs(n.getX(i)), ny = Math.abs(n.getY(i)), x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+      if (ny > 0.5){ uv[i * 2] = x / escala; uv[i * 2 + 1] = z / escala; }
+      else if (nx > 0.5){ uv[i * 2] = z / escala; uv[i * 2 + 1] = y / escala; }
+      else { uv[i * 2] = x / escala; uv[i * 2 + 1] = y / escala; }
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return geo;
+  }
   // Andaime tubular fachadeiro: montantes, longarinas, travessas, diagonais, pranchas, guarda-corpo com rodapé,
   // sapatas e escada interna. Eixo longo em +x, profundidade em +z (face de trabalho em z = largura).
   function andaime(baias, niveis, o){
@@ -503,7 +611,7 @@ var Cena = (function(){
     THREE: THREE, cena: cena, cam: cam, COR: COR, HALO: HALO,
     mat: mat, basico: basico, caixa: caixa, cilindro: cilindro, caixaRedonda: caixaRedonda,
     halo: halo, textoTex: textoTex, cantos: cantos, pessoa: pessoa, aoCarregarFonte: aoCarregarFonte, R: R,
-    barra: barra, trelica: trelica, fundir: fundir, fita: fita, texturaProc: texturaProc, granulado: granulado, carro: carro, asfalto: asfalto, arvores: arvores, roda: roda, epi: epi, andaime: andaime, desvanecivel: desvanecivel
+    barra: barra, trelica: trelica, fundir: fundir, fita: fita, texturaProc: texturaProc, granulado: granulado, carro: carro, asfalto: asfalto, arvores: arvores, roda: roda, epi: epi, andaime: andaime, desvanecivel: desvanecivel, geoBloco: geoBloco, palete: palete, uvMundo: uvMundo, estacaoCorte: estacaoCorte
   };
   // Grua de montagem da clínica: torre treliçada, lança, contralança com contrapeso e cabo com gancho
   (function montarGrua2(){
