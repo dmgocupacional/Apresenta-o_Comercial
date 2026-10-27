@@ -80,3 +80,16 @@
 - Novo roteiro `exclusivo-g4`.
 - Kit ganhou `geoBloco`, `palete`, `uvMundo` e `estacaoCorte`.
 - QA: 0 colisões; regressão 0 erros.
+- 27/10, ajuste pedido pelo Henrique:
+  - saíram o FAP e o calendário;
+  - o kanban e o radar vêm logo depois das 4 dores;
+  - cada dor mostra os riscos e as NRs que mantêm o trabalhador apto (NR-1/6/7/9/12/15/18/35 e eSocial).
+- Qualidade, extrapolada para todas as cenas:
+  - pessoas articuladas, com ações (assentar, cortar, martelar, sinalizar);
+  - desgaste do canteiro (manchas, marcas de pneu, barro na base);
+  - faixa de pedestre e bueiros;
+  - carros em cores sóbrias;
+  - câmeras das dores mais baixas;
+  - o pavimento em execução deixou de aparecer preto.
+- Padrão salvo em `PADRAO-3D.md` §7–8.
+- QA: 0 colisões; regressão 0 erros.

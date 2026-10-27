@@ -65,3 +65,31 @@ Rode com o servidor local `python3 -m http.server 8765 --bind 127.0.0.1` na raiz
 - **Câmera:** travelling em curva entre planos, com aceleração e frenagem, e órbita lenta na entrega. A distância focal é por plano (`fov` opcional na cena do roteiro).
 - **Qualidade adaptativa:** mede o computador nos primeiros quadros e escolhe entre alto, médio e baixo. Para forçar, use `?q=alto|medio|baixo`. O QA visual roda com `Q=alto` ou `Q=medio`.
 - Nenhum brilho estourado (gramado, fachos sobrepostos, alerta). Se estourar, baixe a emissão, não o bloom global.
+
+## 7. Pessoas e desgaste (27/10)
+- **Pessoas articuladas** (`kit.pessoa`): quadril, joelhos, cotovelos, tronco que inclina, nariz e orelhas, jugular do capacete. Tom de pele, calça e camisa são sorteados.
+- **Ações de trabalho:** use `userData.acao` com `'assentar' | 'cortar' | 'martelar' | 'sinalizar'`.
+  - Trabalhador em atividade não fica parado em pose fixa.
+  - `userData.pose` fica só para quem segura algo sem se mexer.
+- **EPI:** `kit.epi` se prende ao tronco articulado e acompanha o corpo.
+- **Desgaste** em toda obra, visível na obra e removido na entrega:
+  - `kit.manchas` (terra, cimento, argamassa, óleo, poça);
+  - `kit.marcasPneu` do portão até a frente de serviço;
+  - `kit.rodapeSujo` na base das edificações.
+- **Rua:** faixa de pedestre e bueiros. Carros em cores sóbrias (branco, prata, grafite, azul-marinho), sem vermelho saturado.
+- **Câmeras das dores:** na altura do olhar, entre 2,5 e 4 m. A visão aérea fica para capa, situação e entrega.
+- **Prédio em execução:** o pavimento que ainda não tem laje mostra a laje de baixo, e não o miolo escuro.
+
+## 8. Roteiro (SPIN) — ordem obrigatória
+1. Capa
+2. Situação
+3. Dores. Cada dor traz `riscos` e `nrs`, que mostram o que mantém o trabalhador apto.
+4. **Kanban de qualificação e radar, logo depois das dores.**
+5. Implicação
+6. Virada
+7. Andares da solução
+8. Entrega
+9. Prova
+10. CTA
+
+Calculadora de FAP e calendário de prazo são opcionais e ficam fora das exclusivas.
